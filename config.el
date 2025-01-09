@@ -77,6 +77,9 @@
       "C-S-<up>"         #'+evil/window-move-up
       "C-S-<right>"      #'+evil/window-move-right)
 
+(map! :leader :desc "Toggle line wrapping" :v "v" #'visual-line-mode)
+;; (map! :leader :desc "Copy whole file into clipboard" :nv "y" (cmd! ":%y+" (evil-ret)))
+
 (after! why-this
   (setq! why-this-idle-delay 0.01)
   (map! :leader :desc "Toggle inline git blame" :nv "b w" #'why-this-mode))
