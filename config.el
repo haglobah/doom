@@ -77,10 +77,9 @@
       "C-<up>"         #'+evil/window-move-up
       "C-<right>"      #'+evil/window-move-right)
 
-
 (after! why-this
   (setq! why-this-idle-delay 0.01)
-  (map! :nv "SPC b w" #'why-this-mode))
+  (map! :leader :desc "Toggle inline git blame" :nv "b w" #'why-this-mode))
 
 (after! treemacs
   (setq! treemacs-file-event-delay 100))
