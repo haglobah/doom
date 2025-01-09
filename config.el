@@ -64,18 +64,18 @@
 
 (map! :nv "M-." (lambda () (interactive) (affe-find "~")))
 
-(map! :map evil-window-map
+(map! :n
       "SPC" #'rotate-layout
 
-      "<left>"  #'evil-window-left
-      "<down>"  #'evil-window-down
-      "<up>"    #'evil-window-up
-      "<right>" #'evil-window-right
+      "S-<left>"  #'evil-window-left
+      "S-<down>"  #'evil-window-down
+      "S-<up>"    #'evil-window-up
+      "S-<right>" #'evil-window-right
 
-      "C-<left>"       #'+evil/window-move-left
-      "C-<down>"       #'+evil/window-move-down
-      "C-<up>"         #'+evil/window-move-up
-      "C-<right>"      #'+evil/window-move-right)
+      "C-S-<left>"       #'+evil/window-move-left
+      "C-S-<down>"       #'+evil/window-move-down
+      "C-S-<up>"         #'+evil/window-move-up
+      "C-S-<right>"      #'+evil/window-move-right)
 
 (after! why-this
   (setq! why-this-idle-delay 0.01)
