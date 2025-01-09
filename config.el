@@ -78,7 +78,7 @@
       "C-S-<right>"      #'+evil/window-move-right)
 
 (map! :leader :desc "Toggle line wrapping" :v "v" #'visual-line-mode)
-;; (map! :leader :desc "Copy whole file into clipboard" :nv "y" (cmd! ":%y+" (evil-ret)))
+(map! :leader :desc "Copy whole file into clipboard" :nv "y" (cmd! (evil-ex "%y+")))
 
 (after! why-this
   (setq! why-this-idle-delay 0.01)
