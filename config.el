@@ -79,7 +79,7 @@
 
 (after! why-this
   (setq! why-this-idle-delay 0.01)
-  (global-why-this-mode t))
+  (map! :nv "SPC b w" #'why-this-mode))
 
 (after! treemacs
   (setq! treemacs-file-event-delay 100))
