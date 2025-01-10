@@ -15,6 +15,8 @@
 ;;(package! another-package
 ;;  :recipe (:host github :repo "username/repo"))
 
+(package! himalaya)
+
 (package! why-this
   :recipe (:host nil :repo "https://codeberg.org/akib/emacs-why-this.git"))
 
