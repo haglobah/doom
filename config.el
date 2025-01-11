@@ -78,12 +78,12 @@
 (map! :leader :desc "Toggle line wrapping" :v "v" #'visual-line-mode)
 (map! :leader :desc "Copy whole file into clipboard" :nv "y" (cmd! (evil-ex "%y+")))
 
-(after! why-this
-  (setq! why-this-idle-delay 0.01)
-  (map! :leader :desc "Toggle inline git blame" :nv "b w" #'why-this-mode))
+;; why-this
+(setq! why-this-idle-delay 0.01)
+(map! :leader :desc "Toggle inline git blame" :nv "b w" #'why-this-mode)
 
-(after! treemacs
-  (setq! treemacs-file-event-delay 100))
+;; treemacs
+(setq! treemacs-file-event-delay 100)
 
 ;; Whenever you reconfigure a package, make sure to wrap your config in an
 ;; `after!' block, otherwise Doom's defaults may override your settings. E.g.
