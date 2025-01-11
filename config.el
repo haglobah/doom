@@ -64,7 +64,7 @@
 
 (map! :nv "M-." (lambda () (interactive) (affe-find "~")))
 
-(map! :n
+(map! :ni
       "S-<left>"  #'evil-window-left
       "S-<down>"  #'evil-window-down
       "S-<up>"    #'evil-window-up
