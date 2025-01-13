@@ -76,14 +76,34 @@
       "C-S-<right>"      #'+evil/window-move-right)
 
 (map! :leader :desc "Toggle line wrapping" :v "v" #'visual-line-mode)
-(map! :leader :desc "Copy whole file into clipboard" :nv "y" (cmd! (evil-ex "%y+")))
+(map! :leader :desc "Copy file to clipboard" :nv "y" (cmd! (evil-ex "%y+")))
 
 ;; why-this
 (setq! why-this-idle-delay 0.01)
 (map! :leader :desc "Toggle inline git blame" :nv "b w" #'why-this-mode)
 
+(defun split-parent-window-right (&optional size)
+  "Split the parent window into two side-by-side windows.
+If there is no parent, splits the current window. Otherwise
+identical to `split-window-right'."
+  (interactive "P")
+  (let ((old-window (selected-window))
+        (size (and size (prefix-numeric-value size)))
+        new-window)
+    (when (and size (< size 0) (< (- size) window-min-width))
+      ;; `split-window' would not signal an error here.
+      (error "Size of new window too small"))
+    (setq new-window (split-window (window-parent) size t))
+    ;; Always copy quit-restore parameter in interactive use.
+    (let ((quit-restore (window-parameter old-window 'quit-restore)))
+      (when quit-restore
+        (set-window-parameter new-window 'quit-restore quit-restore)))
+    new-window))
+
+(map! :leader :desc "Add a parent right split to current window" :nv "w e" #'split-parent-window-right)
+
 ;; treemacs
-(setq! treemacs-file-event-delay 100)
+;; (setq! treemacs-file-event-delay 100)
 
 ;; Whenever you reconfigure a package, make sure to wrap your config in an
 ;; `after!' block, otherwise Doom's defaults may override your settings. E.g.
