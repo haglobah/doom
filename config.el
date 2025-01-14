@@ -119,6 +119,62 @@ identical to `split-window-right'."
       "C-{" #'sp-backward-barf-sexp
       "C-}" #'sp-forward-barf-sexp)
 
+(defun duplicate-line (arg)
+  ;; save the point for undo
+  (setq buffer-undo-list (cons (point) buffer-undo-list))
+
+  ;; local variables for start and end of line
+  (let ((bol (save-excursion (beginning-of-line) (point)))
+        eol)
+    (save-excursion
+
+      ;; don't use forward-line for this, because you would have
+      ;; to check whether you are at the end of the buffer
+      (end-of-line)
+      (setq eol (point))
+
+      ;; store the line and disable the recording of undo information
+      (let ((line (buffer-substring bol eol))
+            (buffer-undo-list t)
+            (count arg))
+        ;; insert the line arg times
+        (while (> count 0)
+          (newline)         ;; because there is no newline in 'line'
+          (insert line)
+          (setq count (1- count))))
+
+      ;; create the undo information
+      (setq buffer-undo-list (cons (cons eol (point)) buffer-undo-list)))))
+
+(defun duplicate-line-up (arg)
+  "Duplicate current line, leaving point in upper line."
+  (interactive "*p")
+  (duplicate-line arg))
+
+(defun duplicate-line-down (arg)
+  "Duplicate current line, leaving point in lower line."
+  (interactive "*p")
+  (duplicate-line arg)
+  (forward-line arg))
+
+(defun move-line-up ()
+  "Move up the current line."
+  (interactive)
+  (transpose-lines 1)
+  (forward-line -2))
+
+(defun move-line-down ()
+  "Move down the current line."
+  (interactive)
+  (forward-line 1)
+  (transpose-lines 1)
+  (forward-line -1))
+
+(map! "M-<up>" #'move-line-up
+      "M-<down>" #'move-line-down
+      "M-S-<up>" #'duplicate-line-up
+      "M-S-<down>" #'duplicate-line-down)
+
 ;; treemacs
 ;; (setq! treemacs-file-event-delay 100)
 
