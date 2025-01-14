@@ -84,8 +84,15 @@
 (map! :leader :desc "Copy file to clipboard" :nv "y" (cmd! (evil-ex "%y+")))
 
 ;; why-this
-(setq! why-this-idle-delay 0.01)
-(map! :leader :desc "Toggle inline git blame" :nv "b w" #'why-this-mode)
+(use-package! why-this
+  :defer
+
+  :init
+  (map! :leader :desc "Toggle inline git blame" :nv "b w" #'why-this-mode)
+
+  :config
+  (setq! why-this-idle-delay 0.01)
+  (set-face-attribute 'why-this-face nil :foreground "gray" :slant 'oblique))
 
 (defun split-parent-window-right (&optional size)
   "Split the parent window into two side-by-side windows.
