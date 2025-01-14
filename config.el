@@ -114,6 +114,11 @@ identical to `split-window-right'."
 
 (map! :leader :desc "Add a parent right split to current window" :nv "w e" #'split-parent-window-right)
 
+(map! "C-(" #'sp-backward-slurp-sexp
+      "C-)" #'sp-forward-slurp-sexp
+      "C-{" #'sp-backward-barf-sexp
+      "C-}" #'sp-forward-barf-sexp)
+
 ;; treemacs
 ;; (setq! treemacs-file-event-delay 100)
 
