@@ -155,7 +155,7 @@ identical to `split-window-right'."
   "Duplicate current line, leaving point in lower line."
   (interactive "*p")
   (duplicate-line arg)
-  (forward-line arg))
+  (next-line arg))
 
 (defun move-line-up ()
   "Move up the current line."
