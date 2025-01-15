@@ -175,6 +175,8 @@ identical to `split-window-right'."
       "M-S-<up>" #'duplicate-line-up
       "M-S-<down>" #'duplicate-line-down)
 
+(map! :leader :desc "LSP: Format buffer" :nv "c f" #'lsp-format-buffer)
+
 ;; treemacs
 ;; (setq! treemacs-file-event-delay 100)
 
