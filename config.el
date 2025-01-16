@@ -83,6 +83,9 @@
 (map! :leader :desc "Toggle line wrapping" :v "v" #'visual-line-mode)
 (map! :leader :desc "Copy file to clipboard" :nv "y" (cmd! (evil-ex-execute "%y+")))
 
+(after! magit
+  (add-hook 'magit-mode-hook #'evil-emacs-state))
+
 ;; why-this
 (use-package! why-this
   :defer
