@@ -58,8 +58,6 @@
 
 (global-auto-revert-mode t)
 
-(evil-set-initial-state 'magit 'emacs)
-
 (map! :i "C-u" nil)
 
 (defun read-unicode-char (c1 c2 c3 c4 _trailing_space_ignored)
