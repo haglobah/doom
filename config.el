@@ -39,6 +39,8 @@
 ;; `load-theme' function. This is the default:
 (setq catppuccin-flavor 'macchiato)
 (setq doom-theme 'catppuccin)
+(setq rainbow-delimiters-max-face-count 9)
+
 (setq doom-localleader-key ",")
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
