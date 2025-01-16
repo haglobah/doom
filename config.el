@@ -119,61 +119,85 @@ identical to `split-window-right'."
       "C-{" #'sp-backward-barf-sexp
       "C-}" #'sp-forward-barf-sexp)
 
-(defun duplicate-line (arg)
-  ;; save the point for undo
-  (setq buffer-undo-list (cons (point) buffer-undo-list))
-
-  ;; local variables for start and end of line
-  (let ((bol (save-excursion (beginning-of-line) (point)))
-        eol)
-    (save-excursion
-
-      ;; don't use forward-line for this, because you would have
-      ;; to check whether you are at the end of the buffer
-      (end-of-line)
-      (setq eol (point))
-
-      ;; store the line and disable the recording of undo information
-      (let ((line (buffer-substring bol eol))
-            (buffer-undo-list t)
-            (count arg))
-        ;; insert the line arg times
-        (while (> count 0)
-          (newline)         ;; because there is no newline in 'line'
-          (insert line)
-          (setq count (1- count))))
-
-      ;; create the undo information
-      (setq buffer-undo-list (cons (cons eol (point)) buffer-undo-list)))))
-
-(defun duplicate-line-up (arg)
-  "Duplicate current line, leaving point in upper line."
+(defun bah/duplicate-line-or-region-up (arg)
+  "Duplicate the current line or selected region upward."
   (interactive "*p")
-  (duplicate-line arg))
+  (dotimes (_ arg)
+    (bah/duplicate-line-or-region -1)))
 
-(defun duplicate-line-down (arg)
-  "Duplicate current line, leaving point in lower line."
+(defun bah/duplicate-line-or-region-down (arg)
+  "Duplicate the current line or selected region downward."
   (interactive "*p")
-  (duplicate-line arg)
-  (next-line arg))
+  (dotimes (_ arg)
+    (bah/duplicate-line-or-region 1)))
 
-(defun move-line-up ()
+(defun bah/duplicate-line-or-region (n)
+  "Duplicate the current line or selected region upward or downward. The
+direction is determined by the argument n being positive (i.e. downward)
+or negative (i.e. upward). When a region is in play, the region will be kept
+in a way so that this duplicate command can be replayed multiple times."
+  (let* ((is-region (use-region-p))
+         (beg (if is-region (region-beginning) nil))
+         (end (if is-region (region-end) nil))
+         (start (point))
+         (region-other-point (if is-region (if (eq start beg) end beg)))
+         (line-start (if is-region
+                         (save-mark-and-excursion
+                           (goto-char beg)
+                           (line-beginning-position))
+                       (line-beginning-position)))
+         (line-end (if is-region
+                       (save-mark-and-excursion
+                         (goto-char end)
+                         (line-end-position))
+                     (line-end-position)))
+         (text (concat (buffer-substring line-start line-end) "\n"))
+         (forward (if (< 0 n) 1 -1))
+         (shift (length text)))
+    ;; If duplication direction is down (forward), keep the existing lines as
+    ;; they appear, and insert before the current line. This makes it look as
+    ;; if the selection has moved down, and can be used to keep duplicating
+    ;; the selected lines downwards.
+    (if (> forward 0)
+        ;; Because other content will be inserted, save-mark-and-excursion won't
+        ;; work. For that reason, I need to do some manual mark adjustment.
+        (progn (goto-char line-start)
+               (insert text)
+               (goto-char (+ start shift))
+               (when is-region
+                 (save-excursion
+                   (push-mark (+ region-other-point shift) 'nomsg nil))))
+
+      ;; If duplication direction is up, insert the item below the current
+      ;; line. This allows upward duplication to be repeated.
+     (progn (goto-char line-end)
+            (forward-line 1)
+            (insert text)
+            (goto-char start)
+            (when is-region
+              (save-excursion
+                (push-mark region-other-point 'nomsg nil)))))
+
+
+    (setq deactivate-mark nil)))
+
+(defun bah/move-line-up ()
   "Move up the current line."
   (interactive)
   (transpose-lines 1)
   (forward-line -2))
 
-(defun move-line-down ()
+(defun bah/move-line-down ()
   "Move down the current line."
   (interactive)
   (forward-line 1)
   (transpose-lines 1)
   (forward-line -1))
 
-(map! "M-<up>" #'move-line-up
-      "M-<down>" #'move-line-down
-      "M-S-<up>" #'duplicate-line-up
-      "M-S-<down>" #'duplicate-line-down)
+(map! "M-<up>" #'bah/move-line-up
+      "M-<down>" #'bah/move-line-down
+      "M-S-<up>" #'bah/duplicate-line-or-region-up
+      "M-S-<down>" #'bah/duplicate-line-or-region-down)
 
 (map! :leader :desc "LSP: Format buffer" :nv "c f" #'lsp-format-buffer)
 
