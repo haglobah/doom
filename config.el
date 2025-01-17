@@ -219,6 +219,9 @@ in a way so that this duplicate command can be replayed multiple times."
 (define-and-bind-text-object "-" "---" "---")
 (let ((var-string "[[:space:],\n\(\)\{\}\[]"))
   (define-and-bind-text-object "v" var-string var-string))
+
+(map! :n "_" (cmd! (insert " ") (evil-normal-state)))
+
 ;; treemacs
 ;; (setq! treemacs-file-event-delay 100)
 
