@@ -204,6 +204,21 @@ in a way so that this duplicate command can be replayed multiple times."
 
 (map! :leader :desc "LSP: Format buffer" :nv "c f" #'lsp-format-buffer)
 
+;; vim
+(defmacro define-and-bind-text-object (key start-regex end-regex)
+  (let ((inner-name (make-symbol "inner-name"))
+        (outer-name (make-symbol "outer-name")))
+    `(progn
+       (evil-define-text-object ,inner-name (count &optional beg end type)
+         (evil-select-paren ,start-regex ,end-regex beg end type count nil))
+       (evil-define-text-object ,outer-name (count &optional beg end type)
+         (evil-select-paren ,start-regex ,end-regex beg end type count t))
+       (define-key evil-inner-text-objects-map ,key (quote ,inner-name))
+       (define-key evil-outer-text-objects-map ,key (quote ,outer-name)))))
+
+(define-and-bind-text-object "-" "---" "---")
+(let ((var-string "[[:space:],\n\(\)\{\}\[]"))
+  (define-and-bind-text-object "v" var-string var-string))
 ;; treemacs
 ;; (setq! treemacs-file-event-delay 100)
 
