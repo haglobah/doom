@@ -222,6 +222,8 @@ in a way so that this duplicate command can be replayed multiple times."
 
 (map! :n "_" (cmd! (insert " ") (evil-normal-state)))
 
+(setq! doom-modeline-buffer-modification-icon nil)
+
 ;; treemacs
 ;; (setq! treemacs-file-event-delay 100)
 
