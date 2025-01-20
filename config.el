@@ -224,6 +224,13 @@ in a way so that this duplicate command can be replayed multiple times."
 
 (setq! doom-modeline-buffer-modification-icon nil)
 
+;; aider
+
+(use-package! aider
+  :config
+  (setq! aider-args '("--model" "gpt-4o-mini")))
+
+
 ;; treemacs
 ;; (setq! treemacs-file-event-delay 100)
 
