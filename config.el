@@ -69,6 +69,8 @@
 
 (map! :nv "M-." (lambda () (interactive) (affe-find "~")))
 
+(setq projectile-enable-caching nil)
+
 (map! :ni
       "S-<left>"  #'evil-window-left
       "S-<down>"  #'evil-window-down
