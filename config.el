@@ -40,6 +40,7 @@
 (setq catppuccin-flavor 'macchiato)
 (setq doom-theme 'catppuccin)
 (setq rainbow-delimiters-max-face-count 9)
+(setq doom-font-increment 1)
 
 (setq doom-localleader-key ",")
 
