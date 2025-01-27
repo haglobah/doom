@@ -220,7 +220,7 @@ in a way so that this duplicate command can be replayed multiple times."
        (define-key evil-outer-text-objects-map ,key (quote ,outer-name)))))
 
 (define-and-bind-text-object "-" "---" "---")
-(let ((var-string "[[:space:],\n\(\)\{\}\[]"))
+(let ((var-string "[[:space:],\n\"\'\(\)\{\}\[]"))
   (define-and-bind-text-object "v" var-string var-string))
 
 (map! :n "_" (cmd! (insert " ") (evil-normal-state)))
@@ -231,7 +231,8 @@ in a way so that this duplicate command can be replayed multiple times."
 
 (use-package! aider
   :config
-  (setq! aider-args '("--model" "gpt-4o-mini")))
+  ;; (setq! aider-args '("--model" "gpt-4o-mini"))
+  (setq! aider-args '("--model" "o1-mini")))
 
 
 ;; treemacs
