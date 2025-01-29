@@ -22,6 +22,8 @@
 ;; accept. For example:
 ;;
 (setq doom-font (font-spec :family "Source Code Pro" :size 16 :weight 'medium))
+(setq doom-font-increment 1)
+
 ;;      doom-variable-pitch-font (font-spec :family "Source Sans Pro" :size 18))
 ;;
 ;; If you or Emacs can't find your font, use 'M-x describe-font' to look them
@@ -40,7 +42,6 @@
 (setq catppuccin-flavor 'macchiato)
 (setq doom-theme 'catppuccin)
 (setq rainbow-delimiters-max-face-count 9)
-(setq doom-font-increment 1)
 
 (setq doom-localleader-key ",")
 
