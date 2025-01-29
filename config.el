@@ -230,10 +230,10 @@ in a way so that this duplicate command can be replayed multiple times."
 
 ;; aider
 
-(use-package! aider
-  :config
-  ;; (setq! aider-args '("--model" "gpt-4o-mini"))
-  (setq! aider-args '("--model" "o1-mini")))
+;; (use-package! aider
+;;   :config
+;;   ;; (setq! aider-args '("--model" "gpt-4o-mini"))
+;;   (setq! aider-args '("--model" "o1-mini")))
 
 
 ;; treemacs

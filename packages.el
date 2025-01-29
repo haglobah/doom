@@ -27,7 +27,7 @@
 
 (package! all-the-icons)
 
-(package! aider :recipe (:host github :repo "tninja/aider.el" :files ("aider.el" "aider-doom.el")))
+;; (package! aider :recipe (:host github :repo "tninja/aider.el" :files ("aider.el" "aider-doom.el")))
 
 (package! pollen-mode)
 
