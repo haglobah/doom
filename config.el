@@ -228,6 +228,9 @@ in a way so that this duplicate command can be replayed multiple times."
 
 (setq! doom-modeline-buffer-modification-icon nil)
 
+(ws-butler-global-mode -1)
+(setq! show-trailing-whitespace t)
+
 ;; aider
 
 ;; (use-package! aider
