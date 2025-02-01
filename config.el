@@ -177,14 +177,13 @@ in a way so that this duplicate command can be replayed multiple times."
 
       ;; If duplication direction is up, insert the item below the current
       ;; line. This allows upward duplication to be repeated.
-     (progn (goto-char line-end)
-            (forward-line 1)
-            (insert text)
-            (goto-char start)
-            (when is-region
-              (save-excursion
-                (push-mark region-other-point 'nomsg nil)))))
-
+      (progn (goto-char line-end)
+             (forward-line 1)
+             (insert text)
+             (goto-char start)
+             (when is-region
+               (save-excursion
+                 (push-mark region-other-point 'nomsg nil)))))
 
     (setq deactivate-mark nil)))
 
@@ -235,7 +234,9 @@ in a way so that this duplicate command can be replayed multiple times."
 (use-package! aider
   :config
   ;; (setq! aider-args '("--model" "gpt-4o-mini"))
-  (setq! aider-args '("--model" "o1-mini")))
+  (setq! aider-args '("--model" "o1-mini"
+                      "--no-git"
+                      "--multiline")))
 
 (setq treesit-language-source-alist
       '((astro "https://github.com/virchau13/tree-sitter-astro")
