@@ -228,7 +228,8 @@ in a way so that this duplicate command can be replayed multiple times."
 
 (setq! doom-modeline-buffer-modification-icon nil)
 
-(ws-butler-global-mode nil)
+(after! ws-butler
+  (ws-butler-global-mode -1))
 
 ;; aider
 (use-package! aider
