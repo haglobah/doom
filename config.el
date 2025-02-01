@@ -207,6 +207,8 @@ in a way so that this duplicate command can be replayed multiple times."
 
 (map! :leader :desc "LSP: Format buffer" :nv "c f" #'lsp-format-buffer)
 
+(map! :desc "Insert current file name" "C-c f" (cmd! (insert (f-filename (file-name-sans-extension (buffer-file-name))))))
+
 ;; vim
 (defmacro define-and-bind-text-object (key start-regex end-regex)
   (let ((inner-name (make-symbol "inner-name"))
