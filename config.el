@@ -231,12 +231,16 @@ in a way so that this duplicate command can be replayed multiple times."
 (ws-butler-global-mode nil)
 
 ;; aider
-
 (use-package! aider
   :config
   ;; (setq! aider-args '("--model" "gpt-4o-mini"))
-  (setq! aider-args '("--model" "o3-mini")))
+  (setq! aider-args '("--model" "o1-mini")))
 
+(setq treesit-language-source-alist
+      '((astro "https://github.com/virchau13/tree-sitter-astro")
+        (css "https://github.com/tree-sitter/tree-sitter-css")
+        (tsx "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")
+        (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")))
 
 ;; treemacs
 ;; (setq! treemacs-file-event-delay 100)
