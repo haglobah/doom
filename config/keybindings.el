@@ -1,13 +1,17 @@
-(map! :i "C-u" nil)
-
 (defun read-unicode-char (c1 c2 c3 c4 _trailing_space_ignored)
   "Convert unicode input C1 C2 C3 C4 to the corresponding insert char call."
   (interactive "c\nc\nc\nc\nc")
   (insert-char (string-to-number (format "%c%c%c%c" c1 c2 c3 c4) 16)))
 
+(map! :i "C-u" nil)
 (map! "C-S-u" 'read-unicode-char)
 
 (map! :nv "M-." (cmd! (affe-find "~")))
+
+(map! "C-(" #'sp-backward-slurp-sexp
+      "C-)" #'sp-forward-slurp-sexp
+      "C-{" #'sp-backward-barf-sexp
+      "C-}" #'sp-forward-barf-sexp)
 
 (map! :ni
       "S-<left>"  #'evil-window-left
@@ -20,9 +24,14 @@
       "C-S-<up>"         #'+evil/window-move-up
       "C-S-<right>"      #'+evil/window-move-right)
 
+(map! :desc "Insert current file name" "C-c f" (cmd! (insert (f-filename (file-name-sans-extension (buffer-file-name))))))
+(map! :nv "M-d" #'evil-mc-make-and-goto-next-match)
+(map! :nv "M-v" #'evil-mc-make-and-goto-next-match)
+
+(map! :leader :desc "LSP: Format buffer" :nv "c f" #'lsp-format-buffer)
 (map! :leader :desc "Toggle line wrapping" :v "v" #'visual-line-mode)
 (map! :leader :desc "Copy file to clipboard" :nv "y" (cmd! (evil-ex-execute "%y+")))
-
+(map! :n "_" (cmd! (insert " ") (evil-normal-state)))
 
 (defun split-parent-window-right (&optional size)
   "Split the parent window into two side-by-side windows.
@@ -43,11 +52,6 @@ identical to `split-window-right'."
     new-window))
 
 (map! :leader :desc "Add a parent right split to current window" :nv "w e" #'split-parent-window-right)
-
-(map! "C-(" #'sp-backward-slurp-sexp
-      "C-)" #'sp-forward-slurp-sexp
-      "C-{" #'sp-backward-barf-sexp
-      "C-}" #'sp-forward-barf-sexp)
 
 (defun bah/duplicate-line-or-region-up (arg)
   "Duplicate the current line or selected region upward."
@@ -128,10 +132,6 @@ in a way so that this duplicate command can be replayed multiple times."
       "M-S-<up>" #'bah/duplicate-line-or-region-up
       "M-S-<down>" #'bah/duplicate-line-or-region-down)
 
-(map! :leader :desc "LSP: Format buffer" :nv "c f" #'lsp-format-buffer)
-
-(map! :desc "Insert current file name" "C-c f" (cmd! (insert (f-filename (file-name-sans-extension (buffer-file-name))))))
-
 ;; vim
 (defmacro define-and-bind-text-object (key start-regex end-regex)
   (let ((inner-name (make-symbol "inner-name"))
@@ -147,5 +147,3 @@ in a way so that this duplicate command can be replayed multiple times."
 (define-and-bind-text-object "-" "---" "---")
 (let ((var-string "[[:space:],\n\"\'\(\)\{\}\[]"))
   (define-and-bind-text-object "v" var-string var-string))
-
-(map! :n "_" (cmd! (insert " ") (evil-normal-state)))
