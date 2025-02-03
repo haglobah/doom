@@ -16,7 +16,11 @@
    slurp/barf-lispy
    additional
    additional-movement
+   additional-wrap
    additional-insert))
+
+(map! :map lispyville-mode-map
+      :i "M-[" #'lispy-brackets)
 
 (map! "C-(" #'sp-backward-slurp-sexp
       "C-)" #'sp-forward-slurp-sexp
