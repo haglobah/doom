@@ -8,6 +8,16 @@
 
 (map! :nv "M-." (cmd! (affe-find "~")))
 
+(lispyville-set-key-theme
+ '((operators normal)
+   c-w
+   (prettify insert)
+   (atom-movement normal visual)
+   slurp/barf-lispy
+   additional
+   additional-movement
+   additional-insert))
+
 (map! "C-(" #'sp-backward-slurp-sexp
       "C-)" #'sp-forward-slurp-sexp
       "C-{" #'sp-backward-barf-sexp
