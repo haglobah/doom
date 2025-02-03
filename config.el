@@ -114,8 +114,3 @@
 ;;
 ;; You can also try 'gd' (or 'C-c c d') to jump to their definition and see how
 ;; they are implemented.
-
-(defun my-final-setup ()
-  (ws-butler-global-mode -1))
-
-(add-hook 'emacs-startup-hook 'my-final-setup)

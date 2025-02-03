@@ -29,6 +29,8 @@
 
 (package! aider :recipe (:host github :repo "tninja/aider.el" :files ("aider.el" "aider-doom.el")))
 
+(package! ws-butler :disable t)
+
 (package! pollen-mode)
 (package! astro-ts-mode)
 
