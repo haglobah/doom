@@ -79,6 +79,18 @@
 
 (after! web-mode
    (add-to-list 'auto-mode-alist '("\\.astro\\'" . web-mode)))
+(setq whitespace-line-column 100)
+(setq whitespace-global-modes
+      '(not magit-status-mode
+        org-mode))
+(setq whitespace-style
+      '(face missing-newline-at-eof
+        trailing empty tabs tab-mark))
+(setq whitespace-display-mappings
+      '((tab-mark 9
+          [187 9]
+          [92 9])))
+(global-whitespace-mode +1)
 
 (load! "packages/why-this.el")
 (load! "packages/aider.el")
