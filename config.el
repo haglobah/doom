@@ -43,6 +43,9 @@
 (setq doom-theme 'catppuccin)
 (setq rainbow-delimiters-max-face-count 9)
 
+(custom-set-variables
+ '(display-battery-mode +1))
+
 (setq doom-localleader-key ",")
 
 (load! "config/keybindings.el")
