@@ -77,8 +77,8 @@
         (tsx "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")
         (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")))
 
-(after! web-mode
-   (add-to-list 'auto-mode-alist '("\\.astro\\'" . web-mode)))
+(add-to-list 'auto-mode-alist '("\\.astro\\'" . web-mode))
+
 (setq whitespace-line-column 100)
 (setq whitespace-global-modes
       '(not magit-status-mode
