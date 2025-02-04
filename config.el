@@ -91,6 +91,7 @@
           [187 9]
           [92 9])))
 (global-whitespace-mode +1)
+(global-visual-line-mode +1)
 
 (after! web-mode
   (setq! web-mode-css-indent-offset 2)
