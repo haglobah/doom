@@ -70,6 +70,7 @@
   (add-hook 'magit-mode-hook #'evil-emacs-state))
 
 (setq! doom-modeline-buffer-modification-icon nil)
+(setq! doom-modeline-vcs-max-length 40)
 
 (setq treesit-language-source-alist
       '((astro "https://github.com/virchau13/tree-sitter-astro")
