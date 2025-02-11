@@ -92,6 +92,12 @@
           [187 9]
           [92 9])))
 (global-whitespace-mode +1)
+(global-visual-line-mode +1)
+
+(after! web-mode
+  (setq! web-mode-css-indent-offset 2)
+  (setq! web-mode-code-indent-offset 2)
+  (setq! web-mode-markup-indent-offset 2))
 
 (load! "packages/why-this.el")
 (load! "packages/aider.el")
