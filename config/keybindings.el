@@ -8,19 +8,19 @@
 
 (map! :nv "M-." (cmd! (affe-find "~")))
 
-(lispyville-set-key-theme
- '((operators normal)
-   c-w
-   (prettify insert)
-   (atom-movement normal visual)
-   slurp/barf-lispy
-   additional
-   additional-movement
-   additional-wrap
-   additional-insert))
+;; (lispyville-set-key-theme
+;;  '((operators normal)
+;;    c-w
+;;    (prettify insert)
+;;    (atom-movement normal visual)
+;;    slurp/barf-lispy
+;;    additional
+;;    additional-movement
+;;    additional-wrap
+;;    additional-insert))
 
-(map! :map lispyville-mode-map
-      :i "M-[" #'lispy-brackets)
+;; (map! :map lispyville-mode-map
+;;       :i "M-[" #'lispy-brackets)
 
 (map! "C-(" #'sp-backward-slurp-sexp
       "C-)" #'sp-forward-slurp-sexp
