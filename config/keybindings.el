@@ -128,19 +128,6 @@ in a way so that this duplicate command can be replayed multiple times."
 
     (setq deactivate-mark nil)))
 
-(defun bah/move-line-up ()
-  "Move up the current line."
-  (interactive)
-  (transpose-lines 1)
-  (forward-line -2))
-
-(defun bah/move-line-down ()
-  "Move down the current line."
-  (interactive)
-  (forward-line 1)
-  (transpose-lines 1)
-  (forward-line -1))
-
 (defun bah/move-line-or-region (arg)
   "Move the current line or region up or down by ARG lines.
 With a selected region, move all lines that are
