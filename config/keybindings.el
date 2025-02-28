@@ -141,8 +141,48 @@ in a way so that this duplicate command can be replayed multiple times."
   (transpose-lines 1)
   (forward-line -1))
 
-(map! "M-<up>" #'bah/move-line-up
-      "M-<down>" #'bah/move-line-down
+(defun bah/move-line-or-region (arg)
+  "Move the current line or region up or down by ARG lines.
+With a selected region, move all lines that are
+wholly or partially within the region.
+Negative ARG moves up, positive ARG moves down."
+  (interactive "*p")
+  (let ((beg)
+        (end)
+        (region-active (use-region-p)))
+    ;; Set up the range to move
+    (if region-active
+        (setq beg (region-beginning)
+              end (region-end))
+      (setq beg (line-beginning-position)
+            end (line-beginning-position 2)))
+
+    ;; Move the text
+    (let ((col (current-column))
+          (line-offset (if (< arg 0) -1 1)))
+      (cond
+       ;; Moving up but at buffer start
+       ((and (< arg 0) (= beg (point-min)))
+        (user-error "Beginning of buffer"))
+       ;; Moving down but at buffer end
+       ((and (> arg 0) (= end (point-max)))
+        (user-error "End of buffer"))
+       ;; Otherwise proceed
+       (t
+        (save-excursion
+          (goto-char (if (< arg 0) beg end))
+          (forward-line line-offset)
+          (when (and (> arg 0) (eobp))
+            (newline))
+          (let ((text (delete-and-extract-region beg end)))
+            (insert text)))
+        (forward-line (* line-offset (if region-active
+                                         (count-lines beg end)
+                                       1)))
+        (move-to-column col))))))
+
+(map! "M-<up>" (cmd! (bah/move-line-or-region -1))
+      "M-<down>" (cmd! (bah/move-line-or-region 1))
       "M-S-<up>" #'bah/duplicate-line-or-region-up
       "M-S-<down>" #'bah/duplicate-line-or-region-down)
 
