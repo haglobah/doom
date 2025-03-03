@@ -22,10 +22,25 @@
 ;; (map! :map lispyville-mode-map
 ;;       :i "M-[" #'lispy-brackets)
 
+(defun my/evil-eol-advice (&optional count)
+  (when (evil-eolp)
+    (forward-char)))
+
+(advice-add 'sp-forward-sexp :before #'my/evil-eol-advice)
+
 (map! "C-(" #'sp-backward-slurp-sexp
       "C-)" #'sp-forward-slurp-sexp
       "C-{" #'sp-backward-barf-sexp
-      "C-}" #'sp-forward-barf-sexp)
+      "C-}" #'sp-forward-barf-sexp
+
+      "M-m" #'sp-raise-sexp
+
+      "M-n" #'sp-backward-sexp
+      "M-e" #'sp-down-sexp
+      "M-i" #'sp-up-sexp
+      "M-o" #'sp-forward-sexp
+      "M-u" #'sp-backward-up-sexp
+      "M-y" #'sp-backward-down-sexp)
 
 (map! :ni
       "S-<left>"  #'evil-window-left
