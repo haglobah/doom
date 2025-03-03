@@ -67,7 +67,9 @@
 (setq projectile-enable-caching nil)
 
 (after! magit
-  (add-hook 'magit-mode-hook #'evil-emacs-state))
+  (add-hook 'magit-mode-hook #'evil-emacs-state)
+  (setq magit-diff-refine-hunk 'all))
+
 
 (setq! doom-modeline-buffer-modification-icon nil)
 (setq! doom-modeline-vcs-max-length 40)
@@ -101,6 +103,9 @@
 
 (load! "packages/why-this.el")
 (load! "packages/aider.el")
+
+;; (global-obsidian-mode t)
+;; (load! "packages/obsidian.el")
 
 ;; treemacs
 ;; (setq! treemacs-file-event-delay 100)
