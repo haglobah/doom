@@ -81,6 +81,7 @@
         (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")))
 
 (add-to-list 'auto-mode-alist '("\\.astro\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.keymap\\'" . c-mode))
 
 (setq whitespace-line-column 100)
 (setq whitespace-global-modes
