@@ -43,6 +43,10 @@
 (setq doom-theme 'catppuccin)
 (setq rainbow-delimiters-max-face-count 9)
 
+(setq web-mode-css-indent-offset 2)
+(setq web-mode-code-indent-offset 2)
+(setq web-mode-markup-indent-offset 2)
+
 (custom-set-variables
  '(display-battery-mode +1))
 
@@ -95,11 +99,6 @@
           [92 9])))
 (global-whitespace-mode +1)
 (global-visual-line-mode +1)
-
-(after! web-mode
-  (setq! web-mode-css-indent-offset 2)
-  (setq! web-mode-code-indent-offset 2)
-  (setq! web-mode-markup-indent-offset 2))
 
 (load! "packages/why-this.el")
 (load! "packages/aider.el")
