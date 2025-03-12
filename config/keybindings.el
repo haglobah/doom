@@ -1,3 +1,5 @@
+;; -*- lexical-binding: t; -*-
+
 (defun read-unicode-char (c1 c2 c3 c4 _trailing_space_ignored)
   "Convert unicode input C1 C2 C3 C4 to the corresponding insert char call."
   (interactive "c\nc\nc\nc\nc")
@@ -203,3 +205,50 @@ Negative ARG moves up, positive ARG moves down."
 (define-and-bind-text-object "-" "---" "---")
 (let ((var-string "[[:space:],\n\"\'\(\)\{\}\[]"))
   (define-and-bind-text-object "v" var-string var-string))
+
+(defun insert-file-header ()
+  "Insert a header at the top of the current buffer with title,
+   growthStage, and dates."
+  (interactive)
+  (save-excursion
+    (goto-char (point-min))
+    (let* ((file-name (buffer-file-name))
+           (title (if file-name
+                      (file-name-base file-name)
+                    "untitled"))
+           (current-time (format-time-string "%Y-%m-%d")))
+      (insert (format "---
+title: %s
+growthStage: seedling
+startDate: %s
+updated: %s
+---
+
+" title current-time current-time)))))
+
+(defun update-file-header ()
+  "Update the title and updated fields of an existing file header.
+Does not create a new header if one doesn't exist."
+  (interactive)
+  (save-excursion
+    (goto-char (point-min))
+    (if (looking-at "---\n")
+        (let* ((file-name (buffer-file-name))
+               (file-title (if file-name
+                               (file-name-base file-name)))
+               (current-date (format-time-string "%Y-%m-%d")))
+          (if (search-forward "title: " nil t)
+              (progn
+                (delete-region
+                 (progn (beginning-of-line) (point))
+                 (progn (end-of-line) (point)))
+                (insert (format "title: %s" file-title))))
+          (if (search-forward "updated: " nil t)
+              (progn
+                (delete-region
+                 (progn (beginning-of-line) (point))
+                 (progn (end-of-line) (point)))
+                (insert (format "updated: %s" current-date)))))
+        (insert-file-header))))
+
+(map! "C-c C-d" #'update-file-header)
