@@ -206,7 +206,7 @@ Negative ARG moves up, positive ARG moves down."
 (let ((var-string "[[:space:],\n\"\'\(\)\{\}\[]"))
   (define-and-bind-text-object "v" var-string var-string))
 
-(defun insert-file-header ()
+(defun bah/insert-file-header ()
   "Insert a header at the top of the current buffer with title,
    growthStage, and dates."
   (interactive)
@@ -226,7 +226,9 @@ updated: %s
 
 " title current-time current-time)))))
 
-(defun update-file-header ()
+(map! "C-c h" #'bah/insert-file-header)
+
+(defun bah/update-file-header ()
   "Update the title and updated fields of an existing file header.
 Does not create a new header if one doesn't exist."
   (interactive)
@@ -251,4 +253,4 @@ Does not create a new header if one doesn't exist."
                 (insert (format "updated: %s" current-date)))))
         (insert-file-header))))
 
-(map! "C-c C-d" #'update-file-header)
+(map! "C-c C-d" #'bah/update-file-header)
