@@ -219,14 +219,14 @@ Negative ARG moves up, positive ARG moves down."
            (current-time (format-time-string "%Y-%m-%d")))
       (insert (format "---
 title: %s
+description: δ
 growthStage: seedling
 startDate: %s
 updated: %s
+topics: []
 ---
 
 " title current-time current-time)))))
-
-(map! "C-c h" #'bah/insert-file-header)
 
 (defun bah/update-file-header ()
   "Update the title and updated fields of an existing file header.
@@ -253,4 +253,6 @@ Does not create a new header if one doesn't exist."
                 (insert (format "updated: %s" current-date)))))
         (insert-file-header))))
 
-(map! "C-c C-d" #'bah/update-file-header)
+(map! :map markdown-mode-map
+      :localleader "c h" #'bah/insert-file-header
+      :localleader "c d" #'bah/update-file-header)
