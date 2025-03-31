@@ -1,12 +1,12 @@
 ;; -*- lexical-binding: t; -*-
 
-(defun read-unicode-char (c1 c2 c3 c4 _trailing_space_ignored)
+(defun bah/read-unicode-char (c1 c2 c3 c4 _trailing_space_ignored)
   "Convert unicode input C1 C2 C3 C4 to the corresponding insert char call."
   (interactive "c\nc\nc\nc\nc")
   (insert-char (string-to-number (format "%c%c%c%c" c1 c2 c3 c4) 16)))
 
 (map! :i "C-u" nil)
-(map! "C-S-u" 'read-unicode-char)
+(map! "C-S-u" #'bah/read-unicode-char)
 
 (map! :nv "M-." (cmd! (affe-find "~")))
 
@@ -24,11 +24,11 @@
 ;; (map! :map lispyville-mode-map
 ;;       :i "M-[" #'lispy-brackets)
 
-(defun my/evil-eol-advice (&optional count)
+(defun bah/evil-eol-advice (&optional count)
   (when (evil-eolp)
     (forward-char)))
 
-(advice-add 'sp-forward-sexp :before #'my/evil-eol-advice)
+(advice-add 'sp-forward-sexp :before #'bah/evil-eol-advice)
 
 (map! "C-(" #'sp-backward-slurp-sexp
       "C-)" #'sp-forward-slurp-sexp
@@ -64,7 +64,7 @@
 (map! :leader :desc "Copy file to clipboard" :nv "y" (cmd! (evil-ex-execute "%y+")))
 (map! :n "_" (cmd! (insert " ") (evil-normal-state)))
 
-(defun split-parent-window-right (&optional size)
+(defun bah/split-parent-window-right (&optional size)
   "Split the parent window into two side-by-side windows.
 If there is no parent, splits the current window. Otherwise
 identical to `split-window-right'."
@@ -82,7 +82,7 @@ identical to `split-window-right'."
         (set-window-parameter new-window 'quit-restore quit-restore)))
     new-window))
 
-(map! :leader :desc "Add a parent right split to current window" :nv "w e" #'split-parent-window-right)
+(map! :leader :desc "Add a parent right split to current window" :nv "w e" #'bah/split-parent-window-right)
 
 (defun bah/duplicate-line-or-region-up (arg)
   "Duplicate the current line or selected region upward."
