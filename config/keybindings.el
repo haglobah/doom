@@ -10,21 +10,7 @@
 
 (map! :nv "M-." (cmd! (affe-find "~")))
 
-;; (lispyville-set-key-theme
-;;  '((operators normal)
-;;    c-w
-;;    (prettify insert)
-;;    (atom-movement normal visual)
-;;    slurp/barf-lispy
-;;    additional
-;;    additional-movement
-;;    additional-wrap
-;;    additional-insert))
-
-;; (map! :map lispyville-mode-map
-;;       :i "M-[" #'lispy-brackets)
-
-(defun bah/evil-eol-advice (&optional count)
+(defun bah/evil-eol-advice (&optional _count)
   (when (evil-eolp)
     (forward-char)))
 
