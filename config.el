@@ -103,6 +103,7 @@
 
 (load! "packages/why-this.el")
 (load! "packages/aider.el")
+(load! "packages/apprentice.el")
 
 ;; (global-obsidian-mode t)
 ;; (load! "packages/obsidian.el")
