@@ -44,17 +44,6 @@
       "M-u" #'sp-backward-up-sexp
       "M-y" #'sp-backward-down-sexp)
 
-(map! :map elixir-mode-map
-      :localleader
-      :desc "compile"                   "e b" #'apprentice-iex-compile-this-buffer
-      :desc "eval last sexp"            "e e" #'apprentice-iex-send-last-sexp
-      :desc "eval line"                 "e l" #'apprentice-iex-send-current-line
-      :desc "reload modlue"             "e R" #'apprentice-iex-reload-module
-      :desc "iex -S mix"                "e r" #'apprentice-iex-project-run
-
-      :desc "Toggle file/tests"         "p t" #'apprentice-project-toggle-file-and-tests
-      :desc "Run tests for file"        "p r" #'apprentice-project-run-tests-for-current-file)
-
 (map! :ni
       "S-<left>"  #'evil-window-left
       "S-<down>"  #'evil-window-down
