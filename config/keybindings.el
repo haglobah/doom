@@ -48,6 +48,7 @@
 (map! :leader :desc "LSP: Format buffer" :nv "c f" #'lsp-format-buffer)
 (map! :leader :desc "Toggle line wrapping" :v "v" #'visual-line-mode)
 (map! :leader :desc "Copy file to clipboard" :nv "y" (cmd! (evil-ex-execute "%y+")))
+(map! :desc "Select whole line" :n "l" (kmacro "^ v $ <left>"))
 (map! :n "_" (cmd! (insert " ") (evil-normal-state)))
 
 (defun bah/split-parent-window-right (&optional size)
