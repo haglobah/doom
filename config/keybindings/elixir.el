@@ -92,12 +92,13 @@
   (process-send-string bah/iex-process (concat expr "\n")))
 
 (defun bah/elixir-eval-show-region (beg end)
-  (interactive (list (point) (mark)))
+  (interactive (list (mark) (point)))
   (if (not (and beg end))
       (error "elixir-eval-region: No region selected")
     (deactivate-mark)
     (let ((region (buffer-substring-no-properties beg end)))
-      (bah/iex-eval region beg (+ end 1)))))
+      ;; (message region)
+      (bah/iex-eval region beg end))))
 
 (defun bah/restart-iex ()
   "Restart the IEx process."
@@ -128,9 +129,12 @@
       :localleader
       :desc "Remove overlay"            "r" (cmd! (remove-overlays (point-min) (point-max) 'bah/elixir t))
       :desc "Eval region"               "e r" #'bah/elixir-eval-show-region
-      :desc "Eval last sexp"            "e e" (cmd! (bah/elixir-eval-show-region (save-excursion (backward-sexp) (point)) (point)))
+      :desc "Eval last sexp"            "e e" (cmd! (save-excursion (mark-sexp) (bah/elixir-eval-show-region (region-beginning) (region-end))))
       :desc "Eval defun"                "e d" (cmd! (save-excursion
                                                       (mark-defun)
+                                                      (bah/elixir-eval-show-region (region-beginning) (region-end))))
+      :desc "Eval buffer"               "e b" (cmd! (save-excursion
+                                                      (mark-whole-buffer)
                                                       (bah/elixir-eval-show-region (region-beginning) (region-end))))
       :desc "Restart IEx"               "i r" #'bah/restart-iex
       :desc "Run 'iex -S mix'"          "i m" #'bah/iex-project-run
