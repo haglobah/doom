@@ -3,7 +3,7 @@
 (defvar-local bah/current-overlay nil
   "Stores the currently displayed overlay.")
 
-(defun display-overlay (text &optional pos)
+(defun display-overlay (text &optional beg end)
   "Display TEXT in a CIDER-like overlay at POS or point.
    The overlay will disappear when cursor moves."
   (interactive "sText to display: ")
@@ -13,42 +13,45 @@
     (setq bah/current-overlay nil))
 
   ;; Create new overlay
-  (let* ((pos (or pos (point)))
-         (ov (make-overlay pos pos))
+  (let* ((beg (or beg (point)))
+         (end (or end (point)))
+         (ov (make-overlay beg end))
          (formatted-text (propertize
                           (format " => %s" text)
                           'face '(:foreground "#7cb8bb" :weight bold))))
     ;; Set overlay properties
     (overlay-put ov 'after-string formatted-text)
     (overlay-put ov 'priority 100)
+    (overlay-put ov 'bah/elixir t)
 
     ;; Store the overlay
-    (setq bah/current-overlay ov)
+    (setq bah/current-overlay ov)))
 
-    ;; Set up the hook to clear the overlay when cursor moves
-    (add-hook 'post-command-hook #'bah/clear-overlay-on-move nil t)))
+(defun bah/run-elixir (expr)
+  (shell-command-to-string (format "elixir -e 'IO.inspect(%s)'" expr)))
 
-(defun bah/clear-overlay-on-move ()
-  "Remove the overlay when cursor moves."
-  (when (and bah/current-overlay
-             (not (eq this-command 'display-overlay)))
-    (delete-overlay bah/current-overlay)
-    (setq bah/current-overlay nil)
-    (remove-hook 'post-command-hook #'bah/clear-overlay-on-move t)))
+(defun bah/elixir-eval-show-region (beg end)
+  (interactive (list (point) (mark)))
+  (if (not (and beg end))
+      (error "elixir-eval-region: No region selected")
+    (deactivate-mark)
+    (display-overlay
+      (string-trim
+       (let* ((region (buffer-substring-no-properties beg end)))
+        (bah/run-elixir region)))
+      beg (+ end 1))))
 
 (map! :map elixir-mode-map
       :localleader
-      :desc "Compile buffer"            "e b" #'apprentice-iex-compile-this-buffer
-      :desc "Eval last sexp"            "e e" (cmd! (display-overlay (apprentice-iex-send-last-sexp)))
-      :desc "Eval line"                 "e l" (cmd! (display-overlay (apprentice-iex-send-current-line)))
-      :desc "Eval last defun"
-      "e d" (cmd!
-             (display-overlay
-              (save-excursion
-                (mark-defun)
-                (apprentice-iex-send-region (region-beginning) (region-end)))))
+      :desc "Remove overlay"            "r" (cmd! (remove-overlays (point-min) (point-max) 'bah/elixir t))
 
-      :desc "Reload modlue"             "i R" #'apprentice-iex-reload-module
+      :desc "Eval region"               "e r" #'bah/elixir-eval-show-region
+      :desc "Eval last sexp"            "e e" (cmd! (bah/elixir-eval-show-region (save-excursion (backward-sexp) (point)) (point)))
+      :desc "Eval defun"                "e d" (cmd! (save-excursion
+                                                      (mark-defun)
+                                                      (bah/elixir-eval-show-region (region-beginning) (region-end))))
+
+      :desc "Reload module"             "i R" #'apprentice-iex-reload-module
       :desc "Run 'iex -S mix'"          "i r" #'apprentice-iex-project-run
 
       :desc "Toggle file/tests"         "p t" #'apprentice-project-toggle-file-and-tests
