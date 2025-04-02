@@ -61,8 +61,10 @@
                    (replace-regexp-in-string
                     "iex([0-9]+)>" ""
                     (replace-regexp-in-string
-                     "\r" ""
-                     (ansi-color-filter-apply bah/iex-output))))))
+                     "\\.\\.\\.(\\([0-9]+\\))?> *" ""
+                     (replace-regexp-in-string
+                      "\r" ""
+                      (ansi-color-filter-apply bah/iex-output)))))))
 
       ;; Remove trailing "nil" on its own line
       (setq result (replace-regexp-in-string "\n\\s-*nil\\s-*$" "" result))
