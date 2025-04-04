@@ -24,6 +24,8 @@
 (setq doom-font (font-spec :family "Source Code Pro" :size 16 :weight 'medium))
 (setq doom-font-increment 1)
 
+(add-to-list 'default-frame-alist '(undecorated . t))
+
 ;;      doom-variable-pitch-font (font-spec :family "Source Sans Pro" :size 18))
 ;;
 ;; If you or Emacs can't find your font, use 'M-x describe-font' to look them
