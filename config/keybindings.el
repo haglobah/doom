@@ -190,8 +190,9 @@ Negative ARG moves up, positive ARG moves down."
        (define-key evil-outer-text-objects-map ,key (quote ,outer-name)))))
 
 (define-and-bind-text-object "-" "---" "---")
-(let ((var-string "[[:space:],\n\"\'\(\)\{\}\[]"))
-  (define-and-bind-text-object "v" var-string var-string))
+(define-and-bind-text-object "v" "$" "$")
+;; (let ((var-string "[[:space:],\n\"\'\(\)\{\}\[]"))
+;;   (define-and-bind-text-object "v" var-string var-string))
 
 (defun bah/insert-file-header ()
   "Insert a header at the top of the current buffer with title,
