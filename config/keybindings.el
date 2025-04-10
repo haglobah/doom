@@ -41,7 +41,30 @@
       "C-S-<up>"         #'+evil/window-move-up
       "C-S-<right>"      #'+evil/window-move-right)
 
+(defun bah/rename-current-buffer-file ()
+  "Renames current buffer and file it is visiting."
+  (interactive)
+  (let* ((name (buffer-name))
+        (filename (buffer-file-name))
+        (basename (file-name-nondirectory filename)))
+    (if (not (and filename (file-exists-p filename)))
+        (error "Buffer '%s' is not visiting a file!" name)
+      (let ((new-name (read-file-name "New name: " (file-name-directory filename) basename nil basename)))
+        (if (get-buffer new-name)
+            (error "A buffer named '%s' already exists!" new-name)
+          (rename-file filename new-name 1)
+          (rename-buffer new-name)
+          (set-visited-file-name new-name)
+          (set-buffer-modified-p nil)
+          (message "File '%s' successfully renamed to '%s'"
+                   name (file-name-nondirectory new-name)))))))
+
 (map! :desc "Insert current file name" "C-c f" (cmd! (insert (f-filename (file-name-sans-extension (buffer-file-name))))))
+(map! :leader
+      :desc "Move file" :nv "f m" #'doom/move-this-file
+      :desc "Rename file" :nv "f r" #'bah/rename-current-buffer-file
+      :desc "Recent file" :nv "f R" #'consult-recent-file)
+
 (map! :nv "M-d" #'evil-mc-make-and-goto-next-match)
 (map! :nv "M-v" #'evil-mc-make-and-goto-next-match)
 
