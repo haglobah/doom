@@ -230,7 +230,7 @@ Negative ARG moves up, positive ARG moves down."
            (current-time (format-time-string "%Y-%m-%d")))
       (insert (format "---
 title: %s
-description: δ
+description: \"\"
 growthStage: seedling
 startDate: %s
 updated: %s
