@@ -28,6 +28,7 @@
 (package! all-the-icons)
 
 (package! aider :recipe (:host github :repo "tninja/aider.el" :files ("*.el")))
+(package! gptel :recipe (:nonrecursive t))
 
 (package! ws-butler :disable t)
 

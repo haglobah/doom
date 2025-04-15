@@ -107,6 +107,7 @@
 (global-visual-line-mode +1)
 
 (load! "packages/why-this.el")
+(load! "packages/gptel.el")
 (load! "packages/aider.el")
 
 ;; (global-obsidian-mode t)
