@@ -1,3 +1,5 @@
+;;; packages/why-this.el -*- lexical-binding: t; -*-
+
 (use-package! why-this
   :defer
 
