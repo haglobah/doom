@@ -24,7 +24,7 @@
 (setq doom-font (font-spec :family "Source Code Pro" :size 16 :weight 'medium))
 (setq doom-font-increment 1)
 
-(setq debug-on-error t)
+;; (setq debug-on-error t)
 
 (add-to-list 'default-frame-alist '(undecorated . t))
 
