@@ -217,7 +217,7 @@ Negative ARG moves up, positive ARG moves down."
 ;; (let ((var-string "[[:space:],\n\"\'\(\)\{\}\[]"))
 ;;   (define-and-bind-text-object "v" var-string var-string))
 
-(defun bah/insert-file-header ()
+(defun bah/insert-file-header (fmt-string)
   "Insert a header at the top of the current buffer with title,
    growthStage, and dates."
   (interactive)
@@ -228,7 +228,11 @@ Negative ARG moves up, positive ARG moves down."
                       (file-name-base file-name)
                     "untitled"))
            (current-time (format-time-string "%Y-%m-%d")))
-      (insert (format "---
+      (insert (format fmt-string title current-time current-time)))))
+
+(defun bah/insert-file-header-note ()
+  (interactive)
+  (bah/insert-file-header "---
 title: %s
 description: \"\"
 growthStage: seedling
@@ -238,7 +242,17 @@ topics: []
 publish: false
 ---
 
-" title current-time current-time)))))
+"))
+
+(defun bah/insert-file-header-thought ()
+  (interactive)
+  (bah/insert-file-header "---
+title: %s
+startDate: %s
+topics: []
+---
+
+"))
 
 (defun bah/update-file-header ()
   "Update the title and updated fields of an existing file header.
@@ -266,5 +280,6 @@ Does not create a new header if one doesn't exist."
         (insert-file-header))))
 
 (map! :map markdown-mode-map
-      :localleader "c h" #'bah/insert-file-header
+      :localleader "c h n" #'bah/insert-file-header-note
+      :localleader "c h t" #'bah/insert-file-header-thought
       :localleader "c d" #'bah/update-file-header)
