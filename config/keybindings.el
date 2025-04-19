@@ -235,6 +235,7 @@ growthStage: seedling
 startDate: %s
 updated: %s
 topics: []
+publish: false
 ---
 
 " title current-time current-time)))))
