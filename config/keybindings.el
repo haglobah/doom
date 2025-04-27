@@ -227,7 +227,7 @@ Negative ARG moves up, positive ARG moves down."
            (title (if file-name
                       (file-name-base file-name)
                     "untitled"))
-           (current-time (format-time-string "%Y-%m-%d")))
+           (current-time (format-time-string "%Y-%m-%dT%H:%M:%S")))
       (insert (format fmt-string title current-time current-time)))))
 
 (defun bah/insert-file-header-note ()
@@ -250,6 +250,7 @@ publish: false
 title: %s
 startDate: %s
 topics: []
+publish: true
 ---
 
 "))
@@ -264,7 +265,7 @@ Does not create a new header if one doesn't exist."
         (let* ((file-name (buffer-file-name))
                (file-title (if file-name
                                (file-name-base file-name)))
-               (current-date (format-time-string "%Y-%m-%d")))
+               (current-date (format-time-string "%Y-%m-%dT%H:%M:%S")))
           (if (search-forward "title: " nil t)
               (progn
                 (delete-region
