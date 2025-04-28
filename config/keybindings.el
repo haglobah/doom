@@ -93,6 +93,8 @@ identical to `split-window-right'."
     new-window))
 
 (map! :leader :desc "Add a parent right split to current window" :nv "w e" #'bah/split-parent-window-right)
+(map! :leader :nv "w t" #'evil-window-vsplit)
+(map! :leader :nv "w v" #'evil-window-top-left)
 
 (defun bah/duplicate-line-or-region-up (arg)
   "Duplicate the current line or selected region upward."
