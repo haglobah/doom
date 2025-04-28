@@ -66,7 +66,7 @@
       :desc "Recent file" :nv "f R" #'consult-recent-file)
 
 (map! :nv "M-d" #'evil-mc-make-and-goto-next-match)
-(map! :nv "M-v" #'evil-mc-make-and-goto-next-match)
+(map! :nv "M-v" #'evil-mc-skip-and-goto-next-match)
 
 (map! :leader :desc "LSP: Format buffer" :nv "c f" #'lsp-format-buffer)
 (map! :leader :desc "Toggle line wrapping" :v "v" #'visual-line-mode)
