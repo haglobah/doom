@@ -27,8 +27,8 @@
       "M-e" #'sp-down-sexp
       "M-i" #'sp-backward-up-sexp
       "M-o" #'sp-forward-sexp
-      "M-u" #'sp-up-sexp
-      "M-y" #'sp-backward-down-sexp)
+      "M-u" #'sp-backward-down-sexp
+      "M-y" #'sp-up-sexp)
 
 (map! :ni
       "S-<left>"  #'evil-window-left
