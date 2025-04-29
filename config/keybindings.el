@@ -25,9 +25,9 @@
 
       "M-n" #'sp-backward-sexp
       "M-e" #'sp-down-sexp
-      "M-i" #'sp-up-sexp
+      "M-i" #'sp-backward-up-sexp
       "M-o" #'sp-forward-sexp
-      "M-u" #'sp-backward-up-sexp
+      "M-u" #'sp-up-sexp
       "M-y" #'sp-backward-down-sexp)
 
 (map! :ni
