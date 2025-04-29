@@ -109,6 +109,7 @@
 (load! "packages/why-this.el")
 (load! "packages/gptel.el")
 (load! "packages/aider.el")
+(load! "packages/rescript.el")
 
 ;; (global-obsidian-mode t)
 ;; (load! "packages/obsidian.el")
