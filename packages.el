@@ -36,6 +36,12 @@
 (package! astro-ts-mode)
 (package! rescript-mode)
 (package! lsp-rescript)
+(package! gleam-ts-mode
+  :recipe (:host github
+           :repo "gleam-lang/gleam-mode"
+           :branch "main"
+
+           :files ("gleam-ts-*.el")))
 
 (package! obsidian)
 

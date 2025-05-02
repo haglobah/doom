@@ -110,6 +110,7 @@
 (load! "packages/gptel.el")
 (load! "packages/aider.el")
 (load! "packages/rescript.el")
+(load! "packages/gleam.el")
 
 ;; (global-obsidian-mode t)
 ;; (load! "packages/obsidian.el")
