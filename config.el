@@ -50,6 +50,7 @@
 (setq web-mode-css-indent-offset 2)
 (setq web-mode-code-indent-offset 2)
 (setq web-mode-markup-indent-offset 2)
+(setq web-mode-sql-indent-offset 2)
 
 (custom-set-variables
  '(display-battery-mode +1))
