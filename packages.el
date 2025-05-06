@@ -43,6 +43,9 @@
 
            :files ("gleam-ts-*.el")))
 
+(package! justl :recipe (:host github :repo "psibi/justl.el"))
+(package! just-mode)
+
 (package! obsidian)
 
 ;; If the package you are trying to install does not contain a PACKAGENAME.el

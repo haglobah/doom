@@ -112,6 +112,7 @@
 (load! "packages/aider.el")
 (load! "packages/rescript.el")
 (load! "packages/gleam.el")
+(load! "packages/just.el")
 
 ;; (global-obsidian-mode t)
 ;; (load! "packages/obsidian.el")
