@@ -113,6 +113,7 @@
 (load! "packages/rescript.el")
 (load! "packages/gleam.el")
 (load! "packages/just.el")
+(load! "packages/email.el")
 
 ;; (global-obsidian-mode t)
 ;; (load! "packages/obsidian.el")
