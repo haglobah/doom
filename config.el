@@ -81,7 +81,6 @@
   (add-hook 'magit-mode-hook #'evil-emacs-state)
   (setq magit-diff-refine-hunk 'all))
 
-
 (setq! doom-modeline-buffer-modification-icon nil)
 (setq! doom-modeline-vcs-max-length 40)
 

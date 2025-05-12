@@ -22,6 +22,7 @@
 
 (package! affe
   :recipe (:host github :repo "minad/affe"))
+
 (package! hercules)
 
 (package! catppuccin-theme)
