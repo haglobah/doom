@@ -107,6 +107,8 @@
 (global-whitespace-mode +1)
 (global-visual-line-mode +1)
 
+(load! "config/email.el")
+
 (load! "packages/why-this.el")
 (load! "packages/gptel.el")
 (load! "packages/aider.el")
