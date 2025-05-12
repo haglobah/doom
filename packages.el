@@ -15,22 +15,20 @@
 ;;(package! another-package
 ;;  :recipe (:host github :repo "username/repo"))
 
-(package! himalaya)
+(package! ws-butler :disable t)
 
 (package! why-this
   :recipe (:host nil :repo "https://codeberg.org/akib/emacs-why-this.git"))
 
 (package! affe
   :recipe (:host github :repo "minad/affe"))
+(package! hercules)
 
 (package! catppuccin-theme)
-
 (package! all-the-icons)
 
 (package! aider :recipe (:host github :repo "tninja/aider.el" :files ("*.el")))
 (package! gptel :recipe (:nonrecursive t))
-
-(package! ws-butler :disable t)
 
 (package! pollen-mode)
 (package! astro-ts-mode)
@@ -47,6 +45,8 @@
 (package! just-mode)
 
 (package! obsidian)
+
+(package! himalaya)
 
 ;; If the package you are trying to install does not contain a PACKAGENAME.el
 ;; file, or is located in a subdirectory of the repo, you'll need to specify
