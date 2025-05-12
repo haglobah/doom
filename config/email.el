@@ -72,19 +72,59 @@
                                        (number-to-string year))))))
    t))
 
+(defhydra hydra-mu4e-ag (:color blue :hint nil)
+  "
+^Move to AG folder^
+------------------
+_m_: action
+_n_: archive
+_e_: read-review
+_i_: waiting-for
+_o_: incubate
+_q_: quit
+"
+  ("m" (kmacro "m a g / a c t <return>") "action")
+  ("n" (kmacro "m a g / a r c h <return>") "archive")
+  ("e" (kmacro "m a g / r e a d <return>") "read-review")
+  ("i" (kmacro "m a g / w a i t <return>") "waiting-for")
+  ("o" (kmacro "m a g / i n c <return>") "incubate")
+  ("q" nil "quit" :color blue))
+
+;; Define the hydra for "Posteo" actions (using kmacro)
+(defhydra hydra-mu4e-posteo (:color blue :hint nil)
+  "
+^Move to Posteo folder^
+----------------------
+_m_: action
+_n_: archive
+_e_: read-review
+_i_: waiting-for
+_o_: incubate
+_q_: quit
+"
+  ("m" (kmacro "m p o s t e o / a c t <return>") "action")
+  ("n" (kmacro "m p o s t e o / a r c h <return>") "archive")
+  ("e" (kmacro "m p o s t e o / r e a d <return>") "read-review")
+  ("i" (kmacro "m p o s t e o / w a i t <return>") "waiting-for")
+  ("o" (kmacro "m p o s t e o / i n c <return>") "incubate")
+  ("q" nil "quit" :color blue))
+
 (map! :map mu4e-headers-mode-map
 
       :desc "Just execute mark"         :n "x"     (cmd! (mu4e-mark-execute-all t))
 
-      :desc "ag: Move to action"    :n "i a m" (kmacro "m a g / a c t <return>")
-      :desc "ag: Move to archive"    :n "i a n" (kmacro "m a g / a r c h <return>")
-      :desc "ag: Move to read-review"    :n "i a e" (kmacro "m a g / r e a d <return>")
-      :desc "ag: Move to waiting-for"    :n "i a i" (kmacro "m a g / w a i t <return>")
-      :desc "ag: Move to incubate"    :n "i a o" (kmacro "m a g / i n c <return>")
+      :desc "ag: move to .." :n "i a" #'hydra-mu4e-ag/body
+      :desc "posteo: move to .." :n "i p" #'hydra-mu4e-posteo/body
 
-      :desc "Posteo: Move to action"    :n "i p m" (kmacro "m p o s t e o / a c t <return>")
-      :desc "Posteo: Move to archive"    :n "i p n" (kmacro "m p o s t e o / a r c h <return>")
-      :desc "Posteo: Move to read-review"    :n "i p e" (kmacro "m p o s t e o / r e a d <return>")
-      :desc "Posteo: Move to waiting-for"    :n "i p i" (kmacro "m p o s t e o / w a i t <return>")
-      :desc "Posteo: Move to incubate"    :n "i p o" (kmacro "m p o s t e o / i n c <return>")
+      ;; :desc "ag: Move to action"    :n "i a m" (kmacro "m a g / a c t <return>")
+      ;; :desc "ag: Move to archive"    :n "i a n" (kmacro "m a g / a r c h <return>")
+      ;; :desc "ag: Move to read-review"    :n "i a e" (kmacro "m a g / r e a d <return>")
+      ;; :desc "ag: Move to waiting-for"    :n "i a i" (kmacro "m a g / w a i t <return>")
+      ;; :desc "ag: Move to incubate"    :n "i a o" (kmacro "m a g / i n c <return>")
+
+      ;; :desc "Posteo: Move to action"    :n "i p m" (kmacro "m p o s t e o / a c t <return>")
+      ;; :desc "Posteo: Move to archive"    :n "i p n" (kmacro "m p o s t e o / a r c h <return>")
+      ;; :desc "Posteo: Move to read-review"    :n "i p e" (kmacro "m p o s t e o / r e a d <return>")
+      ;; :desc "Posteo: Move to waiting-for"    :n "i p i" (kmacro "m p o s t e o / w a i t <return>")
+      ;; :desc "Posteo: Move to incubate"    :n "i p o" (kmacro "m p o s t e o / i n c <return>")
       )
