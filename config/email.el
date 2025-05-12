@@ -9,7 +9,6 @@
         message-sendmail-envelope-from 'header
         mail-envelope-from 'header
         mail-specify-envelope-from 'header
-        ;; +mu4e-backend 'mbsync
         mu4e-drafts-folder "/drafts"
         mu4e-completing-read-function #'completing-read
         mu4e-confirm-quit nil
@@ -19,6 +18,7 @@
         mu4e-compose-context-policy 'ask
         mu4e-search-results-limit -1
         mu4e-search-skip-duplicates nil
+        ;; mu4e-headers-actions '(("move to" . mu4e-move))
         mu4e-headers-fields '((:human-date . 12)
                               (:flags . 6)
                               (:maildir . 15)
@@ -72,7 +72,19 @@
                                        (number-to-string year))))))
    t))
 
-;; (map! :mu4e-view-mode-map
-;;       :desc "Mark for move"       "m m" #'mu4e-headers-mark-for-move
-;;       :desc "Move to"             "m a" (cmd! )
-;;       )
+(map! :map mu4e-headers-mode-map
+
+      :desc "Just execute mark"         :n "x"     (cmd! (mu4e-mark-execute-all t))
+
+      :desc "ag: Move to action"    :n "i a m" (kmacro "m a g / a c t <return>")
+      :desc "ag: Move to archive"    :n "i a n" (kmacro "m a g / a r c h <return>")
+      :desc "ag: Move to read-review"    :n "i a e" (kmacro "m a g / r e a d <return>")
+      :desc "ag: Move to waiting-for"    :n "i a i" (kmacro "m a g / w a i t <return>")
+      :desc "ag: Move to incubate"    :n "i a o" (kmacro "m a g / i n c <return>")
+
+      :desc "Posteo: Move to action"    :n "i p m" (kmacro "m p o s t e o / a c t <return>")
+      :desc "Posteo: Move to archive"    :n "i p n" (kmacro "m p o s t e o / a r c h <return>")
+      :desc "Posteo: Move to read-review"    :n "i p e" (kmacro "m p o s t e o / r e a d <return>")
+      :desc "Posteo: Move to waiting-for"    :n "i p i" (kmacro "m p o s t e o / w a i t <return>")
+      :desc "Posteo: Move to incubate"    :n "i p o" (kmacro "m p o s t e o / i n c <return>")
+      )
