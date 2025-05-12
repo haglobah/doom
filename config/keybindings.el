@@ -59,19 +59,24 @@
           (message "File '%s' successfully renamed to '%s'"
                    name (file-name-nondirectory new-name)))))))
 
-(map! :desc "Insert current file name" "C-c f" (cmd! (insert (f-filename (file-name-sans-extension (buffer-file-name))))))
 (map! :leader
       :desc "Move file" :nv "f m" #'doom/move-this-file
       :desc "Rename file" :nv "f r" #'bah/rename-current-buffer-file
-      :desc "Recent file" :nv "f R" #'consult-recent-file)
+      :desc "Recent file" :nv "f R" #'consult-recent-file
 
-(map! :nv "M-d" #'evil-mc-make-and-goto-next-match)
-(map! :nv "M-v" #'evil-mc-skip-and-goto-next-match)
+      :desc "direnv reload" :nv "d r" #'envrc-reload
 
-(map! :leader :desc "LSP: Format buffer" :nv "c f" #'lsp-format-buffer)
-(map! :leader :desc "Toggle line wrapping" :v "v" #'visual-line-mode)
-(map! :leader :desc "Copy file to clipboard" :nv "y" (cmd! (evil-ex-execute "%y+")))
+      :desc "LSP: Format buffer" :nv "c f" #'lsp-format-buffer
+      :desc "Toggle line wrapping" :v "v" #'visual-line-mode
+      :desc "Copy file to clipboard" :nv "y" (cmd! (evil-ex-execute "%y+")))
+
+(map! :nv "M-d" #'evil-mc-make-and-goto-next-match
+      :nv "M-v" #'evil-mc-skip-and-goto-next-match)
+
+(map! :desc "Insert current file name" "C-c f" (cmd! (insert (f-filename (file-name-sans-extension (buffer-file-name))))))
+
 (map! :desc "Select whole line" :n "l" (kmacro "^ v $ <left>"))
+
 (map! :n "_" (cmd! (insert " ") (evil-normal-state)))
 
 (defun bah/split-parent-window-right (&optional size)
