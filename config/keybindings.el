@@ -10,6 +10,9 @@
 
 (map! :nv "M-." (cmd! (affe-find "~")))
 
+(map! :desc "Insert current file name" "C-c f" (cmd! (insert (f-filename (file-name-sans-extension (buffer-file-name)))))
+      :desc "Open link" "C-c C-o" #'markdown-follow-link-at-point)
+
 (defun bah/evil-eol-advice (&optional _count)
   (when (evil-eolp)
     (forward-char)))
@@ -73,11 +76,8 @@
 (map! :nv "M-d" #'evil-mc-make-and-goto-next-match
       :nv "M-v" #'evil-mc-skip-and-goto-next-match)
 
-(map! :desc "Insert current file name" "C-c f" (cmd! (insert (f-filename (file-name-sans-extension (buffer-file-name))))))
-
-(map! :desc "Select whole line" :n "l" (kmacro "^ v $ <left>"))
-
-(map! :n "_" (cmd! (insert " ") (evil-normal-state)))
+(map! :desc "Select whole line" :n "l" (kmacro "^ v $ <left>")
+      :desc "space" :n "_" (cmd! (insert " ") (evil-normal-state)))
 
 (defun bah/split-parent-window-right (&optional size)
   "Split the parent window into two side-by-side windows.
