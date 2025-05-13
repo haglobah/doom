@@ -58,6 +58,7 @@
 (setq doom-localleader-key ",")
 
 (load! "config/keybindings.el")
+(load! "config/keybindings/lines.el")
 (load! "config/keybindings/header.el")
 (load! "config/keybindings/elixir.el")
 
