@@ -13,25 +13,28 @@
 (map! :desc "Insert current file name" "C-c f" (cmd! (insert (f-filename (file-name-sans-extension (buffer-file-name)))))
       :desc "Open link" "C-c C-o" #'markdown-follow-link-at-point)
 
-(defun bah/evil-eol-advice (&optional _count)
-  (when (evil-eolp)
-    (forward-char)))
+(defun bah/split-parent-window-right (&optional size)
+  "Split the parent window into two side-by-side windows.
+If there is no parent, splits the current window. Otherwise
+identical to `split-window-right'."
+  (interactive "P")
+  (let ((old-window (selected-window))
+        (size (and size (prefix-numeric-value size)))
+        new-window)
+    (when (and size (< size 0) (< (- size) window-min-width))
+      ;; `split-window' would not signal an error here.
+      (error "Size of new window too small"))
+    (setq new-window (split-window (window-parent) size t))
+    ;; Always copy quit-restore parameter in interactive use.
+    (let ((quit-restore (window-parameter old-window 'quit-restore)))
+      (when quit-restore
+        (set-window-parameter new-window 'quit-restore quit-restore)))
+    new-window))
 
-(advice-add 'sp-forward-sexp :before #'bah/evil-eol-advice)
-
-(map! "C-(" #'sp-backward-slurp-sexp
-      "C-)" #'sp-forward-slurp-sexp
-      "C-{" #'sp-backward-barf-sexp
-      "C-}" #'sp-forward-barf-sexp
-
-      "M-m" #'sp-raise-sexp
-
-      "M-n" #'sp-backward-sexp
-      "M-e" #'sp-down-sexp
-      "M-i" #'sp-backward-up-sexp
-      "M-o" #'sp-forward-sexp
-      "M-u" #'sp-backward-down-sexp
-      "M-y" #'sp-up-sexp)
+(map! :leader
+      :desc "Add a parent right split to current window" :nv "w e" #'bah/split-parent-window-right
+      :desc "vsplit window" :nv "w t" #'evil-window-vsplit
+      :nv "w v" #'evil-window-top-left)
 
 (map! :ni
       "S-<left>"  #'evil-window-left
@@ -75,34 +78,10 @@
 
 (map! :nv "M-d" #'evil-mc-make-and-goto-next-match
       :nv "M-v" #'evil-mc-skip-and-goto-next-match)
-
+;; vim
 (map! :desc "Select whole line" :n "l" (kmacro "^ v $ <left>")
       :desc "space" :n "_" (cmd! (insert " ") (evil-normal-state)))
 
-(defun bah/split-parent-window-right (&optional size)
-  "Split the parent window into two side-by-side windows.
-If there is no parent, splits the current window. Otherwise
-identical to `split-window-right'."
-  (interactive "P")
-  (let ((old-window (selected-window))
-        (size (and size (prefix-numeric-value size)))
-        new-window)
-    (when (and size (< size 0) (< (- size) window-min-width))
-      ;; `split-window' would not signal an error here.
-      (error "Size of new window too small"))
-    (setq new-window (split-window (window-parent) size t))
-    ;; Always copy quit-restore parameter in interactive use.
-    (let ((quit-restore (window-parameter old-window 'quit-restore)))
-      (when quit-restore
-        (set-window-parameter new-window 'quit-restore quit-restore)))
-    new-window))
-
-(map! :leader
-      :desc "Add a parent right split to current window" :nv "w e" #'bah/split-parent-window-right
-      :desc "vsplit window" :nv "w t" #'evil-window-vsplit
-      :nv "w v" #'evil-window-top-left)
-
-;; vim
 (defmacro define-and-bind-text-object (key start-regex end-regex)
   (let ((inner-name (make-symbol "inner-name"))
         (outer-name (make-symbol "outer-name")))
@@ -119,3 +98,23 @@ identical to `split-window-right'."
 ;; (let ((var-string "[[:space:],\n\"\'\(\)\{\}\[]"))
 ;;   (define-and-bind-text-object "v" var-string var-string))
 
+;; sexp editing/movement
+(defun bah/evil-eol-advice (&optional _count)
+  (when (evil-eolp)
+    (forward-char)))
+
+(advice-add 'sp-forward-sexp :before #'bah/evil-eol-advice)
+
+(map! "C-(" #'sp-backward-slurp-sexp
+      "C-)" #'sp-forward-slurp-sexp
+      "C-{" #'sp-backward-barf-sexp
+      "C-}" #'sp-forward-barf-sexp
+
+      "M-m" #'sp-raise-sexp
+
+      "M-n" #'sp-backward-sexp
+      "M-e" #'sp-down-sexp
+      "M-i" #'sp-backward-up-sexp
+      "M-o" #'sp-forward-sexp
+      "M-u" #'sp-backward-down-sexp
+      "M-y" #'sp-up-sexp)
