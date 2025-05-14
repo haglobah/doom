@@ -62,6 +62,7 @@
 (load! "config/keybindings/header.el")
 (load! "config/keybindings/elixir.el")
 (load! "config/keybindings/workspaces.el")
+(load! "config/keybindings/markdown-link.el")
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
