@@ -4,7 +4,14 @@
 (defun bah/setup-workspaces ()
   (interactive)
 
-  (progn (projectile-switch-project-by-name "~/ag/fabresearcher/work/")
-         (kmacro "<return> f l a k e . n i x <return>")))
+  (dolist (name+dir '(("mycelium" "~/mycelium/")
+                      ("doom" "~/.config/doom/")
+                      ("nix-home" "~/nix-home/")
+                      ))
+    (persp-add-new (car name+dir))
+    m
+    m
+    (persp-switch (car name+dir))
+    (dired (cdr name+dir))))
 
 (map! :leader "TAB w" #'bah/setup-workspaces)
