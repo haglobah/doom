@@ -88,3 +88,5 @@
       :desc "Posteo: Move to waiting-for"    :n "i p i" (kmacro "m p o s t e o / w a i t <return>")
       :desc "Posteo: Move to incubate"    :n "i p o" (kmacro "m p o s t e o / i n c <return>")
       )
+
+(unbind-key "C-S-u" 'mu4e-compose-mode-map)
