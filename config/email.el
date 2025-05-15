@@ -39,6 +39,7 @@
 
                          (:name "Unread messages" :query "flag:unread AND NOT flag:trashed" :key ?u)
                          (:name "Sent" :query "maildir:/ag/Sent OR maildir:/posteo/Sent" :key ?s)))
+  (unbind-key "C-S-u" 'mu4e-compose-mode-map)
   (set-email-account!
    "posteo"
    '((user-mail-address . "hagenlob@posteo.de")
@@ -88,5 +89,3 @@
       :desc "Posteo: Move to waiting-for"    :n "i p i" (kmacro "m p o s t e o / w a i t <return>")
       :desc "Posteo: Move to incubate"    :n "i p o" (kmacro "m p o s t e o / i n c <return>")
       )
-
-(unbind-key "C-S-u" 'mu4e-compose-mode-map)
