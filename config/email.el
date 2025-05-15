@@ -18,6 +18,7 @@
         mu4e-compose-context-policy 'ask
         mu4e-search-results-limit -1
         mu4e-search-skip-duplicates nil
+        mu4e-update-interval 5
         ;; mu4e-headers-actions '(("move to" . mu4e-move))
         mu4e-headers-fields '((:human-date . 12)
                               (:flags . 6)
