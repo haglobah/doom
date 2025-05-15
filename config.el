@@ -53,7 +53,9 @@
 (setq web-mode-sql-indent-offset 2)
 
 (custom-set-variables
- '(display-battery-mode +1))
+ '(display-battery-mode +1)
+ '(battery-load-low 30)
+ '(battery-load-critical 15))
 
 (setq doom-localleader-key ",")
 
