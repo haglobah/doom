@@ -2,6 +2,7 @@
 
 (use-package! justl
   :config
-  (map! :n "e" 'justl-exec-recipe))
+  (map! :map justl-compile-mode-map
+        :n "e" 'justl-exec-recipe))
 
 (use-package! just-mode)
