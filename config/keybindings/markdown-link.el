@@ -1,6 +1,30 @@
 ;;; config/keybindings/markdown-link.el -*- lexical-binding: t; -*-
 
-;; (url-retrieve "https://github.com" (lambda (resp) (with-temp-file resp))
+(defun bah/url->title|description (link)
+  (with-temp-buffer
+    (url-insert-file-contents link)
+    (letrec
+        ((dom (libxml-parse-html-region))
+         (description-node
+          (dom-search dom
+                      (lambda (node)
+                        (and (eq 'meta (car node))
+                             (string-equal "description"
+                                           (dom-attr node 'name))))))
+         (title-node
+          (dom-search dom
+                      (lambda (node)
+                        (and (eq 'title (car node))))))
+         (description
+          (dom-attr description-node 'content))
+         (title
+          (dom-text title-node)))
+      (cond
+       ((eq description nil) title)
+       (t (concat title " x " description))))))
+
+;; (bah/url->title|description "https://example.com")
+;; (bah/url->title|description "https://beathagenlocher.com")
 
 (defun doom/url-to-markdown-with-title (url)
   "Convert a bare URL to a Markdown link with its webpage title as the link text.
