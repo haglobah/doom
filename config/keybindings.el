@@ -111,10 +111,15 @@ identical to `split-window-right'."
       "C-}" #'sp-forward-barf-sexp
 
       "M-m" #'sp-raise-sexp
+      "M-h" #'sp-absorb-sexp
+      "M-k" #'sp-transpose-sexp
+
+      "M-l" #'sp-beginning-of-sexp
+      "M-'" #'sp-end-of-sexp
 
       "M-n" #'sp-backward-sexp
-      "M-e" #'sp-down-sexp
-      "M-i" #'sp-backward-up-sexp
+      "M-i" #'sp-down-sexp
+      "M-e" #'sp-backward-up-sexp
       "M-o" #'sp-forward-sexp
       "M-u" #'sp-backward-down-sexp
       "M-y" #'sp-up-sexp)
