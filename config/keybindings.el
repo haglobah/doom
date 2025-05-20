@@ -95,8 +95,13 @@ identical to `split-window-right'."
 
 (define-and-bind-text-object "-" "---" "---")
 (define-and-bind-text-object "v" "$" "$")
-;; (let ((var-string "[[:space:],\n\"\'\(\)\{\}\[]"))
-;;   (define-and-bind-text-object "v" var-string var-string))
+
+;; Careful: For some reason, "\]" does not work in the regex string. Maybe it needs more escapes?
+(let ((var-string "[[:space:]:\n\"\'\(\)\{\}\[\.\/]"))
+  (define-and-bind-text-object "." var-string var-string))
+;; Same as above but without the dot
+(let ((var-string "[[:space:]:\n\"\'\(\)\{\}\[\/]"))
+  (define-and-bind-text-object "r" var-string var-string))
 
 ;; sexp editing/movement
 (defun bah/evil-eol-advice (&optional _count)
