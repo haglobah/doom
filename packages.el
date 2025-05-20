@@ -25,6 +25,8 @@
 
 (package! hercules)
 
+(package! eat)
+
 (package! catppuccin-theme)
 (package! all-the-icons)
 

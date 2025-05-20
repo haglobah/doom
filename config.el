@@ -113,6 +113,8 @@
 
 (load! "config/email.el")
 
+(load! "packages/eat.el")
+
 (load! "packages/why-this.el")
 (load! "packages/gptel.el")
 (load! "packages/aider.el")
