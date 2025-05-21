@@ -8,6 +8,8 @@
 (map! :i "C-u" nil)
 (map! "C-S-u" #'bah/read-unicode-char)
 
+(map! :i "C-f" #'kill-word)
+
 (map! :nv "M-." (cmd! (affe-find "~")))
 
 (map! :desc "Insert current file name" "C-c f" (cmd! (insert (f-filename (file-name-sans-extension (buffer-file-name)))))
