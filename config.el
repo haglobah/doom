@@ -38,6 +38,7 @@
 (map! :leader
       :desc "Decrease UI font size" :g "-" #'doom/decrease-font-size
       :desc "Increase UI font size" :g "+" #'doom/increase-font-size
+      :desc "Change to framework font size" :g "!" (cmd! (doom/increase-font-size 6))
       :desc "Reset UI font size" :g "=" #'doom/reset-font-size)
 
 ;; There are two ways to load a theme. Both assume the theme is installed and
