@@ -5,6 +5,7 @@
                          ("mynix" "~/mynix/" "configuration.nix")
                          ("beathagenlocher.com" "~/beathagenlocher.com/" "flake.nix")
                          ("mycelium" "~/mycelium/" "acc.md")
+                         ("templater" "~/projects/templater/" "templates/flake.nix")
 
                          ("fabresearcher" "~/ag/fabresearcher/work/" "Justfile")
                          ))
@@ -28,6 +29,7 @@
       :desc "mynix"               "TAB m" (cmd! (+workspace-switch "mynix"))
       :desc "beathagenlocher.com" "TAB b" (cmd! (+workspace-switch "beathagenlocher.com"))
       :desc "mycelium"            "TAB o" (cmd! (+workspace-switch "mycelium"))
+      :desc "templater"           "TAB t" (cmd! (+workspace-switch "templater"))
 
       :desc "fabresearcher"       "TAB f" (cmd! (+workspace-switch "fabresearcher"))
       )
