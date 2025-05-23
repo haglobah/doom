@@ -24,6 +24,8 @@
       :desc "Delete Workspace"    "TAB x" #'+workspace/kill
       :desc "New Workspace"       "TAB N" #'+workspace/new
 
+      :desc "Launch kitty tab"    "TAB ," (cmd! (shell-command (concat "kitty @ --to=unix:/tmp/mykitty launch --type=tab --cwd=" (projectile-project-root (file-name-directory (buffer-file-name))) " fish")))
+
       :desc "doom"                "TAB d" (cmd! (+workspace-switch "doom"))
       :desc "nix-home"            "TAB n" (cmd! (+workspace-switch "nix-home"))
       :desc "mynix"               "TAB m" (cmd! (+workspace-switch "mynix"))
