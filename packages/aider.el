@@ -3,6 +3,7 @@
 (use-package! aider
   :config
   ;; (setq! aider-args '("--model" "gpt-4o-mini"))
-  (setq! aider-args '("--model" "o1-mini"
+  (setq! aider-args '("--model" "o4-mini"
                       "--no-git"
-                      "--multiline")))
+                      "--multiline"))
+  (map! :g "C-c a" #'aider-transient-menu))
