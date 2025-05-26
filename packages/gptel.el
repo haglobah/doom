@@ -12,7 +12,7 @@
  
   :config
   (setq! gptel-api-key #'get-apikey-from-env)
-  (setq! gptel-model "o4-mini"))
+  (setq! gptel-model 'o4-mini))
 
 (map! :localleader
       :desc "gptel: Send region" :nv "a s" #'gptel-send
