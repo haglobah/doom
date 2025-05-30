@@ -8,6 +8,7 @@
                          ("templater" "~/projects/templater/" "templates/flake.nix")
 
                          ("fabresearcher" "~/ag/fabresearcher/work/" "Justfile")
+                         ("queue" "~/projects/rescript_instant_todo/" "flake.nix")
                          ))
 
 (defun bah/setup-workspaces (workspaces)
@@ -34,4 +35,5 @@
       :desc "templater"           "TAB t" (cmd! (+workspace-switch "templater"))
 
       :desc "fabresearcher"       "TAB f" (cmd! (+workspace-switch "fabresearcher"))
+      :desc "queue"               "TAB q" (cmd! (+workspace-switch "queue"))
       )
