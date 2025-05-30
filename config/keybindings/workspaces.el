@@ -6,6 +6,7 @@
                          ("beathagenlocher.com" "~/beathagenlocher.com/" "flake.nix")
                          ("mycelium" "~/mycelium/" "acc.md")
                          ("templater" "~/projects/templater/" "templates/flake.nix")
+                         ("zmk-config-tzcl" "~/projects/zmk-config-tzcl/" "config/rae_dax.keymap")
 
                          ("fabresearcher" "~/ag/fabresearcher/work/" "Justfile")
                          ("queue" "~/projects/rescript_instant_todo/" "flake.nix")
@@ -33,6 +34,7 @@
       :desc "beathagenlocher.com" "TAB b" (cmd! (+workspace-switch "beathagenlocher.com"))
       :desc "mycelium"            "TAB o" (cmd! (+workspace-switch "mycelium"))
       :desc "templater"           "TAB t" (cmd! (+workspace-switch "templater"))
+      :desc "zmk-config-tzcl"     "TAB z" (cmd! (+workspace-switch "zmk-config-tzcl"))
 
       :desc "fabresearcher"       "TAB f" (cmd! (+workspace-switch "fabresearcher"))
       :desc "queue"               "TAB q" (cmd! (+workspace-switch "queue"))
