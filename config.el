@@ -119,7 +119,7 @@
 
 (load! "packages/why-this.el")
 (load! "packages/gptel.el")
-(load! "packages/aider.el")
+(load! "packages/aidermacs.el")
 (load! "packages/rescript.el")
 (load! "packages/gleam.el")
 (load! "packages/just.el")

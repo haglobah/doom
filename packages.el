@@ -30,7 +30,7 @@
 (package! catppuccin-theme)
 (package! all-the-icons)
 
-(package! aider :recipe (:host github :repo "tninja/aider.el"))
+(package! aidermacs)
 (package! gptel :recipe (:nonrecursive t))
 
 (package! pollen-mode)
