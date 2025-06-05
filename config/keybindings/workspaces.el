@@ -6,7 +6,7 @@
                          ("beathagenlocher.com" "~/beathagenlocher.com/" "flake.nix")
                          ("mycelium" "~/mycelium/" "acc.md")
                          ("templater" "~/projects/templater/" "templates/flake.nix")
-                         ("zmk-config-tzcl" "~/projects/zmk-config-tzcl/" "config/rae_dax.keymap")
+                         ("zmk-config-tzcl" "~/projects/zmk-config-tzcl/" "config/rae_dux.keymap")
 
                          ("fabresearcher" "~/ag/fabresearcher/work/" "Justfile")
                          ("queue" "~/projects/rescript_instant_todo/" "flake.nix")
