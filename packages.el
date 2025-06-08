@@ -43,7 +43,11 @@
            :branch "main"
 
            :files ("gleam-ts-*.el")))
-
+(package! purescript-mode)
+(package! lean4-mode
+  :recipe (:host github
+           :repo "leanprover-community/lean4-mode"
+           :files ("*.el" "data")))
 
 (package! justl :recipe (:host github :repo "psibi/justl.el"))
 (package! just-mode)
