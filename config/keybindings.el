@@ -53,8 +53,8 @@ identical to `split-window-right'."
   "Renames current buffer and file it is visiting."
   (interactive)
   (let* ((name (buffer-name))
-        (filename (buffer-file-name))
-        (basename (file-name-nondirectory filename)))
+         (filename (buffer-file-name))
+         (basename (file-name-nondirectory filename)))
     (if (not (and filename (file-exists-p filename)))
         (error "Buffer '%s' is not visiting a file!" name)
       (let ((new-name (read-file-name "New name: " (file-name-directory filename) basename nil basename)))
@@ -80,30 +80,6 @@ identical to `split-window-right'."
 
 (map! :nv "M-d" #'evil-mc-make-and-goto-next-match
       :nv "M-v" #'evil-mc-skip-and-goto-next-match)
-;; vim
-(map! :desc "Select whole line" :n "l" (kmacro "^ v $ <left>")
-      :desc "space" :n "_" (cmd! (insert " ") (evil-normal-state)))
-
-(defmacro define-and-bind-text-object (key start-regex end-regex)
-  (let ((inner-name (make-symbol "inner-name"))
-        (outer-name (make-symbol "outer-name")))
-    `(progn
-       (evil-define-text-object ,inner-name (count &optional beg end type)
-         (evil-select-paren ,start-regex ,end-regex beg end type count nil))
-       (evil-define-text-object ,outer-name (count &optional beg end type)
-         (evil-select-paren ,start-regex ,end-regex beg end type count t))
-       (define-key evil-inner-text-objects-map ,key (quote ,inner-name))
-       (define-key evil-outer-text-objects-map ,key (quote ,outer-name)))))
-
-(define-and-bind-text-object "-" "---" "---")
-(define-and-bind-text-object "v" "$" "$")
-
-;; Careful: For some reason, "\]" does not work in the regex string. Maybe it needs more escapes?
-(let ((var-string "[[:space:]:\n\"\'\(\)\{\}\[\.\/]"))
-  (define-and-bind-text-object "." var-string var-string))
-;; Same as above but without the dot
-(let ((var-string "[[:space:]:\n\"\'\(\)\{\}\[\/]"))
-  (define-and-bind-text-object "r" var-string var-string))
 
 ;; sexp editing/movement
 (defun bah/evil-eol-advice (&optional _count)
