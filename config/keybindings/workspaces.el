@@ -1,5 +1,22 @@
 ;;; config/keybindings/workspaces.el -*- lexical-binding: t; -*-
 
+(defun bah/projectile-force-add-project ()
+  "Select a directory, add .projectile if needed, then switch to it."
+  (interactive)
+  (let* ((dir (read-directory-name "Project directory: "))
+         (project-root (file-truename dir)))
+    ;; Add .projectile if not already a project
+    (when (not (projectile-project-p project-root))
+      (let ((projectile-file (expand-file-name ".projectile" project-root)))
+        (when (not (file-exists-p projectile-file))
+          (write-region "" nil projectile-file))
+        (message "Created .projectile in %s" project-root)))
+    ;; Add to known projects and switch
+    (projectile-add-known-project project-root)))
+
+(map! :leader
+      :desc "Add project" "p a" #'bah/projectile-force-add-project)
+
 (defvar bah/persistent-workspaces
   '(("doom" "~/.config/doom/" "config.el")
     ("nix-home" "~/nix-home/" "home.nix")
