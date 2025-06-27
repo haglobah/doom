@@ -84,10 +84,6 @@
 
 (setq projectile-enable-caching nil)
 
-(after! magit
-  (add-hook 'magit-mode-hook #'evil-emacs-state)
-  (setq magit-diff-refine-hunk 'all))
-
 (setq! doom-modeline-buffer-modification-icon nil)
 (setq! doom-modeline-vcs-max-length 40)
 
@@ -115,6 +111,7 @@
 (global-visual-line-mode +1)
 
 (load! "config/email.el")
+(load! "config/magit.el")
 
 (load! "packages/eat.el")
 
