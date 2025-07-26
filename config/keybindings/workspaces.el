@@ -30,7 +30,8 @@
   (append
    bah/persistent-workspaces
    '(("fabresearcher" "~/ag/fabresearcher/work/" "Justfile")
-     ("queue" "~/projects/rescript_instant_todo/" "flake.nix"))))
+     ("queue" "~/projects/rescript_instant_todo/" "flake.nix")
+     ("talks" "~/projects/talks/" "flake.nix"))))
 
 (cl-defun bah/get-workspace (name workspaces)
   (interactive)
@@ -71,9 +72,10 @@
       :desc "mynix"               "TAB m" (cmd! (bah/create|switch "mynix"))
       :desc "beathagenlocher.com" "TAB b" (cmd! (bah/create|switch "beathagenlocher.com"))
       :desc "mycelium"            "TAB o" (cmd! (bah/create|switch "mycelium"))
-      :desc "templater"           "TAB t" (cmd! (bah/create|switch "templater"))
+      :desc "templater"           "TAB p" (cmd! (bah/create|switch "templater"))
       :desc "zmk-config-tzcl"     "TAB z" (cmd! (bah/create|switch "zmk-config-tzcl"))
 
       :desc "fabresearcher"       "TAB f" (cmd! (bah/create|switch "fabresearcher"))
+      :desc "talks"               "TAB t" (cmd! (bah/create|switch "talks"))
       :desc "queue"               "TAB q" (cmd! (bah/create|switch "queue"))
       )
