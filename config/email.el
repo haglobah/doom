@@ -43,7 +43,7 @@
   (unbind-key "C-S-u" 'mu4e-compose-mode-map)
   (set-email-account!
    "posteo"
-   '((user-mail-address . "hagenlob@posteo.de")
+   '((user-mail-address . "bah@posteo.de")
      (mu4e-sent-folder . "/posteo/Sent")
      (mu4e-trash-folder . "/posteo/Trash")
      (mu4e-compose-signature . nil)
