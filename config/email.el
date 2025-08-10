@@ -28,7 +28,7 @@
                               (:subject))
         mu4e-bookmarks '((:name "AG inbox" :query "maildir:/ag/Inbox" :key ?a)
                          (:name "AG actions" :query "maildir:/ag/action" :key ?r)
-                         (:name "AG read/review" :query "maildir:/ag/read-review" :key ?s)
+                         (:name "AG read/review" :query "maildir:/ag/read-review" :key ?c)
                          (:name "AG waiting for" :query "maildir:/ag/waiting-for" :key ?t)
                          (:name "AG incubate" :query "maildir:/ag/incubate" :key ?g)
 
