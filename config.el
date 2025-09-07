@@ -81,11 +81,11 @@
 (setq auto-save-visited-interval 0.1)
 (auto-save-visited-mode t)
 (global-auto-revert-mode t)
+(setq! doom-modeline-buffer-modification-icon nil)
+
+(setq! doom-modeline-vcs-max-length 40)
 
 (setq projectile-enable-caching nil)
-
-(setq! doom-modeline-buffer-modification-icon nil)
-(setq! doom-modeline-vcs-max-length 40)
 
 (setq treesit-language-source-alist
       '((astro "https://github.com/virchau13/tree-sitter-astro")
