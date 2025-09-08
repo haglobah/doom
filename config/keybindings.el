@@ -12,6 +12,10 @@
 
 (map! :nv "M-." (cmd! (affe-find "~")))
 
+(map! :nv
+      :desc "Add new snippet" "C-S-y" #'+snippets/new
+      :desc "Find snippet" "C-." #'+snippets/find-for-current-mode)
+
 (map! :desc "Insert current file name" "C-c f" (cmd! (insert (f-filename (file-name-sans-extension (buffer-file-name)))))
       :desc "Open link" "C-c C-o" #'markdown-follow-link-at-point)
 
