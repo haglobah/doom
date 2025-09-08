@@ -1,0 +1,13 @@
+# -*- mode: snippet -*-
+# name: Bestellung
+# key: best
+# condition: t
+# --
+
+Bestellung für Morgen, den `
+(let* ((date (calendar-current-date 1))
+       (day (second date))
+       (month (first date))
+       (year (third date)))
+  (format! "%s.%s.%s" day month year))
+`
