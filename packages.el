@@ -33,6 +33,8 @@
 (package! aidermacs)
 (package! gptel :recipe (:nonrecursive t))
 
+(package! monkeytype)
+
 (package! pollen-mode)
 (package! astro-ts-mode)
 (package! rescript-mode)
