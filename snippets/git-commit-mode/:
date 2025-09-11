@@ -1,0 +1,10 @@
+# -*- mode: snippet -*-
+# name: project work
+# uuid: 
+# key: :
+# condition: t
+# --
+
+${1:subproject}: $0
+
+refs #${2:issue id}
