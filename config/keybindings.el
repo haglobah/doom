@@ -12,6 +12,9 @@
 
 (map! :nv "M-." (cmd! (affe-find "~")))
 
+(map! :leader
+      :desc "Restart Workspace" "c R" #'lsp-workspace-restart)
+
 (map! :nv
       :desc "Add new snippet" "C-S-y" #'+snippets/new
       :desc "Find snippet" "C-." #'+snippets/find-for-current-mode)
