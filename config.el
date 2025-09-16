@@ -64,7 +64,7 @@
 (load! "config/keybindings.el")
 (load! "config/keybindings/evil.el")
 (load! "config/keybindings/lines.el")
-(load! "config/keybindings/header.el")
+(load! "config/keybindings/garden.el")
 (load! "config/keybindings/elixir.el")
 (load! "config/keybindings/workspaces.el")
 
