@@ -63,8 +63,31 @@ Does not create a new header if one doesn't exist."
                 (insert (format "updated: %s" current-date)))))
         (insert-file-header))))
 
-(map! :map markdown-mode-map
-      :localleader "c h n" #'bah/insert-file-header-note
-      :localleader "c h t" #'bah/insert-file-header-thought
-      :localleader "c d" #'bah/update-file-header)
+(defun bah/new-streamlet ()
+ (interactive)
+ (let* ((dg-root "~/beathagenlocher.com")
+        (stream-folder (doom-path dg-root "src" "content" "stream"))
+        (next-number (->> (directory-files stream-folder nil (rx ".mdx"))
+                          (map 'list
+                               (lambda (filename)
+                                 (string-to-number (file-name-sans-extension filename))))
+                          (sort)
+                          (reverse)
+                          (first)
+                          (+ 1)))
+        (next-streamlet-filename (concat (number-to-string next-number) ".mdx"))
+        (next-streamlet-path (doom-path stream-folder next-streamlet-filename)))
+   (with-temp-file next-streamlet-path (insert "stream"))
+   (find-file next-streamlet-path)
+   (move-end-of-line nil)
+   (evil-append 0)))
 
+(map! :map markdown-mode-map
+      :localleader
+      "c h n" #'bah/insert-file-header-note
+      "c h t" #'bah/insert-file-header-thought
+      "c d" #'bah/update-file-header)
+
+(map! :leader
+      :prefix ("e" . "bah")
+      :desc "Writing: Streamlet" :nv "s" #'bah/new-streamlet)
