@@ -1,0 +1,14 @@
+# -*- mode: snippet -*-
+# name: stream
+# uuid: 
+# key: stream
+# condition: t
+# --
+---
+title: ${1:title}
+startDate: `(format-time-string "%Y-%m-%dT%H:%M:%S")`
+topics: []
+publish: true
+---
+
+$0
