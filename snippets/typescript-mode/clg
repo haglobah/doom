@@ -1,6 +1,6 @@
 # -*- mode: snippet -*-
 # name: clg
-# uuid: 
+# uuid: console.log()
 # key: clg
 # condition: t
 # --
