@@ -1,0 +1,7 @@
+# -*- mode: snippet -*-
+# name: cl'
+# uuid: console.log('')
+# key: cl'
+# condition: t
+# --
+console.log('$0')
