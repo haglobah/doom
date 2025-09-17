@@ -123,6 +123,7 @@
 (load! "packages/purescript.el")
 (load! "packages/just.el")
 (load! "packages/monkeytype.el")
+(load! "packages/bluesky.el")
 
 ;; (global-obsidian-mode t)
 ;; (load! "packages/obsidian.el")
