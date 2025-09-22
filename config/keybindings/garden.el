@@ -63,6 +63,12 @@ Does not create a new header if one doesn't exist."
                 (insert (format "updated: %s" current-date)))))
         (insert-file-header))))
 
+(map! :map markdown-mode-map
+      :localleader
+      "c h n" #'bah/insert-file-header-note
+      "c h t" #'bah/insert-file-header-thought
+      "c d" #'bah/update-file-header)
+
 (defun bah/new-streamlet ()
  (interactive)
  (let* ((dg-root "~/beathagenlocher.com")
@@ -82,11 +88,6 @@ Does not create a new header if one doesn't exist."
    (move-end-of-line nil)
    (evil-append 0)))
 
-(map! :map markdown-mode-map
-      :localleader
-      "c h n" #'bah/insert-file-header-note
-      "c h t" #'bah/insert-file-header-thought
-      "c d" #'bah/update-file-header)
 
 (map! :leader
       :prefix ("e" . "bah")
