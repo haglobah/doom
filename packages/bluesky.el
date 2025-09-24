@@ -26,7 +26,7 @@
     (replace-regexp-in-string " +" "-" (string-trim text)))))
 [
  (bluesky--slugify "neo Vim")
-]
+ ]
 
 (defun bluesky--strip-frontmatter (content)
   "Remove YAML frontmatter from CONTENT"
@@ -35,7 +35,7 @@
     content))
 [
  (bluesky--strip-frontmatter "---\narst: hoho\ntitle: \"lala\"\n---\n  qwfp")
-]
+ ]
 
 (defun bluesky--parse-mdx-to-richtext (content)
   "Parse MDX CONTENT and return (text . facets) for Bluesky rich text"
@@ -88,10 +88,29 @@
     ;; Return text and facets
     (cons (string-trim text) (reverse facets))))
 
+(defun encode-text (record-data)
+  (json-encode `((collection . "app.bsky.feed.post")
+                 (record . ,record-data))))
+
 [
- (bluesky--parse-mdx-to-richtext "[[lala]]")
+ (defvar text "
+---
+title: Raising Aspirations
+startDate: 2025-09-05T18:28:27
+topics: [Ambition]
+publish: true
+---
+
+Just came upon this wonderful piece again:
+
+[The high-return activity of raising others’ aspirations](https://marginalrevolution.com/marginalrevolution/2018/10/high-return-activity-raising-others-aspirations.html)
+
+Already raised someone's aspirations today?")
+ (defvar record (bluesky--parse-mdx-to-richtext text))
+ (encode-text record)
+ (bluesky--parse-mdx-to-richtext "[[Learning To C]]")
  (bluesky--parse-mdx-to-richtext "[hoho](https://qwfp.com)")
-]
+ ]
 
 (defun bluesky-authenticate ()
   "Authenticate with Bluesky and store session"
@@ -100,7 +119,7 @@
     :type "POST"
     :headers '(("Content-Type" . "application/json"))
     :data (json-encode `((identifier . ,bluesky-handle)
-                        (password . ,bluesky-app-password)))
+                         (password . ,bluesky-app-password)))
     :parser 'json-read
     :success (cl-function
               (lambda (&key data &allow-other-keys)
@@ -119,7 +138,7 @@
     (let ((access-token (alist-get 'accessJwt bluesky--session))
           (did (alist-get 'did bluesky--session))
           (record-data `((text . ,text)
-                        (createdAt . ,(format-time-string "%Y-%m-%dT%H:%M:%S.%3NZ")))))
+                         (createdAt . ,(format-time-string "%Y-%m-%dT%H:%M:%S.%3NZ")))))
 
       ;; Add facets if they exist
       (when facets
@@ -130,8 +149,8 @@
         :headers `(("Authorization" . ,(format "Bearer %s" access-token))
                    ("Content-Type" . "application/json"))
         :data (json-encode `((repo . ,did)
-                            (collection . "app.bsky.feed.post")
-                            (record . ,record-data)))
+                             (collection . "app.bsky.feed.post")
+                             (record . ,record-data)))
         :parser 'json-read
         :success (cl-function
                   (lambda (&key data &allow-other-keys)
@@ -149,7 +168,8 @@
   (interactive)
   (let* ((content (buffer-substring-no-properties (point-min) (point-max)))
          (parsed (bluesky--parse-mdx-to-richtext content)))
-    parsed))
+    (message
+     (cdr parsed))))
 
 (defun bluesky-post-mdx-buffer ()
   "Post current MDX buffer to Bluesky with rich text formatting"
