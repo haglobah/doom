@@ -65,9 +65,14 @@ Does not create a new header if one doesn't exist."
 
 (map! :map markdown-mode-map
       :localleader
-      "c h n" #'bah/insert-file-header-note
-      "c h t" #'bah/insert-file-header-thought
-      "c d" #'bah/update-file-header)
+      :prefix ("c" . "bah")
+      :desc "Update header" "d" #'bah/update-file-header)
+
+(map! :map markdown-mode-map
+      :localleader
+      :prefix ("c h" . "Header")
+      :desc "Insert Note header" "n" #'bah/insert-file-header-note
+      :desc "Insert Thought header" "t" #'bah/insert-file-header-thought)
 
 (defun bah/new-streamlet ()
  (interactive)
@@ -87,7 +92,6 @@ Does not create a new header if one doesn't exist."
    (find-file next-streamlet-path)
    (move-end-of-line nil)
    (evil-append 0)))
-
 
 (map! :leader
       :prefix ("e" . "bah")
