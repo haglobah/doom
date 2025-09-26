@@ -113,17 +113,19 @@
 (load! "config/email.el")
 (load! "config/magit.el")
 
+(load! "packages/monkeytype.el")
+(load! "packages/bluesky.el")
 (load! "packages/eat.el")
-
 (load! "packages/why-this.el")
+
 (load! "packages/gptel.el")
 (load! "packages/aidermacs.el")
+(load! "packages/agent-shell.el")
+
 (load! "packages/rescript.el")
 (load! "packages/gleam.el")
 (load! "packages/purescript.el")
 (load! "packages/just.el")
-(load! "packages/monkeytype.el")
-(load! "packages/bluesky.el")
 
 ;; (global-obsidian-mode t)
 ;; (load! "packages/obsidian.el")
