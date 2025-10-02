@@ -6,4 +6,4 @@
   (map! :g "C-c a" #'aidermacs-transient-menu)
   :custom
   (aidermacs-architect-mode t)
-  (aidermacs-deault-model "sonnet"))
+  (aidermacs-default-model "sonnet"))
