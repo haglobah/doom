@@ -32,18 +32,30 @@
                          (:name "AG waiting for" :query "maildir:/ag/waiting-for" :key ?t)
                          (:name "AG incubate" :query "maildir:/ag/incubate" :key ?g)
 
-                         (:name "Posteo inbox" :query "maildir:/posteo/Inbox" :key ?m)
-                         (:name "Posteo action" :query "maildir:/posteo/action" :key ?n)
-                         (:name "Posteo read/review" :query "maildir:/posteo/read-review" :key ?e)
-                         (:name "Posteo waiting for" :query "maildir:/posteo/waiting-for" :key ?i)
-                         (:name "Posteo incubate" :query "maildir:/posteo/incubate" :key ?o)
+                         (:name "bah inbox" :query "maildir:/posteo/Inbox" :key ?m)
+                         (:name "bah action" :query "maildir:/posteo/action" :key ?n)
+                         (:name "bah read/review" :query "maildir:/posteo/read-review" :key ?e)
+                         (:name "bah waiting for" :query "maildir:/posteo/waiting-for" :key ?i)
+                         (:name "bah incubate" :query "maildir:/posteo/incubate" :key ?o)
 
                          (:name "Unread messages" :query "flag:unread AND NOT flag:trashed" :key ?u)
                          (:name "Sent" :query "maildir:/ag/Sent OR maildir:/posteo/Sent" :key ?s)))
   (unbind-key "C-S-u" 'mu4e-compose-mode-map)
   (set-email-account!
-   "posteo"
+   "bah"
    '((user-mail-address . "bah@posteo.de")
+     (mu4e-sent-folder . "/posteo/Sent")
+     (mu4e-trash-folder . "/posteo/Trash")
+     (mu4e-compose-signature . nil)
+     (mu4e-refile-folder . (lambda (msg)
+                             (let* ((date (mu4e-message-field-at-point :date))
+                                    (year (decoded-time-year (decode-time date))))
+                               (concat "/posteo/Archive/"
+                                       (number-to-string year))))))
+   t)
+  (set-email-account!
+   "hagenlob"
+   '((user-mail-address . "hagenlob@posteo.de")
      (mu4e-sent-folder . "/posteo/Sent")
      (mu4e-trash-folder . "/posteo/Trash")
      (mu4e-compose-signature . nil)
