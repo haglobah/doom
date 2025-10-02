@@ -1,6 +1,6 @@
 # -*- mode: snippet -*-
 # name: cl'
-# uuid: console.log('')
+# uuid: console.log('')-js
 # key: cl'
 # condition: t
 # --
