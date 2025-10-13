@@ -48,12 +48,6 @@
 (setq doom-theme 'catppuccin)
 (setq rainbow-delimiters-max-face-count 9)
 
-(setq web-mode-css-indent-offset 2)
-(setq web-mode-code-indent-offset 2)
-(setq web-mode-markup-indent-offset 2)
-(setq web-mode-sql-indent-offset 2)
-(setq typescript-indent-level 2)
-
 (custom-set-variables
  '(display-battery-mode +1)
  '(battery-load-low 30)
@@ -67,6 +61,8 @@
 (load! "config/keybindings/garden.el")
 (load! "config/keybindings/elixir.el")
 (load! "config/keybindings/workspaces.el")
+
+(load! "config/programming-language-specifics.el")
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
@@ -86,15 +82,6 @@
 (setq! doom-modeline-vcs-max-length 40)
 
 (setq projectile-enable-caching nil)
-
-(setq treesit-language-source-alist
-      '((astro "https://github.com/virchau13/tree-sitter-astro")
-        (css "https://github.com/tree-sitter/tree-sitter-css")
-        (tsx "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")
-        (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")))
-
-(add-to-list 'auto-mode-alist '("\\.astro\\'" . web-mode))
-(add-to-list 'auto-mode-alist '("\\.keymap\\'" . c-mode))
 
 (setq whitespace-line-column 100)
 (setq whitespace-global-modes
