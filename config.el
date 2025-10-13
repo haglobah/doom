@@ -62,6 +62,7 @@
 (load! "config/keybindings/elixir.el")
 (load! "config/keybindings/workspaces.el")
 
+(load! "config/lsp-mode.el")
 (load! "config/programming-language-specifics.el")
 
 ;; This determines the style of line numbers in effect. If set to `nil', line
