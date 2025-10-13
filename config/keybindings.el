@@ -8,7 +8,16 @@
 (map! :i "C-u" nil)
 (map! "C-S-u" #'bah/read-unicode-char)
 
-(map! :i "C-f" #'kill-word)
+(defun delete-word (arg)
+  "Delete characters forward until encountering the end of a word.
+With argument ARG, do this that many times.
+Does not add to kill ring."
+  (interactive "p")
+  (delete-region (point) (progn (forward-word arg) (point))))
+
+(map! :i "C-f" #'kill-word
+      :i "C-<backspace>" #'doom/delete-backward-word
+      :i "C-<delete>" #'delete-word)
 
 (map! :nv "M-." (cmd! (affe-find "~")))
 
