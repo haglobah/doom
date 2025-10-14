@@ -22,7 +22,8 @@ Does not add to kill ring."
 (map! :nv "M-." (cmd! (affe-find "~")))
 
 (map! :leader
-      :desc "Restart Workspace" "c R" #'lsp-workspace-restart)
+      :desc "Restart Workspace" "c R" #'lsp-workspace-restart
+      :desc "Show full error" "c h" #'flycheck-copy-errors-as-kill)
 
 (map! :leader
       :desc "+format-buffer" "b f" #'+format/buffer)
