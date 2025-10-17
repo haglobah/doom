@@ -16,7 +16,7 @@
 (defun bah/insert-file-header-note ()
   (interactive)
   (bah/insert-file-header "---
-title: %s
+title: \"%s\"
 description: \"\"
 growthStage: seedling
 startDate: %s
@@ -30,7 +30,7 @@ publish: false
 (defun bah/insert-file-header-thought ()
   (interactive)
   (bah/insert-file-header "---
-title: %s
+title: \"%s\"
 startDate: %s
 topics: []
 publish: true
@@ -54,7 +54,7 @@ Does not create a new header if one doesn't exist."
                 (delete-region
                  (progn (beginning-of-line) (point))
                  (progn (end-of-line) (point)))
-                (insert (format "title: %s" file-title))))
+                (insert (format "title: \"%s\"" file-title))))
           (if (search-forward "updated: " nil t)
               (progn
                 (delete-region
