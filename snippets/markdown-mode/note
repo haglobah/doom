@@ -11,7 +11,7 @@ description: \"\"
 growthStage: seedling
 startDate: `(format-time-string "%Y-%m-%dT%H:%M:%S")`
 updated: `(format-time-string "%Y-%m-%dT%H:%M:%S")`
-topics: []
+topics: [${2}]
 publish: false
 ---
 
