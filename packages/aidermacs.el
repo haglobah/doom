@@ -8,4 +8,4 @@
   (map! :g "C-c a" #'aidermacs-transient-menu)
   :custom
   (aidermacs-architect-mode t)
-  (aidermacs-default-model "anthropic/claude-sonnet-4-5-20250929"))
+  (aidermacs-default-model "anthropic/claude-haiku-4-5-20251001"))
