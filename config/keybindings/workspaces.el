@@ -22,14 +22,14 @@
     ("nix-home" "~/nix-home/" "home.nix")
     ("mynix" "~/mynix/" "configuration.nix")
     ("beathagenlocher.com" "~/beathagenlocher.com/" "flake.nix")
-    ("mycelium" "~/mycelium/" "acc.md")
-    ("zmk-config-tzcl" "~/projects/zmk-config-tzcl/" "config/rae_dux.keymap")
-    ("templater" "~/projects/templater/" "templates/flake.nix")))
+    ("mycelium" "~/mycelium/" "acc.md")))
 
 (defvar bah/all-workspaces
   (append
    bah/persistent-workspaces
-   '(("fabresearcher" "~/ag/fabresearcher/work/" "Justfile")
+   '(("templater" "~/projects/templater/" "templates/flake.nix")
+     ("zmk-config-tzcl" "~/projects/zmk-config-tzcl/" "config/rae_dux.keymap")
+     ("fabresearcher" "~/ag/fabresearcher/work/" "Justfile")
      ("queue" "~/projects/rescript_instant_todo/" "flake.nix")
      ("talks" "~/projects/talks/" "flake.nix"))))
 
@@ -72,9 +72,9 @@
       :desc "mynix"               "TAB m" (cmd! (bah/create|switch "mynix"))
       :desc "beathagenlocher.com" "TAB b" (cmd! (bah/create|switch "beathagenlocher.com"))
       :desc "mycelium"            "TAB o" (cmd! (bah/create|switch "mycelium"))
+
       :desc "templater"           "TAB p" (cmd! (bah/create|switch "templater"))
       :desc "zmk-config-tzcl"     "TAB z" (cmd! (bah/create|switch "zmk-config-tzcl"))
-
       :desc "fabresearcher"       "TAB f" (cmd! (bah/create|switch "fabresearcher"))
       :desc "talks"               "TAB t" (cmd! (bah/create|switch "talks"))
       :desc "queue"               "TAB q" (cmd! (bah/create|switch "queue"))
