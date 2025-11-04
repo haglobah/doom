@@ -8,7 +8,7 @@
 
   (let ((res '())
         (final-buffer "*Monkeytype-words*")
-        (true-num-words (or num-words 50))
+        (true-num-words (or num-words 25))
         (num-buffer-words nil)
         (indices nil))
 
