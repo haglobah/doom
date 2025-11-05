@@ -89,28 +89,60 @@ identical to `split-window-right'."
 
 (defun bah/move-file-to-dir-fuzzy ()
   "Move the current file to a directory chosen via fuzzy search.
-Uses `consult-dir` to prioritize project and recent directories.
-Automatically creates the destination directory if needed."
+If in a project, include all subdirectories (excluding dot-dirs),
+displaying them relative to the project root.
+Otherwise fall back to default `consult-dir` sources."
   (interactive)
   (unless buffer-file-name
     (user-error "Not visiting a file"))
   (require 'consult-dir)
-  (let* ((default-directory
-           (or (when (fboundp 'project-root)
-                 (ignore-errors (project-root (project-current))))
-               default-directory))
-         (dir (consult-dir--pick "Move to directory: "))
-         (basename (file-name-nondirectory buffer-file-name))
-         (target-dir (expand-file-name dir))
-         (target (expand-file-name basename target-dir)))
-    ;; Create directory if it doesn't exist
-    (unless (file-directory-p target-dir)
-      (make-directory target-dir t))
-    (when (file-exists-p target)
-      (user-error "File already exists at destination"))
-    (rename-file buffer-file-name target)
-    (set-visited-file-name target t t)
-    (message "Moved %s → %s" basename target-dir)))
+  (let* ((proj (when (fboundp 'project-current)
+                 (ignore-errors (project-current))))
+         (proj-root (when proj (expand-file-name (project-root proj))))
+         (default-directory (or proj-root default-directory))
+         ;; Collect subdirectories under project root, skipping dotdirs
+         (proj-dirs
+          (when proj-root
+            (directory-files-recursively
+             proj-root
+             ".*" t
+             (lambda (dir)
+               (not (string-match-p "/\\.[^/]*$" dir))))))
+         ;; Keep only directories
+         (proj-dirs (when proj-dirs (seq-filter #'file-directory-p proj-dirs)))
+         ;; Convert to (display . realpath) pairs for consult
+         (proj-dirs-display
+          (when proj-dirs
+            (->
+             (mapcar (lambda (path)
+                       (cons (file-relative-name path proj-root) path))
+                     proj-dirs)
+             (sort (lambda (a b)
+                     (< (length (car a)) (length (car b))))))))
+         ;; Temporary consult-dir source
+         (source-project-subdirs
+          (when proj-root
+            `(:name ,(format "Project dirs (%s)" (file-name-nondirectory (directory-file-name proj-root)))
+              :narrow ?P
+              :category file
+              :face consult-file
+              :items ,proj-dirs-display))))
+    (let* ((consult-dir-sources
+            (if source-project-subdirs
+                (cons source-project-subdirs consult-dir-sources)
+              consult-dir-sources))
+           (dir (consult-dir--pick "Move to directory: "))
+           (basename (file-name-nondirectory buffer-file-name))
+           (target-dir (expand-file-name dir))
+           (target (expand-file-name basename target-dir)))
+      (unless (file-directory-p target-dir)
+        (make-directory target-dir t))
+      (when (file-exists-p target)
+        (user-error "File already exists at destination"))
+      (rename-file buffer-file-name target)
+      (set-visited-file-name target t t)
+      (message "Moved %s → %s" basename target-dir))))
+
 
 (map! :leader
       :desc "Move file" :nv "f m" #'bah/move-file-to-dir-fuzzy
