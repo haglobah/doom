@@ -61,6 +61,7 @@
 (load! "config/keybindings/garden.el")
 (load! "config/keybindings/elixir.el")
 (load! "config/keybindings/workspaces.el")
+(load! "config/keybindings/links.el")
 
 (load! "config/lsp-mode.el")
 (load! "config/programming-language-specifics.el")
