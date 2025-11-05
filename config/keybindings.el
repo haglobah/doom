@@ -87,8 +87,34 @@ identical to `split-window-right'."
           (message "File '%s' successfully renamed to '%s'"
                    name (file-name-nondirectory new-name)))))))
 
+(defun bah/move-file-to-dir-fuzzy ()
+  "Move the current file to a directory chosen via fuzzy search.
+Uses `consult-dir` to prioritize project and recent directories.
+Automatically creates the destination directory if needed."
+  (interactive)
+  (unless buffer-file-name
+    (user-error "Not visiting a file"))
+  (require 'consult-dir)
+  (let* ((default-directory
+           (or (when (fboundp 'project-root)
+                 (ignore-errors (project-root (project-current))))
+               default-directory))
+         (dir (consult-dir--pick "Move to directory: "))
+         (basename (file-name-nondirectory buffer-file-name))
+         (target-dir (expand-file-name dir))
+         (target (expand-file-name basename target-dir)))
+    ;; Create directory if it doesn't exist
+    (unless (file-directory-p target-dir)
+      (make-directory target-dir t))
+    (when (file-exists-p target)
+      (user-error "File already exists at destination"))
+    (rename-file buffer-file-name target)
+    (set-visited-file-name target t t)
+    (message "Moved %s → %s" basename target-dir)))
+
 (map! :leader
-      :desc "Move file" :nv "f m" #'doom/move-this-file
+      :desc "Move file" :nv "f m" #'bah/move-file-to-dir-fuzzy
+      :desc "Move file" :nv "f M" #'doom/move-this-file
       :desc "Rename file" :nv "f r" #'bah/rename-current-buffer-file
       :desc "Recent file" :nv "f R" #'consult-recent-file
 
