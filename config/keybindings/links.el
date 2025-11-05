@@ -3,7 +3,7 @@
 (defvar bah/standard-links
   '("mattermost.active-group.de"
     "timetracking.active-group.de"
-    "projects.active-group.de"
+    ;; "projects.active-group.de"
     "focus.nirvanahq.com"))
 
 (map! :leader
