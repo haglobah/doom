@@ -32,8 +32,6 @@ Does not add to kill ring."
       :desc "Add new snippet" "C-S-y" #'+snippets/new
       :desc "Find snippet" "C-." #'+snippets/find-for-current-mode)
 
-(map! :desc "Insert current file name" "C-c f" (cmd! (insert (f-filename (file-name-sans-extension (buffer-file-name)))))
-      :desc "Open link" "C-c C-o" #'markdown-follow-link-at-point)
 
 (defun bah/split-parent-window-right (&optional size)
   "Split the parent window into two side-by-side windows.
@@ -86,6 +84,22 @@ identical to `split-window-right'."
           (set-buffer-modified-p nil)
           (message "File '%s' successfully renamed to '%s'"
                    name (file-name-nondirectory new-name)))))))
+
+(defun bah/insert-relative-file-path (file)
+  "Prompt with `find-file` to choose FILE, then insert its path
+relative to current buffer."
+  (interactive "fInsert path to file: ")
+  (let* ((current (or (buffer-file-name)
+                      default-directory))
+         (relative (concat "./" (file-relative-name (expand-file-name file)
+                                                    (file-name-directory current)))))
+    (insert relative)))
+
+(map! :desc "Insert current file name" "C-c f c"
+      (cmd! (insert (f-filename (file-name-sans-extension (buffer-file-name)))))
+
+      :desc "Open link" "C-c C-o" #'markdown-follow-link-at-point
+      :desc "Insert relative file path" "C-c f i" #'bah/insert-relative-file-path)
 
 (defun bah/move-file-to-dir-fuzzy ()
   "Move the current file to a directory chosen via fuzzy search.
@@ -143,12 +157,13 @@ Otherwise fall back to default `consult-dir` sources."
       (set-visited-file-name target t t)
       (message "Moved %s → %s" basename target-dir))))
 
-
 (map! :leader
       :desc "Move file" :nv "f m" #'bah/move-file-to-dir-fuzzy
-      :desc "Move file" :nv "f M" #'doom/move-this-file
+      :desc "Move file (doom)" :nv "f M" #'doom/move-this-file
       :desc "Rename file" :nv "f r" #'bah/rename-current-buffer-file
       :desc "Recent file" :nv "f R" #'consult-recent-file
+
+      :desc "Insert relative path" :i
 
       :desc "direnv reload" :nv "d r" #'envrc-reload
 
