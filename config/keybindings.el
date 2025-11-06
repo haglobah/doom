@@ -67,7 +67,7 @@ identical to `split-window-right'."
       "C-S-<up>"         #'+evil/window-move-up
       "C-S-<right>"      #'+evil/window-move-right)
 
-(map!
+(map! :leader
       :desc "direnv reload" :nv "d r" #'envrc-reload
 
       :desc "LSP: Format buffer" :nv "c f" #'lsp-format-buffer
