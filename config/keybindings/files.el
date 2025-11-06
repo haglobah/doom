@@ -39,7 +39,7 @@
                      files)
              (sort (lambda (a b)
                      (< (length (car a)) (length (car b)))))))))
-    (insert (consult--read rel-files-display))))
+    (insert (projectile-completing-read "Choose file:" rel-files-display))))
 
 (map! :desc "Insert current file name" "C-c f c"
       (cmd! (insert (f-filename (file-name-sans-extension (buffer-file-name)))))
