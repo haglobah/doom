@@ -29,8 +29,8 @@
   (let* ((root (or (project-root (project-current))
                    default-directory))
          (files (directory-files-recursively
-                 root ".*" t (lambda (dir)
-                               (not (string-match-p "/\\.[^/]*$" dir)))))
+                 root ".*" nil (lambda (file)
+                                 (not (string-match-p "/\\.[^/]*$" file)))))
          (rel-files-display
           (when files
             (->
