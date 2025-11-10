@@ -6,7 +6,7 @@
 # --
 ---
 title: ${1:title}
-startDate: `(format-time-string "%Y-%m-%dT%H:%M:%S")`
+startDate: `(format-time-string "%Y-%m-%dT%H:%M:%SZ" (current-time) t)`
 topics: [${2}]
 publish: true
 ---

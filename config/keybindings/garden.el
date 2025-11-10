@@ -10,7 +10,7 @@
            (title (if file-name
                       (file-name-base file-name)
                     "untitled"))
-           (current-time (format-time-string "%Y-%m-%dT%H:%M:%S")))
+           (current-time (format-time-string "%Y-%m-%dT%H:%M:%SZ" (current-time) t)))
       (insert (format fmt-string title current-time current-time)))))
 
 (defun bah/insert-file-header-note ()
@@ -48,7 +48,7 @@ Does not create a new header if one doesn't exist."
         (let* ((file-name (buffer-file-name))
                (file-title (if file-name
                                (file-name-base file-name)))
-               (current-date (format-time-string "%Y-%m-%dT%H:%M:%S")))
+               (current-date (format-time-string "%Y-%m-%dT%H:%M:%SZ" (current-time) t)))
           (if (search-forward "title: " nil t)
               (progn
                 (delete-region

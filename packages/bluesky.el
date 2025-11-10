@@ -138,7 +138,7 @@ Already raised someone's aspirations today?")
     (let ((access-token (alist-get 'accessJwt bluesky--session))
           (did (alist-get 'did bluesky--session))
           (record-data `((text . ,text)
-                         (createdAt . ,(format-time-string "%Y-%m-%dT%H:%M:%S.%3NZ")))))
+                         (createdAt . ,(format-time-string "%Y-%m-%dT%H:%M:%S.%3NZ" (current-time) t)))))
 
       ;; Add facets if they exist
       (when facets
