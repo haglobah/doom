@@ -1,5 +1,7 @@
 ;;; mycelium.el ---                                     -*- lexical-binding: t; -*-
 
+(require 'filenotify)
+
 (defface bah/bracket-highlight
   '((t :foreground "#ff6b6b" :weight bold))
   "Face for highlighted content in [[...]]")
@@ -11,29 +13,48 @@
 (defvar bah/markdown-files-cache nil
   "Cached hashmap of markdown filenames from the project.")
 
-(defvar bah/markdown-files-cache-time nil
-  "Timestamp of when the markdown files cache was last updated.")
+(defvar bah/file-watch-descriptor nil
+  "File watch descriptor for the project root.")
 
 (defvar bah/bracket-overlay-timer nil
   "Timer for debounced overlay updates.")
 
+(defun bah/invalidate-markdown-cache ()
+  "Invalidate the markdown files cache."
+  (setq bah/markdown-files-cache nil))
+
+(defun bah/setup-file-watcher ()
+  "Set up a file watcher on the project root to invalidate cache on changes."
+  (let ((project-root (projectile-project-root)))
+    (when project-root
+      ;; Clean up old watcher if it exists
+      (when bah/file-watch-descriptor
+        (file-notify-rm-watch bah/file-watch-descriptor))
+
+      ;; Set up new watcher
+      (setq bah/file-watch-descriptor
+            (file-notify-add-watch
+             project-root
+             '(change)
+             (lambda (event)
+               (let ((file (nth 2 event)))
+                 ;; Only invalidate cache if a .md or .mdx file changed
+                 (when (and file (string-match-p "\\.md\\(x\\)?$" file))
+                   (bah/invalidate-markdown-cache)))))))))
+
 (defun bah/get-project-markdown-files ()
   "Get a hashmap of markdown filenames from the current project.
-Results are cached for 5 seconds to avoid repeated filesystem scans."
-  (let ((now (time-to-seconds (current-time))))
-    (if (and bah/markdown-files-cache
-             bah/markdown-files-cache-time
-             (< (- now bah/markdown-files-cache-time) 5))
-        bah/markdown-files-cache
-      (let ((files (projectile-project-files (projectile-project-root)))
-            (markdown-map (make-hash-table :test 'equal)))
-        (dolist (file files)
-          (when (string-match-p "\\.md\\(x\\)?$" file)
-            (let ((filename (file-name-nondirectory file)))
-              (puthash filename t markdown-map))))
-        (setq bah/markdown-files-cache markdown-map)
-        (setq bah/markdown-files-cache-time now)
-        markdown-map))))
+Results are cached until the file watcher detects changes."
+  (if bah/markdown-files-cache
+      bah/markdown-files-cache
+    (let ((files (projectile-project-files (projectile-project-root)))
+          (markdown-map (make-hash-table :test 'equal)))
+      (dolist (file files)
+        (when (string-match-p "\\.md\\(x\\)?$" file)
+          (let ((filename (file-name-nondirectory file)))
+            (puthash filename t markdown-map))))
+      (setq bah/markdown-files-cache markdown-map)
+      markdown-map)))
 
 (defun bah/apply-bracket-overlays ()
   "Apply overlays to all [[...]] patterns in current buffer.
@@ -71,6 +92,7 @@ Prevents excessive updates when typing rapidly."
 
 (add-hook 'markdown-mode-hook
   (lambda ()
+    (bah/setup-file-watcher)
     (bah/apply-bracket-overlays)
     ;; Re-apply overlays when buffer changes, but debounced
     (add-hook 'after-change-functions
