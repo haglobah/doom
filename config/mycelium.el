@@ -1,7 +1,5 @@
 ;;; mycelium.el ---                                     -*- lexical-binding: t; -*-
 
-(require 'filenotify)
-
 (defface bah/bracket-highlight
   '((t :inherit font-lock-type-face :weight bold))
   "Face for highlighted content in [[...]]")
@@ -115,7 +113,8 @@ Updates cache and reapplies overlays."
     (bah/apply-bracket-overlays)))
 
 (add-hook 'markdown-mode-hook
-  (lambda ()
-    (bah/rebuild-markdown-cache)
-    (bah/apply-bracket-overlays)
-    (add-hook 'after-save-hook #'bah/on-markdown-save nil t)))
+          (lambda ()
+            (bah/rebuild-markdown-cache)
+            (bah/apply-bracket-overlays)
+                                        ;(add-hook 'after-save-hook #'bah/on-markdown-save nil t)
+            ))
