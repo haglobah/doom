@@ -90,6 +90,42 @@ Prevents excessive updates when typing rapidly."
   (setq bah/bracket-overlay-timer
         (run-with-idle-timer 0.5 nil #'bah/apply-bracket-overlays)))
 
+(defun bah/get-bracket-content-at-point ()
+  "Get the content inside [[...]] at point, or nil if not inside brackets."
+  (save-excursion
+    (let ((start-pos (point)))
+      ;; Try to find opening brackets before point
+      (when (search-backward "[[" nil t)
+        (let ((bracket-start (point)))
+          ;; Try to find closing brackets after original point
+          (goto-char start-pos)
+          (when (search-forward "]]" nil t)
+            (let ((bracket-end (point)))
+              ;; Verify we're actually inside the brackets
+              (if (and (> start-pos bracket-start) (< start-pos bracket-end))
+                  (buffer-substring-no-properties (+ bracket-start 2) (- bracket-end 2))
+                nil))))))))
+
+(defun bah/open-or-create-bracket-file ()
+  "Open the markdown file referenced in [[...]] at point.
+If not inside brackets, message to minibuffer.
+Looks for .mdx first, then .md. Creates file if it doesn't exist."
+  (interactive)
+  (let ((content (bah/get-bracket-content-at-point)))
+    (if (not content)
+        (message "Only works inside double brackets [[...]]")
+      (let* ((project-root (projectile-project-root))
+             (mdx-file (expand-file-name (concat content ".mdx") project-root))
+             (md-file (expand-file-name (concat content ".md") project-root))
+             (target-file (cond
+                           ((file-exists-p mdx-file) mdx-file)
+                           ((file-exists-p md-file) md-file)
+                           (t md-file))))  ; Default to .md if neither exists
+        (unless (file-exists-p target-file)
+          (make-directory (file-name-directory target-file) t)
+          (write-region "" nil target-file))
+        (find-file target-file)))))
+
 (add-hook 'markdown-mode-hook
   (lambda ()
     (bah/setup-file-watcher)
