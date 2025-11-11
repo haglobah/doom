@@ -116,5 +116,13 @@ Updates cache and reapplies overlays."
           (lambda ()
             (bah/rebuild-markdown-cache)
             (bah/apply-bracket-overlays)
+            (add-hook 'after-change-functions
+                (lambda (_beg _end _len)
+                  (bah/apply-bracket-overlays)))
                                         ;(add-hook 'after-save-hook #'bah/on-markdown-save nil t)
             ))
+
+(map! :map markdown-mode-map
+      :leader
+      :nv "f ." #'bah/open-or-create-bracket-file
+      :nv "e r" #'bah/refresh-mycelium)
