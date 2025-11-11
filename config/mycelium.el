@@ -21,7 +21,8 @@
 
 (defun bah/invalidate-markdown-cache ()
   "Invalidate the markdown files cache."
-  (setq bah/markdown-files-cache nil))
+  (setq bah/markdown-files-cache nil)
+  (message "[mycelium] Cache invalidated"))
 
 (defun bah/setup-file-watcher ()
   "Set up a file watcher on the project root to invalidate cache on changes."
@@ -29,18 +30,25 @@
     (when project-root
       ;; Clean up old watcher if it exists
       (when bah/file-watch-descriptor
-        (file-notify-rm-watch bah/file-watch-descriptor))
+        (condition-case err
+          (file-notify-rm-watch bah/file-watch-descriptor)
+          (error (message "[mycelium] Error removing old watcher: %s" err))))
 
       ;; Set up new watcher
-      (setq bah/file-watch-descriptor
-            (file-notify-add-watch
-             project-root
-             '(change)
-             (lambda (event)
-               (let ((file (nth 2 event)))
-                 ;; Only invalidate cache if a .md or .mdx file changed
-                 (when (and file (string-match-p "\\.md\\(x\\)?$" file))
-                   (bah/invalidate-markdown-cache)))))))))
+      (condition-case err
+        (progn
+          (setq bah/file-watch-descriptor
+                (file-notify-add-watch
+                 project-root
+                 '(change)
+                 (lambda (event)
+                   (let ((file (nth 2 event)))
+                     ;; Only invalidate cache if a .md or .mdx file changed
+                     (when (and file (string-match-p "\\.md\\(x\\)?$" file))
+                       (message "[mycelium] File changed: %s" file)
+                       (bah/invalidate-markdown-cache))))))
+          (message "[mycelium] File watcher set up on: %s" project-root))
+        (error (message "[mycelium] Error setting up file watcher: %s" err))))))
 
 (defun bah/get-project-markdown-file-names ()
   "Get a hashmap of markdown filenames from the current project.
@@ -54,6 +62,7 @@ Results are cached until the file watcher detects changes."
           (let ((filename (file-name-sans-extension (file-name-nondirectory file))))
             (puthash filename file markdown-map))))
       (setq bah/markdown-files-cache markdown-map)
+      (message "[mycelium] Markdown cache built: %d files" (hash-table-count markdown-map))
       markdown-map)))
 
 (defun bah/apply-bracket-overlays ()
@@ -86,6 +95,16 @@ Prevents excessive updates when typing rapidly."
     (cancel-timer bah/bracket-overlay-timer))
   (setq bah/bracket-overlay-timer
         (run-with-idle-timer 0.5 nil #'bah/apply-bracket-overlays)))
+
+(defun bah/refresh-mycelium ()
+  "Manually refresh the mycelium cache and reapply overlays.
+Useful for testing and debugging."
+  (interactive)
+  (message "[mycelium] Manual refresh triggered")
+  (bah/invalidate-markdown-cache)
+  (bah/setup-file-watcher)
+  (bah/apply-bracket-overlays)
+  (message "[mycelium] Refresh complete"))
 
 (defun bah/get-bracket-content-at-point ()
   "Get the content inside [[...]] at point, or nil if not inside brackets."
@@ -122,7 +141,7 @@ in current directory."
           (let* ((new-note-file (doom-path current-dir (concat note-name ".md"))))
             (with-temp-file new-note-file
               (insert ""))
-            (find-file new-note-file))))))))
+            (find-file new-note-file)))))))
 
 (add-hook 'markdown-mode-hook
   (lambda ()
