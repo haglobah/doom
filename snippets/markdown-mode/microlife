@@ -1,7 +1,7 @@
 # -*- mode: snippet -*-
-# name: weekly
-# uuid: weekly-review
-# key: weekly
+# name: microlife review
+# uuid: microlife-review
+# key: microlife
 # condition: t
 # --
 
@@ -22,3 +22,13 @@ $0
 ## Was gibt mir Energie, was nimmt mir Energie?
 
 ## Gab's ein Learning, gibt's 'nen Vorsatz?
+
+---
+
+# Wie haben meine letzten drei Monate so funktioniert?
+
+# Womit bin ich zufrieden, womit nicht?
+
+# Was möchte ich mehr, was weniger machen?
+
+# Wie sind die Dinge, in die ich die nächsten 3 Monate dezidiert Energie stecken möchte?
