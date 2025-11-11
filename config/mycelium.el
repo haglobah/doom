@@ -3,11 +3,11 @@
 (require 'filenotify)
 
 (defface bah/bracket-highlight
-  '((t :foreground "#ff6b6b" :weight bold))
+  '((t :inherit font-lock-type-face :weight bold))
   "Face for highlighted content in [[...]]")
 
 (defface bah/bracket-dim
-  '((t :foreground "#666666"))
+  '((t :inherit font-lock-constant-face))
   "Face for dimmed content in [[...]]")
 
 (defvar bah/markdown-files-cache nil
