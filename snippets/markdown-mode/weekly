@@ -1,0 +1,22 @@
+# -*- mode: snippet -*-
+# name: weekly
+# uuid: weekly-review
+# key: weekly
+# condition: t
+# --
+
+## Wie geht's mir gerade? Wie ging's mir in der letzten Woche?
+
+$0
+
+## Was treibt mich um? Welche Fragen stelle ich mir?
+
+## Was machen meine großen Ziele?
+
+## Genieße ich mein Leben?
+
+## Meditiere ich morgens? Dehne ich mich regelmäßig? Wie oft war ich diese Woche morgens am Handy? Schreibe ich nachts (Dankbarkeits-)Tagebuch?
+
+## Was gibt mir Energie, was nimmt mir Energie?
+
+## Gab's ein Learning, gibt's 'nen Vorsatz?
