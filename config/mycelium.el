@@ -97,5 +97,5 @@ Prevents excessive updates when typing rapidly."
     ;; Re-apply overlays when buffer changes, but debounced
     (add-hook 'after-change-functions
       (lambda (_beg _end _len)
-        (bah/debounced-apply-bracket-overlays))
+        (bah/apply-bracket-overlays))
       nil t)))
