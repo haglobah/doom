@@ -42,7 +42,7 @@
                  (when (and file (string-match-p "\\.md\\(x\\)?$" file))
                    (bah/invalidate-markdown-cache)))))))))
 
-(defun bah/get-project-markdown-files ()
+(defun bah/get-project-markdown-file-names ()
   "Get a hashmap of markdown filenames from the current project.
 Results are cached until the file watcher detects changes."
   (if bah/markdown-files-cache
@@ -51,8 +51,8 @@ Results are cached until the file watcher detects changes."
           (markdown-map (make-hash-table :test 'equal)))
       (dolist (file files)
         (when (string-match-p "\\.md\\(x\\)?$" file)
-          (let ((filename (file-name-nondirectory file)))
-            (puthash filename t markdown-map))))
+          (let ((filename (file-name-sans-extension (file-name-nondirectory file))))
+            (puthash filename file markdown-map))))
       (setq bah/markdown-files-cache markdown-map)
       markdown-map)))
 
@@ -66,17 +66,14 @@ Highlights valid markdown file references, dims invalid ones."
     (when (overlay-get ov 'bah/bracket-overlay)
       (delete-overlay ov)))
 
-  (let ((markdown-files (bah/get-project-markdown-files)))
+  (let ((markdown-files (bah/get-project-markdown-file-names)))
     (save-excursion
       (goto-char (point-min))
       (while (re-search-forward "\\[\\[\\(.*?\\)\\]\\]" nil t)
         (let* ((start (match-beginning 1))
                (end (match-end 1))
-               (content (match-string 1))
-               (filename-with-ext (if (string-match-p "\\.md\\(x\\)?$" content)
-                                      content
-                                    (concat content ".md")))
-               (is-valid (gethash filename-with-ext markdown-files))
+               (note-name (match-string 1))
+               (is-valid (gethash note-name markdown-files))
                (overlay (make-overlay start end))
                (face (if is-valid 'bah/bracket-highlight 'bah/bracket-dim)))
           (overlay-put overlay 'face face)
@@ -109,22 +106,23 @@ Prevents excessive updates when typing rapidly."
 (defun bah/open-or-create-bracket-file ()
   "Open the markdown file referenced in [[...]] at point.
 If not inside brackets, message to minibuffer.
-Looks for .mdx first, then .md. Creates file if it doesn't exist."
+Looks for .mdx first, then .md. Creates file if it doesn't exist
+in current directory."
   (interactive)
-  (let ((content (bah/get-bracket-content-at-point)))
-    (if (not content)
+  (let ((note-name (bah/get-bracket-content-at-point)))
+    (if (not note-name)
         (message "Only works inside double brackets [[...]]")
-      (let* ((project-root (projectile-project-root))
-             (mdx-file (expand-file-name (concat content ".mdx") project-root))
-             (md-file (expand-file-name (concat content ".md") project-root))
-             (target-file (cond
-                           ((file-exists-p mdx-file) mdx-file)
-                           ((file-exists-p md-file) md-file)
-                           (t md-file))))  ; Default to .md if neither exists
-        (unless (file-exists-p target-file)
-          (make-directory (file-name-directory target-file) t)
-          (write-region "" nil target-file))
-        (find-file target-file)))))
+      (let* ((current-dir (file-name-directory (or (buffer-file-name) default-directory)))
+             (markdown-files (bah/get-project-markdown-file-names))
+             (project-note-file (gethash note-name markdown-files)))
+        (if project-note-file
+            (let* ((existing-note-file (doom-path (projectile-project-root) project-note-file)))
+              (message "existing file path!")
+              (find-file existing-note-file))
+          (let* ((new-note-file (doom-path current-dir (concat note-name ".md"))))
+            (with-temp-file new-note-file
+              (insert ""))
+            (find-file new-note-file))))))))
 
 (add-hook 'markdown-mode-hook
   (lambda ()
