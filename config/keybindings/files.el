@@ -120,6 +120,8 @@ Otherwise fall back to default `consult-dir` sources."
 (map! :leader
       :desc "Move file" :nv "f m" #'bah/move-file-to-dir-fuzzy
       :desc "Move file (doom)" :nv "f M" #'doom/move-this-file
+      :desc "Delete this file" :nv "f d" (cmd! (doom/delete-this-file (buffer-file-name) t))
+      :desc "Find dir (dired)" :nv "f D" #'+default/dired
       :desc "Rename file" :nv "f r" #'bah/rename-current-buffer-file
       :desc "Recent file" :nv "f R" #'consult-recent-file
       :desc "Create markdown file" :nv "f n" #'bah/create-markdown-file)
