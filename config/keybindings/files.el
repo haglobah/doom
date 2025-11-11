@@ -103,25 +103,10 @@ Otherwise fall back to default `consult-dir` sources."
       (set-visited-file-name target t t)
       (message "Moved %s → %s" basename target-dir))))
 
-(defun bah/create-markdown-file ()
-  "Create a new .md file in the current directory from the selected region and open it."
-  (interactive)
-  (unless (region-active-p)
-    (user-error "No region selected"))
-  (let* ((filename (buffer-substring-no-properties (region-beginning) (region-end)))
-         (filepath (expand-file-name (concat filename ".md") default-directory)))
-    (when (file-exists-p filepath)
-      (user-error "File '%s' already exists" filepath))
-    (with-temp-file filepath
-      (insert ""))
-    (find-file filepath)
-    (message "Created %s" filepath)))
-
 (map! :leader
       :desc "Move file" :nv "f m" #'bah/move-file-to-dir-fuzzy
       :desc "Move file (doom)" :nv "f M" #'doom/move-this-file
       :desc "Delete this file" :nv "f d" (cmd! (doom/delete-this-file (buffer-file-name) t))
       :desc "Find dir (dired)" :nv "f D" #'+default/dired
       :desc "Rename file" :nv "f r" #'bah/rename-current-buffer-file
-      :desc "Recent file" :nv "f R" #'consult-recent-file
-      :desc "Create markdown file" :nv "f n" #'bah/create-markdown-file)
+      :desc "Recent file" :nv "f R" #'consult-recent-file)
