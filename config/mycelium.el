@@ -13,6 +13,9 @@
 (defvar bah/markdown-files-cache nil
   "Cached hashmap of markdown filenames from the project.")
 
+(defvar bah/file-watchers (make-hash-table :test 'equal)
+  "Map of project roots to their file watchers.")
+
 (defun bah/rebuild-markdown-cache ()
   "Rebuild the markdown files cache from the project."
   (let ((files (projectile-project-files (projectile-project-root)))
@@ -25,17 +28,37 @@
     (message "[mycelium] Markdown cache rebuilt: %d files" (hash-table-count markdown-map))
     markdown-map))
 
-(defun bah/add-file-to-cache (file-path)
-  "Add a markdown file to the cache by its path."
-  (when (string-match-p "\\.md\\(x\\)?$" file-path)
-    (let ((filename (file-name-sans-extension (file-name-nondirectory file-path))))
-      (puthash filename file-path bah/markdown-files-cache))))
-
 (defun bah/get-project-markdown-file-names ()
   "Get a hashmap of markdown filenames from the current project.
 Results are cached; rebuild on first access or after project changes."
   (or bah/markdown-files-cache
       (bah/rebuild-markdown-cache)))
+
+(defun bah/file-watcher-callback (event)
+  "Callback for file system events in the project.
+Invalidates cache on file creation/deletion."
+  (let ((action (car event))
+        (file (cadr event)))
+    (when (and (string-match-p "\\.md\\(x\\)?$" file)
+               (or (eq action 'created) (eq action 'deleted)))
+      (setq bah/markdown-files-cache nil)
+      (message "[mycelium] Cache invalidated by file event: %s" action)
+      ;; Reapply overlays in all open markdown buffers
+      (dolist (buf (buffer-list))
+        (with-current-buffer buf
+          (when (derived-mode-p 'markdown-mode)
+            (bah/apply-bracket-overlays)))))))
+
+(defun bah/setup-file-watcher ()
+  "Set up file system watcher for the current project."
+  (let ((project-root (projectile-project-root)))
+    (unless (gethash project-root bah/file-watchers)
+      (let ((watch-descriptor
+             (file-notify-add-watch project-root
+                                    '(change)
+                                    #'bah/file-watcher-callback)))
+        (puthash project-root watch-descriptor bah/file-watchers)
+        (message "[mycelium] File watcher started for %s" project-root)))))
 
 (defun bah/apply-bracket-overlays ()
   "Apply overlays to all [[...]] patterns in current buffer.
@@ -65,6 +88,7 @@ Highlights valid markdown file references, dims invalid ones."
 Useful for testing and debugging."
   (interactive)
   (message "[mycelium] Manual refresh triggered")
+  (setq bah/markdown-files-cache nil)
   (bah/rebuild-markdown-cache)
   (bah/apply-bracket-overlays)
   (message "[mycelium] Refresh complete"))
@@ -106,16 +130,8 @@ in current directory."
               (insert ""))
             (find-file new-note-file)))))))
 
-(defun bah/on-markdown-save ()
-  "Hook to run on markdown file save.
-Updates cache and reapplies overlays."
-  (when (and (buffer-file-name)
-             (string-match-p "\\.md\\(x\\)?$" (buffer-file-name)))
-    (bah/add-file-to-cache (buffer-file-name))
-    (bah/apply-bracket-overlays)))
-
 (add-hook 'markdown-mode-hook
   (lambda ()
+    (bah/setup-file-watcher)
     (bah/rebuild-markdown-cache)
-    (bah/apply-bracket-overlays)
-    (add-hook 'after-save-hook #'bah/on-markdown-save nil t)))
+    (bah/apply-bracket-overlays)))
