@@ -13,17 +13,6 @@
 (defvar bah/markdown-files-cache nil
   "Cached hashmap of markdown filenames from the project.")
 
-(defvar bah/cache-rebuild-timer nil
-  "Timer for debounced cache rebuilds.")
-
-(defvar bah/bracket-overlay-timer nil
-  "Timer for debounced overlay updates.")
-
-(defun bah/invalidate-markdown-cache ()
-  "Invalidate the markdown files cache."
-  (setq bah/markdown-files-cache nil)
-  (message "[mycelium] Cache invalidated"))
-
 (defun bah/rebuild-markdown-cache ()
   "Rebuild the markdown files cache from the project."
   (let ((files (projectile-project-files (projectile-project-root)))
@@ -36,18 +25,15 @@
     (message "[mycelium] Markdown cache rebuilt: %d files" (hash-table-count markdown-map))
     markdown-map))
 
-(defun bah/debounced-rebuild-markdown-cache ()
-  "Debounced cache rebuild.
-Prevents excessive rebuilds when files change rapidly."
-  (when bah/cache-rebuild-timer
-    (cancel-timer bah/cache-rebuild-timer))
-  (setq bah/cache-rebuild-timer
-        (run-with-idle-timer 2 nil (cmd! (bah/rebuild-markdown-cache)
-                                         (bah/apply-bracket-overlays)))))
+(defun bah/add-file-to-cache (file-path)
+  "Add a markdown file to the cache by its path."
+  (when (string-match-p "\\.md\\(x\\)?$" file-path)
+    (let ((filename (file-name-sans-extension (file-name-nondirectory file-path))))
+      (puthash filename file-path bah/markdown-files-cache))))
 
 (defun bah/get-project-markdown-file-names ()
   "Get a hashmap of markdown filenames from the current project.
-Results are cached; use bah/debounced-rebuild-markdown-cache to refresh."
+Results are cached; rebuild on first access or after project changes."
   (or bah/markdown-files-cache
       (bah/rebuild-markdown-cache)))
 
@@ -120,13 +106,16 @@ in current directory."
               (insert ""))
             (find-file new-note-file)))))))
 
+(defun bah/on-markdown-save ()
+  "Hook to run on markdown file save.
+Updates cache and reapplies overlays."
+  (when (and (buffer-file-name)
+             (string-match-p "\\.md\\(x\\)?$" (buffer-file-name)))
+    (bah/add-file-to-cache (buffer-file-name))
+    (bah/apply-bracket-overlays)))
+
 (add-hook 'markdown-mode-hook
   (lambda ()
     (bah/rebuild-markdown-cache)
     (bah/apply-bracket-overlays)
-    ;; Re-apply overlays when buffer changes, but debounced
-    (add-hook 'after-change-functions
-      (lambda (_beg _end _len)
-        (bah/debounced-rebuild-markdown-cache)
-        (bah/apply-bracket-overlays))
-      nil t)))
+    (add-hook 'after-save-hook #'bah/on-markdown-save nil t)))
