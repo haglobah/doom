@@ -1,0 +1,11 @@
+# -*- mode: snippet -*-
+# name: links
+# uuid: obs-links
+# key: links
+# condition: t
+# --
+
+# Notes
+
+# Links
+- $0
