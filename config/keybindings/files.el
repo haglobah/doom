@@ -104,7 +104,7 @@ Otherwise fall back to default `consult-dir` sources."
       (message "Moved %s → %s" basename target-dir))))
 
 (defun bah/create-markdown-file ()
-  "Create a new .md file in the current directory from the selected region."
+  "Create a new .md file in the current directory from the selected region and open it."
   (interactive)
   (unless (region-active-p)
     (user-error "No region selected"))
@@ -114,6 +114,7 @@ Otherwise fall back to default `consult-dir` sources."
       (user-error "File '%s' already exists" filepath))
     (with-temp-file filepath
       (insert ""))
+    (find-file filepath)
     (message "Created %s" filepath)))
 
 (map! :leader
