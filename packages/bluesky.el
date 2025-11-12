@@ -34,13 +34,20 @@
       (match-string 2 content)
     content))
 [
- (bluesky--strip-frontmatter "---\narst: hoho\ntitle: \"lala\"\n---\n  qwfp")
+ (bluesky--strip-frontmatter
+  "---
+arst: hoho
+title: \"lala\"
+---
+  qwfp")
  ]
 
 (defun bluesky--parse-mdx-to-richtext (content)
   "Parse MDX CONTENT and return (text . facets) for Bluesky rich text"
   (interactive)
-  (let ((text (bluesky--strip-frontmatter content))
+  (let ((text (-> content
+                  (bluesky--strip-frontmatter)
+                  (string-trim)))
         (facets '())
         (byte-offset 0))
 
@@ -109,7 +116,9 @@ Already raised someone's aspirations today?")
  (defvar record (bluesky--parse-mdx-to-richtext text))
  (encode-text record)
  (bluesky--parse-mdx-to-richtext "[[Learning To C]]")
- (bluesky--parse-mdx-to-richtext "[hoho](https://qwfp.com)")
+ (bluesky--parse-mdx-to-richtext "[hoho](https://qwfp.com),
+
+and [here](https://github.com)")
  ]
 
 (defun bluesky-authenticate ()
