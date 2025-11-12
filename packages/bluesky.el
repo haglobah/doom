@@ -121,3 +121,11 @@
 
 (setq bluesky-handle "beathagenlocher.com")
 (setq bluesky-app-password (getenv "BLUESKY_APP_SECRET"))
+
+
+(map! :map markdown-mode-map
+      :leader
+      :prefix ("d b" . "dg bsky")
+      :desc "Authenticate" "a" #'bluesky-authenticate
+      :desc "Publish" "p" #'bluesky-post-mdx-buffer
+      )
