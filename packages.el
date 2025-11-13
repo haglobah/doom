@@ -16,15 +16,11 @@
 ;;  :recipe (:host github :repo "username/repo"))
 
 (package! ws-butler :disable t)
-
 (package! why-this
   :recipe (:host nil :repo "https://codeberg.org/akib/emacs-why-this.git"))
-
 (package! affe
   :recipe (:host github :repo "minad/affe"))
-
 (package! hercules)
-
 (package! eat)
 
 (package! catppuccin-theme)
