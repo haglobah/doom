@@ -123,6 +123,8 @@ Updates cache and reapplies overlays."
             ))
 
 (map! :map markdown-mode-map
+      :nvi "C-," #'bah/open-or-create-bracket-file
+
       :leader
       :nv "f ." #'bah/open-or-create-bracket-file
       :nv "e r" #'bah/refresh-mycelium)
