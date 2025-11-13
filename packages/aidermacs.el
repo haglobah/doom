@@ -7,6 +7,11 @@
   (setq! aidermacs-program "aider")
   ;; (setq! aider-args '("--model" "gpt-4o-mini"))
   (map! :leader :n "r" #'aidermacs-transient-menu)
+  (with-eval-after-load 'aidermacs
+    (transient-replace-suffix
+      'aidermacs-transient-menu
+      "F"
+      '("f" "Add Current File" aidermacs-add-current-file)))
   :custom
   (aidermacs-architect-mode t)
   (aidermacs-default-model "anthropic/claude-haiku-4-5-20251001"))
