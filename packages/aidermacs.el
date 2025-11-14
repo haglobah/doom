@@ -22,4 +22,5 @@
       "3" '("y" "Architect Mode" aidermacs-switch-to-architect-mode)))
   :custom
   (aidermacs-architect-mode t)
-  (aidermacs-default-model "anthropic/claude-haiku-4-5-20251001"))
+  (aidermacs-default-model "anthropic/claude-sonnet-4-5-20250929")
+  (aidermacs-weak-model "anthropic/claude-haiku-4-5-20251001"))
