@@ -74,26 +74,6 @@ title: \"lala\"
         ;; Replace [text](url) with just the link text
         (setq text (replace-match link-text nil nil text))))
 
-    ;; Process bare https:// URLs
-    (while (string-match "https?://\\([^[:space:]]+\\)" text)
-      (let* ((match-start (match-beginning 0))
-             (match-end (match-end 0))
-             (url (match-string 0 text))
-             (without-https (match-string 1 text))
-             ;; Calculate byte positions
-             (byte-start (string-bytes (substring text 0 match-start)))
-             (byte-end (+ byte-start (string-bytes without-https))))
-
-        ;; Add facet for this link
-        (push `((index (byteStart . ,byte-start)
-                 (byteEnd . ,byte-end))
-                (features . [(("$type" . "app.bsky.richtext.facet#link")
-                              (uri . ,url))]))
-              facets)
-
-        ;; Remove the matched URL from text to avoid infinite loop
-        (setq text (replace-match without-https nil nil text))))
-
     ;; Return text and facets
     (cons (string-trim text) (reverse facets))))
 
