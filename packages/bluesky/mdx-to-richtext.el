@@ -27,57 +27,75 @@ title: \"lala\"
 (defun bluesky--parse-mdx-to-richtext (content)
   "Parse MDX CONTENT and return (text . facets) for Bluesky rich text"
   (interactive)
-  (let ((text (-> content
-                  (bluesky--strip-frontmatter)
-                  (string-trim)))
-        (facets '())
-        (byte-offset 0))
+  (let* ((text (-> content
+                   (bluesky--strip-frontmatter)
+                   (string-trim)))
+         (matches '())
+         (pos 0))
 
-    ;; Process [[...]] wiki-style links first
-    (while (string-match "\\[\\[\\([^]]+\\)\\]\\]" text)
+    ;; Collect all [[...]] wiki-style links
+    (while (string-match "\\[\\[\\([^]]+\\)\\]\\]" text pos)
       (let* ((match-start (match-beginning 0))
              (match-end (match-end 0))
              (link-text (match-string 1 text))
              (slug (bluesky--slugify link-text))
-             (url (concat bluesky-garden-base-url slug))
-             ;; Calculate byte positions
-             (byte-start (string-bytes (substring text 0 match-start)))
-             (byte-end (+ byte-start (string-bytes link-text))))
+             (url (concat bluesky-garden-base-url slug)))
+        (push (list match-start match-end link-text url) matches)
+        (setq pos match-end)))
 
-        ;; Add facet for this link
-        (push `((index (byteStart . ,byte-start)
-                 (byteEnd . ,byte-end))
-                (features . [(("$type" . "app.bsky.richtext.facet#link")
-                              (uri . ,url))]))
-              facets)
-
-        ;; Replace [[link]] with just the link text
-        (setq text (replace-match link-text nil nil text))))
-
-    ;; Process [text](url) markdown-style links
-    (while (string-match "\\[\\([^]]+\\)\\](\\([^)]+\\))" text)
+    ;; Collect all [text](url) markdown-style links
+    (setq pos 0)
+    (while (string-match "\\[\\([^]]+\\)\\](\\([^)]+\\))" text pos)
       (let* ((match-start (match-beginning 0))
              (match-end (match-end 0))
              (link-text (match-string 1 text))
-             (url (match-string 2 text))
-             ;; Calculate byte positions
-             (byte-start (string-bytes (substring text 0 match-start)))
-             (byte-end (+ byte-start (string-bytes link-text))))
+             (url (match-string 2 text)))
+        (push (list match-start match-end link-text url) matches)
+        (setq pos match-end)))
 
-        ;; Add facet for this link
-        (push `((index (byteStart . ,byte-start)
-                 (byteEnd . ,byte-end))
-                (features . [(("$type" . "app.bsky.richtext.facet#link")
-                              (uri . ,url))]))
-              facets)
+    ;; Sort matches by position (earliest first)
+    (setq matches (sort matches (lambda (a b) (< (car a) (car b)))))
 
-        ;; Replace [text](url) with just the link text
-        (setq text (replace-match link-text nil nil text))))
+    ;; Process matches in order, building new text and facets
+    (let ((new-text "")
+          (facets '())
+          (last-pos 0)
+          (byte-offset 0))
 
-    ;; Return text and facets
-    (cons (string-trim text) (reverse facets))))
+      (dolist (match matches)
+        (let* ((match-start (nth 0 match))
+               (match-end (nth 1 match))
+               (link-text (nth 2 match))
+               (url (nth 3 match))
+               ;; Add text before this match
+               (before-text (substring text last-pos match-start))
+               (byte-start (+ byte-offset (string-bytes before-text)))
+               (byte-end (+ byte-start (string-bytes link-text))))
+
+          ;; Append text before match
+          (setq new-text (concat new-text before-text))
+          ;; Append link text
+          (setq new-text (concat new-text link-text))
+
+          ;; Add facet
+          (push `((index (byteStart . ,byte-start)
+                   (byteEnd . ,byte-end))
+                  (features . [(("$type" . "app.bsky.richtext.facet#link")
+                                (uri . ,url))]))
+                facets)
+
+          ;; Update positions
+          (setq byte-offset byte-end)
+          (setq last-pos match-end)))
+
+      ;; Append remaining text after last match
+      (setq new-text (concat new-text (substring text last-pos)))
+
+      ;; Return text and facets
+      (cons (string-trim new-text) (reverse facets)))))
 
 [
+ (bluesky--parse-mdx-to-richtext "[[a]] [b](b.com) [[c]]")
  (bluesky--parse-mdx-to-richtext "Hi! https://qwfp.com wfp https://lala.com")
  (defvar text "
 ---
