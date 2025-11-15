@@ -48,5 +48,6 @@
 (map! :map markdown-mode-map
       :leader
       :prefix ("d b" . "dg bsky")
-      :desc "Publish" "p" #'publish-content
+      :desc "Post buffer" "b" #'bsky-post-buffer
+      :desc "Post region" "r" #'bsky-post-region
       )
