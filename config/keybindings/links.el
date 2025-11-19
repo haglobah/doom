@@ -4,7 +4,8 @@
   '("mattermost.active-group.de"
     "timetracking.active-group.de"
     ;; "projects.active-group.de"
-    "focus.nirvanahq.com"))
+    "focus.nirvanahq.com"
+    "app.mochi.cards"))
 
 (map! :leader
       :prefix ("e" . "bah")
