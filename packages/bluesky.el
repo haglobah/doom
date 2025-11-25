@@ -34,7 +34,7 @@
   "Adds the POSSE backlink caption"
   (concat text "
 
-[Syndicated](https://indieweb.org/POSSE) from my [digital garden](https://beathagenlocher.com)"))
+Syndicated from my [digital garden](https://beathagenlocher.com)"))
 
 (defun bsky-post-region (start end)
   (interactive "r")
