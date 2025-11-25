@@ -19,8 +19,9 @@
         mu4e-search-results-limit -1
         mu4e-search-skip-duplicates nil
         mu4e-update-interval 60
+        mu4e-headers-date-format "%Y-%m-%d  %H:%M"
         ;; mu4e-headers-actions '(("move to" . mu4e-move))
-        mu4e-headers-fields '((:human-date . 12)
+        mu4e-headers-fields '((:human-date . 18)
                               (:flags . 6)
                               (:maildir . 15)
                               (:mailing-list . 10)
