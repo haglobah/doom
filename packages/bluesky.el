@@ -40,6 +40,7 @@
   (interactive "r")
   (let ((text (buffer-substring-no-properties start end)))
     (->> text
+         (bsky-append-posse-backlink)
          (bluesky--parse-mdx-to-richtext)
          (bsky-post))))
 
