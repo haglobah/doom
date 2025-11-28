@@ -1,0 +1,14 @@
+# -*- mode: snippet -*-
+# name: ldr
+# uuid: life decision record
+# key: ldr
+# condition: t
+# --
+
+# ${1:title}
+
+`(format-time-string "%Y-%m-%d" (current-time) t)`
+
+# Status
+
+$0
