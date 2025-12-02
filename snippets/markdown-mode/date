@@ -1,0 +1,10 @@
+# -*- mode: snippet -*-
+# name: daily
+# uuid: daily
+# key: daily
+# condition: t
+# --
+
+# `(format-time-string "%Y-%m-%d" (current-time) t)`
+
+$0

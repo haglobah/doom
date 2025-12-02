@@ -1,0 +1,10 @@
+# -*- mode: snippet -*-
+# name: now
+# uuid: now
+# key: now
+# condition: t
+# --
+
+## `(format-time-string "%H:%M" (current-time) t)`
+
+$0
