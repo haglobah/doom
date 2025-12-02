@@ -5,6 +5,6 @@
 # condition: t
 # --
 
-## `(format-time-string "%H:%M" (current-time) t)`
+## `(format-time-string "%H:%M" (current-time))`
 
 $0
