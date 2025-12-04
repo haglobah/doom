@@ -26,6 +26,7 @@
 
 ;; (setq debug-on-error t)
 
+(setq read-process-output-max (* 3 1024 1024)) ;; 3mb
 (add-to-list 'default-frame-alist '(undecorated . t))
 
 ;;      doom-variable-pitch-font (font-spec :family "Source Sans Pro" :size 18))
