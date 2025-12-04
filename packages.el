@@ -22,6 +22,14 @@
   :recipe (:host github :repo "minad/affe"))
 (package! hercules)
 (package! eat)
+(when (package! lsp-bridge
+        :recipe (:host github
+                 :repo "manateelazycat/lsp-bridge"
+                 :branch "master"
+                 :files ("*.el" "*.py" "acm" "core" "langserver" "multiserver" "resources")
+                 :build (:not compile)))
+  (package! markdown-mode)
+  (package! yasnippet))
 
 (package! catppuccin-theme)
 (package! all-the-icons)
