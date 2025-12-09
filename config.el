@@ -78,7 +78,7 @@
 ;; change `org-directory'. It must be set before org loads!
 (setq org-directory "~/org/")
 
-(setq auto-save-visited-interval 1.0)
+(setq auto-save-visited-interval 0.5)
 (auto-save-visited-mode t)
 (global-auto-revert-mode t)
 (setq! doom-modeline-buffer-modification-icon nil)
