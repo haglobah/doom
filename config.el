@@ -105,6 +105,7 @@
 (load! "config/magit.el")
 (load! "config/mycelium.el")
 (load! "config/avy.el")
+(load! "config/company.el")
 
 (load! "packages/monkeytype.el")
 (load! "packages/bluesky.el")
