@@ -29,10 +29,8 @@
 (package! aidermacs)
 (package! gptel :recipe (:nonrecursive t))
 (package! shell-maker)
-(package! acp
-  :recipe (:host github :repo "xenodium/acp.el"))
-(package! agent-shell
-  :recipe (:host github :repo "xenodium/agent-shell"))
+(package! acp)
+(package! agent-shell)
 
 (package! monkeytype)
 
