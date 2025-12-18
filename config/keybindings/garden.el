@@ -86,7 +86,7 @@ Does not create a new header if one doesn't exist."
                           (reverse)
                           (first)
                           (+ 1)))
-        (next-streamlet-filename (concat (number-to-string next-number) ".mdx"))
+        (next-streamlet-filename (concat (s-pad-left 5 "0" (number-to-string next-number)) ".mdx"))
         (next-streamlet-path (doom-path stream-folder next-streamlet-filename)))
    (with-temp-file next-streamlet-path (insert "stream"))
    (find-file next-streamlet-path)
