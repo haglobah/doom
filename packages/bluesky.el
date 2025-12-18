@@ -8,6 +8,25 @@
   :type 'string
   :group 'bluesky)
 
+(defun bsky-post-as-image (text.link)
+  (interactive)
+  (let* ((url-request-method "POST")
+         (url-request-extra-headers '(("Content-Type" . "application/json")))
+         (url-request-data (encode-coding-string
+                            (json-encode `((text . ,(car text.link))
+                                           (link . ,(cdr text.link))
+                                           )
+                                         )
+                            'utf-8)))
+    (url-retrieve
+     "http://localhost:3000/post/as-image"
+     (lambda (status)
+       (if (plist-get status :error)
+           (message "Bsky post as image failed: %s" (plist-get status :error))
+         (message "Posted to Bluesky: %s" status))))))
+
+(bsky-post-as-image (cons "Hello there" "stream#00092"))
+
 (defun bsky-post (text.facets)
   "Post current buffer content to Bluesky."
   (interactive)
@@ -52,6 +71,19 @@ Syndicated from my [digital garden](https://beathagenlocher.com)"))
          (bluesky--parse-mdx-to-richtext)
          (bsky-post))))
 
+(defun bsky-post-buffer-as-image ()
+  (interactive)
+  (let* ((text (buffer-substring-no-properties (point-min) (point-max)))
+         ;; TODO: src/content/....mdx -> stream#...
+         (link (file-relative-name (buffer-file-name) "~/beathagenlocher.com"))
+         (sanitized.facets (bluesky--parse-mdx-to-richtext text))
+         ;; NOTE: Maybe don't ignore the facets here?
+         (sanitized (car sanitized.facets)))
+    (message sanitized)
+    (message link)
+    ))
+    ;; (bsky-post-buffer-as-image (cons sanitized link))))
+
 [
  (->> "[[Learning to C]]"
       (bah/i)
@@ -62,5 +94,6 @@ Syndicated from my [digital garden](https://beathagenlocher.com)"))
       :leader
       :prefix ("d b" . "dg bsky")
       :desc "Post buffer" "b" #'bsky-post-buffer
+      :desc "Post buffer" "i" #'bsky-post-buffer-as-image
       :desc "Post region" "r" #'bsky-post-region
       )
