@@ -24,8 +24,9 @@
        (if (plist-get status :error)
            (message "Bsky post as image failed: %s" (plist-get status :error))
          (message "Posted to Bluesky: %s" status))))))
-
-(bsky-post-as-image (cons "Hello there" "stream#00092"))
+[
+ (bsky-post-as-image (cons "Hello there" "stream#00092"))
+ ]
 
 (defun bsky-post (text.facets)
   "Post current buffer content to Bluesky."
@@ -82,7 +83,7 @@ Syndicated from my [digital garden](https://beathagenlocher.com)"))
     (message sanitized)
     (message link)
     ))
-    ;; (bsky-post-buffer-as-image (cons sanitized link))))
+;; (bsky-post-buffer-as-image (cons sanitized link))))
 
 [
  (->> "[[Learning to C]]"
