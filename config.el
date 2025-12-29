@@ -80,13 +80,13 @@
 (setq org-directory "~/org/")
 
 ;; (setq auto-save-visited-interval 1.0)
-(defun bah/save-on-focus-lost ()
+(defun bah/save-buffer ()
   (when (and buffer-file-name
-             (buffer-modified-p)
              (file-writable-p buffer-file-name))
     (save-buffer)))
-
-(add-hook! 'focus-out-hook #'bah/save-on-focus-lost)
+(add-hook! 'focus-out-hook #'bah/save-buffer)
+(add-hook! 'doom-switch-buffer-hook #'bah/save-buffer)
+(add-hook! 'doom-switch-window-hook #'bah/save-buffer)
 
 (auto-save-visited-mode t)
 (global-auto-revert-mode t)
