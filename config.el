@@ -79,7 +79,15 @@
 ;; change `org-directory'. It must be set before org loads!
 (setq org-directory "~/org/")
 
-(setq auto-save-visited-interval 1.0)
+;; (setq auto-save-visited-interval 1.0)
+(defun bah/save-on-focus-lost ()
+  (when (and buffer-file-name
+             (buffer-modified-p)
+             (file-writable-p buffer-file-name))
+    (save-buffer)))
+
+(add-hook! 'focus-out-hook #'bah/save-on-focus-lost)
+
 (auto-save-visited-mode t)
 (global-auto-revert-mode t)
 (setq! doom-modeline-buffer-modification-icon nil)
