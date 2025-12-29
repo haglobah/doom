@@ -8,13 +8,14 @@
   :type 'string
   :group 'bluesky)
 
-(defun bsky-post-as-image (text.link)
+(defun bsky-post-as-image (title text link)
   (interactive)
   (let* ((url-request-method "POST")
          (url-request-extra-headers '(("Content-Type" . "application/json")))
          (url-request-data (encode-coding-string
-                            (json-encode `((text . ,(car text.link))
-                                           (link . ,(cdr text.link))
+                            (json-encode `((title . ,title)
+                                           (text . ,text)
+                                           (link . ,link)
                                            )
                                          )
                             'utf-8)))
@@ -25,17 +26,18 @@
            (message "Bsky post as image failed: %s" (plist-get status :error))
          (message "Posted to Bluesky: %s" status))))))
 [
- (bsky-post-as-image (cons "Hello there" "stream#00092"))
+ (bsky-post-as-image "The title" "Hello there" "stream#00092")
  ]
 
-(defun bsky-post (text.facets)
+(defun bsky-post (ret)
   "Post current buffer content to Bluesky."
   (interactive)
   (let* ((url-request-method "POST")
          (url-request-extra-headers '(("Content-Type" . "application/json")))
          (url-request-data (encode-coding-string
-                            (json-encode `((text . ,(car text.facets))
-                                           (facets . ,(cdr text.facets))))
+                            (json-encode `((title . ,(ret-title ret))
+                                           (text . ,(ret-text ret))
+                                           (facets . ,(ret-facets ret))))
                             'utf-8)))
     (url-retrieve
      "http://localhost:3000/post"
@@ -75,21 +77,15 @@ Syndicated from my [digital garden](https://beathagenlocher.com)"))
 (defun bsky-post-buffer-as-image ()
   (interactive)
   (let* ((text (buffer-substring-no-properties (point-min) (point-max)))
-         ;; TODO: src/content/....mdx -> stream#...
-         (link (file-relative-name (buffer-file-name) "~/beathagenlocher.com"))
-         (sanitized.facets (bluesky--parse-mdx-to-richtext text))
+         (link (->> (file-relative-name (buffer-file-name) "~/beathagenlocher.com/")
+                    (file-name-base)
+                    (concat "stream#")
+                    bah/i))
+         (ret (bluesky--parse-mdx-to-richtext text))
          ;; NOTE: Maybe don't ignore the facets here?
-         (sanitized (car sanitized.facets)))
-    (message sanitized)
-    (message link)
-    ))
-;; (bsky-post-buffer-as-image (cons sanitized link))))
-
-[
- (->> "[[Learning to C]]"
-      (bah/i)
-      (bsky-post))
- ]
+         (sanitized (ret-text ret))
+         (title (ret-title ret)))
+    (bsky-post-as-image title sanitized link)))
 
 (map! :map markdown-mode-map
       :leader

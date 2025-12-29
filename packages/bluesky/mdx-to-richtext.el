@@ -24,10 +24,35 @@ title: \"lala\"
   qwfp")
  ]
 
+(defun bluesky--get-frontmatter (content)
+  "Get YAML frontmatter from CONTENT"
+  (if (string-match "^---\n\\(\\(?:.\\|\n\\)*?\\)\n---\n\\(\\(?:.\\|\n\\)*\\)$" content)
+      (match-string 1 content)
+    nil))
+
+(defun get-title (frontmatter)
+  (when (and frontmatter
+             (string-match "title:[ \t]*\"\\([^\"]+\\)\"" frontmatter))
+    (match-string 1 frontmatter)))
+[
+ (->> "---
+arst: hoho
+title: \"lala\"
+---
+  qwfp"
+      (bluesky--get-frontmatter)
+      (get-title)
+      )
+ ]
+
+(cl-defstruct ret
+  title text facets)
+
 (defun bluesky--parse-mdx-to-richtext (content)
   "Parse MDX CONTENT and return (text . facets) for Bluesky rich text"
   (interactive)
-  (let* ((text (-> content
+  (let* ((title (-> content (bluesky--get-frontmatter) (get-title)))
+         (text (-> content
                    (bluesky--strip-frontmatter)
                    (string-trim)))
          (matches '())
@@ -92,14 +117,14 @@ title: \"lala\"
       (setq new-text (concat new-text (substring text last-pos)))
 
       ;; Return text and facets
-      (cons (string-trim new-text) (reverse facets)))))
+      (make-ret :title title :text (string-trim new-text) :facets (reverse facets)))))
 
 [
  (bluesky--parse-mdx-to-richtext "[[a]] [b](b.com) [[c]]")
  (bluesky--parse-mdx-to-richtext "Hi! https://qwfp.com wfp https://lala.com")
  (defvar text "
 ---
-title: Raising Aspirations
+title: \"Raising Aspirations\"
 startDate: 2025-09-05T18:28:27
 topics: [Ambition]
 publish: true
