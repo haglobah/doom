@@ -21,7 +21,7 @@
 ;; See 'C-h v doom-font' for documentation and more examples of what they
 ;; accept. For example:
 
-(setq doom-font (font-spec :family "FiraCode Nerd Font" :size 16 :weight 'normal))
+(setq doom-font (font-spec :family "FiraCode Nerd Font" :size 20 :weight 'normal))
 (setq doom-font-increment 1)
 
 ;; (setq debug-on-error t)
@@ -39,6 +39,7 @@
 (map! :leader
       :desc "Decrease UI font size" :g "-" #'doom/decrease-font-size
       :desc "Increase UI font size" :g "+" #'doom/increase-font-size
+      :desc "Change to framework font size" :g "@" (cmd! (doom/decrease-font-size 4))
       :desc "Change to framework font size" :g "!" (cmd! (doom/increase-font-size 4))
       :desc "Reset UI font size" :g "=" #'doom/reset-font-size)
 
