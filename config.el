@@ -87,6 +87,7 @@
 (add-hook! 'focus-out-hook #'bah/save-buffer)
 (add-hook! 'doom-switch-buffer-hook #'bah/save-buffer)
 (add-hook! 'doom-switch-window-hook #'bah/save-buffer)
+(add-hook! 'evil-insert-state-exit-hook #'bah/save-buffer)
 
 (auto-save-visited-mode t)
 (global-auto-revert-mode t)
