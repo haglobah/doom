@@ -7,7 +7,7 @@
 
   :init
   (map! :leader
-        :desc "Toggle agent-shell buffer" "o !" #'agent-shell-toggle
+        :desc "Toggle agent-shell buffer" "o `" #'agent-shell-toggle
         :desc "Open agent-shell: Claude" "o c" #'agent-shell-anthropic-start-claude-code
         :desc "Open agent-shell: OpenAI" "o o" #'agent-shell-openai-start-codex)
   :config
