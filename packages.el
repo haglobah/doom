@@ -32,6 +32,9 @@
 (package! acp)
 (package! agent-shell)
 
+(package! beads
+  :recipe (:host github :repo "ChristianTietze/beads.el" :files ("lisp/*.el")))
+
 (package! monkeytype)
 
 (package! pollen-mode)
