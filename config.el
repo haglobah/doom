@@ -89,6 +89,7 @@
 (add-hook! 'focus-out-hook #'bah/save-buffer)
 (add-hook! 'doom-switch-buffer-hook #'bah/save-buffer)
 (add-hook! 'doom-switch-window-hook #'bah/save-buffer)
+(add-hook! 'magit-status-mode-hook #'bah/save-buffer)
 ;; REVIEW: This breaks `dd.` in vim, which is not what I want—so I'm gonna disable this for now.
 ;;(add-hook! 'evil-insert-state-exit-hook #'bah/save-buffer)
 
