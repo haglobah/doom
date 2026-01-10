@@ -3,7 +3,12 @@
 (defun bah/read-unicode-char (c1 c2 c3 c4 _trailing_space_ignored)
   "Convert unicode input C1 C2 C3 C4 to the corresponding insert char call."
   (interactive "c\nc\nc\nc\nc")
-  (insert-char (string-to-number (format "%c%c%c%c" c1 c2 c3 c4) 16)))
+  (let ((code (string-to-number (format "%c%c%c%c" c1 c2 c3 c4) 16))
+        )
+    (cond
+      ((= code #x2014) (insert "hallo"))
+      ((= code #x2013) (insert "–"))
+      (t (insert-char code)))))
 
 (map! :i "C-u" nil)
 (map! "C-S-u" #'bah/read-unicode-char)
