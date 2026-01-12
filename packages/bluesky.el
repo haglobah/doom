@@ -90,7 +90,7 @@ Syndicated from my [digital garden](https://beathagenlocher.com)"))
 (map! :map markdown-mode-map
       :leader
       :prefix ("d b" . "dg bsky")
-      :desc "Post buffer" "b" #'bsky-post-buffer
-      :desc "Post buffer" "i" #'bsky-post-buffer-as-image
+      :desc "Post buffer as text" "b" #'bsky-post-buffer
+      :desc "Post buffer as image" "i" #'bsky-post-buffer-as-image
       :desc "Post region" "r" #'bsky-post-region
       )
