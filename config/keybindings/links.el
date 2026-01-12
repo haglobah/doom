@@ -10,7 +10,8 @@
     "timetracking.active-group.de"
     "focus.nirvanahq.com"
     "app.mochi.cards"
-    "https://projects.active-group.de/projects/fab-researcher/issues"
+    "projects.active-group.de/projects/fab-researcher/issues"
+    "app.element.io"
     "plausible.io"
     "eu.posthog.com"))
 
