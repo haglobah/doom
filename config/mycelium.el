@@ -128,16 +128,3 @@ Updates cache and reapplies overlays."
       :leader
       :nv "f ." #'bah/open-or-create-bracket-file
       :nv "e r" #'bah/refresh-mycelium)
-
-(defun bah/mycelium-company-backend (command &optional arg &rest ignored)
-  (interactive (list 'interactive))
-  (cl-case command
-    (interactive (company-begin-backend 'bah/mycelium-company-backend))
-    (prefix (when (looking-back "\\[\\[" 2)
-              "[["))
-    (candidates (let ((markdown-files (bah/get-project-markdown-file-names)))
-                  (->> (hash-table-keys markdown-files)
-                       (mapcar (lambda (file) (concat "[[" file))))))
-    (meta (format "Markdown file: %s" arg))))
-
-(add-to-list 'company-backends #'bah/mycelium-company-backend)
