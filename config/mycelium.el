@@ -104,6 +104,16 @@ in current directory."
               (insert ""))
             (find-file new-note-file)))))))
 
+(add-hook 'markdown-mode-hook
+          (lambda ()
+            (bah/rebuild-markdown-cache)
+            (bah/apply-bracket-overlays)
+            (add-hook 'after-change-functions
+                      (lambda (_beg _end _len)
+                        (bah/apply-bracket-overlays)))
+                                        ;(add-hook 'after-save-hook #'bah/on-markdown-save nil t)
+            ))
+
 (defun bah/on-markdown-save ()
   "Hook to run on markdown file save.
 Updates cache and reapplies overlays."
@@ -112,19 +122,22 @@ Updates cache and reapplies overlays."
     (bah/add-file-to-cache (buffer-file-name))
     (bah/apply-bracket-overlays)))
 
-(add-hook 'markdown-mode-hook
-          (lambda ()
-            (bah/rebuild-markdown-cache)
-            (bah/apply-bracket-overlays)
-            (add-hook 'after-change-functions
-                (lambda (_beg _end _len)
-                  (bah/apply-bracket-overlays)))
-                                        ;(add-hook 'after-save-hook #'bah/on-markdown-save nil t)
-            ))
-
 (map! :map markdown-mode-map
       :nvi "C-," #'bah/open-or-create-bracket-file
 
       :leader
       :nv "f ." #'bah/open-or-create-bracket-file
       :nv "e r" #'bah/refresh-mycelium)
+
+(defun bah/mycelium-company-backend (command &optional arg &rest ignored)
+  (interactive (list 'interactive))
+  (cl-case command
+    (interactive (company-begin-backend 'bah/mycelium-company-backend))
+    (prefix (when (looking-back "\\[\\[" 2)
+              "[["))
+    (candidates (let ((markdown-files (bah/get-project-markdown-file-names)))
+                  (->> (hash-table-keys markdown-files)
+                       (mapcar (lambda (file) (concat "[[" file))))))
+    (meta (format "Markdown file: %s" arg))))
+
+(add-to-list 'company-backends #'bah/mycelium-company-backend)
