@@ -119,9 +119,10 @@
 (load! "config/email.el")
 (load! "config/magit.el")
 (load! "config/mycelium.el")
-(load! "config/mycelium-completion.el")
 (load! "config/avy.el")
 (load! "config/company.el")
+
+(load! "config/completion/wikilinks.el")
 
 (load! "packages/monkeytype.el")
 (load! "packages/bluesky.el")
