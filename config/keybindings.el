@@ -8,6 +8,12 @@
 (map! :i "C-u" nil)
 (map! "C-S-u" #'bah/read-unicode-char)
 
+;; ↑ This sometimes breaks when `ibus' does something weird.
+;; For that, an `ibus' restart is sufficient
+(map! :leader
+      :prefix ("e" . "bah")
+      :desc "Restart ibus" :nv "i" (cmd! (shell-command "ibus restart")))
+
 (defun delete-word (arg)
   "Delete characters forward until encountering the end of a word.
 With argument ARG, do this that many times.
