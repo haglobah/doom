@@ -128,3 +128,4 @@ Updates cache and reapplies overlays."
       :leader
       :desc "Open or create wikilink" :nv "f ." #'bah/open-or-create-bracket-file
       :desc "Refresh wikilinks" :nv "e r" #'bah/refresh-wikilinks
+      :desc "Go to journal" :nv "e t" (cmd! (find-file "~/mycelium/2025.md")))
