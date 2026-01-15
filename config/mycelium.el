@@ -58,7 +58,7 @@ Highlights valid markdown file references, dims invalid ones."
           (overlay-put overlay 'face face)
           (overlay-put overlay 'bah/bracket-overlay t))))))
 
-(defun bah/refresh-mycelium ()
+(defun bah/refresh-wikilinks ()
   "Manually refresh the mycelium cache and reapply overlays.
 Useful for testing and debugging."
   (interactive)
@@ -126,5 +126,5 @@ Updates cache and reapplies overlays."
       :nvi "C-," #'bah/open-or-create-bracket-file
 
       :leader
-      :nv "f ." #'bah/open-or-create-bracket-file
-      :nv "e r" #'bah/refresh-mycelium)
+      :desc "Open or create wikilink" :nv "f ." #'bah/open-or-create-bracket-file
+      :desc "Refresh wikilinks" :nv "e r" #'bah/refresh-wikilinks
