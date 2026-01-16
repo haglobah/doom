@@ -86,8 +86,9 @@ Syndicated from my [digital garden](https://beathagenlocher.com)"))
          (ret (bluesky--parse-mdx-to-richtext text))
          ;; REVIEW: Maybe don't ignore the facets here?
          (sanitized (ret-text ret))
-         (title (ret-title ret)))
-    (bsky-post-as-image title sanitized link)))
+         (title (ret-title ret))
+         (tags (ret-tags ret)))
+    (bsky-post-as-image (concat title "\n\n" tags) sanitized link)))
 
 (map! :map markdown-mode-map
       :leader

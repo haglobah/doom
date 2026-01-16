@@ -45,8 +45,37 @@ title: \"lala\"
       )
  ]
 
+(defun get-topics (frontmatter)
+  (when (and frontmatter
+             (string-match "topics:[ \t]*\\[\\([^]]+\\)\\]" frontmatter))
+    (match-string 1 frontmatter)))
+
+[
+ (->> "---
+arst: hoho
+title: \"lala\"
+topics: [hoho, lala, hihi]
+---
+  qwfp"
+      (bluesky--get-frontmatter)
+      (get-topics)
+      )
+ ]
+
+(defun topic->tags (topic-string)
+  (-as-> topic-string _
+      (string-split _ "," t " ")
+      (mapcar (lambda (topic) (concat "#" topic)) _)
+      (string-join _ " ")))
+
+[
+ (split-string "hoho, lala" "," t " ")
+ (-> "hoho, lala, hihi"
+     (topic->tags))
+ ]
+
 (cl-defstruct ret
-  title text facets)
+  title text facets tags)
 
 (defun bluesky--parse-mdx-to-richtext (content)
   "Parse MDX CONTENT and return (text . facets) for Bluesky rich text"
@@ -56,6 +85,10 @@ title: \"lala\"
                    (bluesky--strip-frontmatter)
                    (string-trim)))
          (matches '())
+         (tags (-> content
+                     (bluesky--get-frontmatter)
+                     (get-topics)
+                     (topic->tags)))
          (pos 0))
 
     ;; Collect all [[...]] wiki-style links
@@ -117,7 +150,7 @@ title: \"lala\"
       (setq new-text (concat new-text (substring text last-pos)))
 
       ;; Return text and facets
-      (make-ret :title title :text (string-trim new-text) :facets (reverse facets)))))
+      (make-ret :title title :text (string-trim new-text) :facets (reverse facets) :tags tags))))
 
 [
  (bluesky--parse-mdx-to-richtext "[[a]] [b](b.com) [[c]]")
