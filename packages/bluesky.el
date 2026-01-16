@@ -8,13 +8,13 @@
   :type 'string
   :group 'bluesky)
 
-(defun bsky-post-as-image (title text link)
+(defun bsky-post-as-image (text alttext link)
   (interactive)
   (let* ((url-request-method "POST")
          (url-request-extra-headers '(("Content-Type" . "application/json")))
          (url-request-data (encode-coding-string
-                            (json-encode `((text . ,title)
-                                           (alttext . ,text)
+                            (json-encode `((text . ,text)
+                                           (alttext . ,alttext)
                                            (link . ,link)
                                            )
                                          )
