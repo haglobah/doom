@@ -25,6 +25,7 @@
 
 (package! catppuccin-theme)
 (package! all-the-icons)
+(package! company-emoji)
 
 (package! aidermacs)
 (package! gptel :recipe (:nonrecursive t))
