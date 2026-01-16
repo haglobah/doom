@@ -46,15 +46,15 @@ Does not create a new header if one doesn't exist."
     (goto-char (point-min))
     (if (looking-at "---\n")
         (let* ((file-name (buffer-file-name))
-               (file-title (if file-name
-                               (file-name-base file-name)))
+               ;; (file-title (if file-name
+               ;;                 (file-name-base file-name)))
                (current-date (format-time-string "%Y-%m-%dT%H:%M:%SZ" (current-time) t)))
-          (if (search-forward "title: " nil t)
-              (progn
-                (delete-region
-                 (progn (beginning-of-line) (point))
-                 (progn (end-of-line) (point)))
-                (insert (format "title: \"%s\"" file-title))))
+          ;; (if (search-forward "title: " nil t)
+          ;;     (progn
+          ;;       (delete-region
+          ;;        (progn (beginning-of-line) (point))
+          ;;        (progn (end-of-line) (point)))
+          ;;       (insert (format "title: \"%s\"" file-title))))
           (if (search-forward "updated: " nil t)
               (progn
                 (delete-region
