@@ -13,8 +13,8 @@
   (let* ((url-request-method "POST")
          (url-request-extra-headers '(("Content-Type" . "application/json")))
          (url-request-data (encode-coding-string
-                            (json-encode `((title . ,title)
-                                           (text . ,text)
+                            (json-encode `((text . ,title)
+                                           (alttext . ,text)
                                            (link . ,link)
                                            )
                                          )
