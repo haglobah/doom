@@ -122,8 +122,7 @@
 (load! "config/avy.el")
 (load! "config/company.el")
 
-(load! "config/completion/wikilinks.el")
-(load! "config/completion/emojis.el")
+(load! "config/completion/markdown.el")
 
 (load! "packages/monkeytype.el")
 (load! "packages/bluesky.el")

@@ -1,4 +1,4 @@
-;;; wikilinks.el ---                                     -*- lexical-binding: t; -*-
+;;; markdown.el ---                                     -*- lexical-binding: t; -*-
 
 (defun bah/wikilinks-backend (command &optional arg &rest ignored)
   (interactive (list 'interactive))
@@ -11,6 +11,7 @@
                    (string-prefix-p arg candidate t))
                  (hash-table-keys (bah/get-project-markdown-file-names))))))
 
-(after! markdown-mode
-  (set-company-backend! 'markdown-mode #'bah/wikilinks-backend))
+(require 'company-emoji)
 
+(after! markdown-mode
+  (set-company-backend! 'markdown-mode 'company-emoji #'bah/wikilinks-backend))
