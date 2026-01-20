@@ -38,7 +38,7 @@ publish: true
 
 "))
 
-(defun bah/update-file-header ()
+(defun bah/update-title ()
   "Update the title and updated fields of an existing file header.
 Does not create a new header if one doesn't exist."
   (interactive)
@@ -46,27 +46,37 @@ Does not create a new header if one doesn't exist."
     (goto-char (point-min))
     (if (looking-at "---\n")
         (let* ((file-name (buffer-file-name))
-               ;; (file-title (if file-name
-               ;;                 (file-name-base file-name)))
-               (current-date (format-time-string "%Y-%m-%dT%H:%M:%SZ" (current-time) t)))
-          ;; (if (search-forward "title: " nil t)
-          ;;     (progn
-          ;;       (delete-region
-          ;;        (progn (beginning-of-line) (point))
-          ;;        (progn (end-of-line) (point)))
-          ;;       (insert (format "title: \"%s\"" file-title))))
+               (file-title (if file-name
+                               (file-name-base file-name))))
+          (if (search-forward "title: " nil t)
+              (progn
+                (delete-region
+                 (progn (beginning-of-line) (point))
+                 (progn (end-of-line) (point)))
+                (insert (format "title: \"%s\"" file-title)))))
+      (insert-file-header))))
+
+(defun bah/update-date ()
+  "Update the title and updated fields of an existing file header.
+Does not create a new header if one doesn't exist."
+  (interactive)
+  (save-excursion
+    (goto-char (point-min))
+    (if (looking-at "---\n")
+        (let* ((current-date (format-time-string "%Y-%m-%dT%H:%M:%SZ" (current-time) t)))
           (if (search-forward "updated: " nil t)
               (progn
                 (delete-region
                  (progn (beginning-of-line) (point))
                  (progn (end-of-line) (point)))
                 (insert (format "updated: %s" current-date)))))
-        (insert-file-header))))
+      (insert-file-header))))
 
 (map! :map markdown-mode-map
       :localleader
       :prefix ("c" . "bah")
-      :desc "Update header" "d" #'bah/update-file-header)
+      :desc "Update date" "d" #'bah/update-date
+      :desc "Update title" "t" #'bah/update-title)
 
 (map! :map markdown-mode-map
       :localleader
@@ -75,23 +85,23 @@ Does not create a new header if one doesn't exist."
       :desc "Insert Thought header" "t" #'bah/insert-file-header-thought)
 
 (defun bah/new-streamlet ()
- (interactive)
- (let* ((dg-root "~/beathagenlocher.com")
-        (stream-folder (doom-path dg-root "src" "content" "stream"))
-        (next-number (->> (directory-files stream-folder nil (rx ".mdx"))
-                          (map 'list
-                               (lambda (filename)
-                                 (string-to-number (file-name-sans-extension filename))))
-                          (sort)
-                          (reverse)
-                          (first)
-                          (+ 1)))
-        (next-streamlet-filename (concat (s-pad-left 5 "0" (number-to-string next-number)) ".mdx"))
-        (next-streamlet-path (doom-path stream-folder next-streamlet-filename)))
-   (with-temp-file next-streamlet-path (insert "stream"))
-   (find-file next-streamlet-path)
-   (move-end-of-line nil)
-   (evil-append 0)))
+  (interactive)
+  (let* ((dg-root "~/beathagenlocher.com")
+         (stream-folder (doom-path dg-root "src" "content" "stream"))
+         (next-number (->> (directory-files stream-folder nil (rx ".mdx"))
+                           (map 'list
+                                (lambda (filename)
+                                  (string-to-number (file-name-sans-extension filename))))
+                           (sort)
+                           (reverse)
+                           (first)
+                           (+ 1)))
+         (next-streamlet-filename (concat (s-pad-left 5 "0" (number-to-string next-number)) ".mdx"))
+         (next-streamlet-path (doom-path stream-folder next-streamlet-filename)))
+    (with-temp-file next-streamlet-path (insert "stream"))
+    (find-file next-streamlet-path)
+    (move-end-of-line nil)
+    (evil-append 0)))
 
 (map! :leader
       :prefix ("e" . "bah")
