@@ -80,15 +80,19 @@ Syndicated from my [digital garden](https://beathagenlocher.com)"))
          (relative-file-name (file-relative-name
                               (buffer-file-name)
                               "~/beathagenlocher.com/src/content/"))
-         (link (if (string-prefix-p "stream/" relative-file-name)
+         (is-stream (string-prefix-p "stream/" relative-file-name))
+         (link (if is-stream
                    (concat "stream#" (file-name-base relative-file-name))
                  (file-name-base relative-file-name)))
          (ret (bluesky--parse-mdx-to-richtext text))
          ;; REVIEW: Maybe don't ignore the facets here?
          (sanitized (ret-text ret))
          (title (ret-title ret))
-         (tags (ret-tags ret)))
-    (bsky-post-as-image (concat title "\n\n" tags) sanitized link)))
+         (tags (ret-tags ret))
+         (post-text (if is-stream
+                        (concat title "\n\n" tags)
+                      (read-string "Post text: " (concat title "\n\n" tags)))))
+    (bsky-post-as-image post-text sanitized link)))
 
 (map! :map markdown-mode-map
       :leader
