@@ -65,7 +65,7 @@ topics: [hoho, lala, hihi]
 (defun topic->tags (topic-string)
   (-as-> topic-string _
       (string-split _ "," t " ")
-      (mapcar (lambda (topic) (string-replace " " "-" topic)) _)
+      (mapcar (lambda (topic) (string-replace " " "" topic)) _)
       (mapcar (lambda (topic) (concat "#" topic)) _)
       (string-join _ " ")))
 
