@@ -79,9 +79,6 @@
 ;; change `org-directory'. It must be set before org loads!
 (setq org-directory "~/org/")
 
-;; "Auto"saving
-;; NOTE: This is bad for performance:
-;; (setq auto-save-visited-interval 1.0)
 (defun bah/save-buffer ()
   (when (and buffer-file-name
              (file-writable-p buffer-file-name))
@@ -93,6 +90,10 @@
 ;;(add-hook! 'evil-insert-state-exit-hook #'bah/save-buffer)
 
 ;; This disables the creation of the emacs auto save files
+;; "Auto"saving
+;; NOTE: This is bad for performance:
+;; (setq auto-save-visited-interval 1.0)
+(setq auto-save-visited-interval 20.0)
 (auto-save-visited-mode t)
 ;; This makes buffers not diverge from files
 (global-auto-revert-mode t)
@@ -111,8 +112,8 @@
         trailing empty tabs tab-mark))
 (setq whitespace-display-mappings
       '((tab-mark 9
-          [187 9]
-          [92 9])))
+         [187 9]
+         [92 9])))
 (global-whitespace-mode +1)
 (global-visual-line-mode +1)
 
