@@ -87,19 +87,21 @@ Useful for testing and debugging."
   "Open the markdown file referenced in [[...]] at point.
 If not inside brackets, message to minibuffer.
 Looks for .mdx first, then .md. Creates file if it doesn't exist
-in current directory."
+in current directory. When creating, uses the same extension as the current file."
   (interactive)
   (let ((note-name (bah/get-bracket-content-at-point)))
     (if (not note-name)
         (message "Only works inside double brackets [[...]]")
       (let* ((current-dir (file-name-directory (or (buffer-file-name) default-directory)))
+             (current-file-ext (file-name-extension (buffer-file-name)))
              (markdown-files (bah/get-project-markdown-file-names))
              (project-note-file (gethash note-name markdown-files)))
         (if project-note-file
             (let* ((existing-note-file (doom-path (projectile-project-root) project-note-file)))
               (message "existing file path!")
               (find-file existing-note-file))
-          (let* ((new-note-file (doom-path current-dir (concat note-name ".md"))))
+          (let* ((new-extension (if (string= current-file-ext "mdx") "mdx" "md"))
+                 (new-note-file (doom-path current-dir (concat note-name "." new-extension))))
             (with-temp-file new-note-file
               (insert ""))
             (find-file new-note-file)))))))
