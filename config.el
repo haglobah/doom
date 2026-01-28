@@ -103,6 +103,9 @@
 
 (setq projectile-enable-caching nil)
 
+;; Increase the number of files in the recent file list
+(setq recentf-max-saved-items 500)
+
 (setq whitespace-line-column 100)
 (setq whitespace-global-modes
       '(not magit-status-mode
