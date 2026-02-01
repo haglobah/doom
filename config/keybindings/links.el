@@ -2,14 +2,14 @@
 
 (defvar bah/priv-links
   '("focus.nirvanahq.com"
-    "app.mochi.cards"
+    ;; "app.mochi.cards"
     "eu.posthog.com"))
 
 (defvar bah/work-links
   '("mattermost.active-group.de"
     "timetracking.active-group.de"
     "focus.nirvanahq.com"
-    "app.mochi.cards"
+    ;; "app.mochi.cards"
     "projects.active-group.de/projects/fab-researcher/issues"
     "app.element.io"
     "plausible.io"
