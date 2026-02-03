@@ -103,6 +103,16 @@ Does not create a new header if one doesn't exist."
     (move-end-of-line nil)
     (evil-append 0)))
 
+(defun bah/dg-track ()
+  "Run `just track` in the beathagenlocher.com project directory."
+  (interactive)
+  (let* ((dg-root (expand-file-name "~/beathagenlocher.com"))
+         (default-directory dg-root))
+    (if (string-prefix-p dg-root (expand-file-name (buffer-file-name)))
+        (shell-command "just track")
+      (message "Not in the beathagenlocher.com project"))))
+
 (map! :leader
-      :prefix ("e" . "bah")
-      :desc "Writing: Streamlet" :nv "s" #'bah/new-streamlet)
+      :prefix ("d" . "digital garden")
+      :desc "Writing: Streamlet" :nv "s" #'bah/new-streamlet
+      :desc "Track" :nv "t" #'bah/dg-track)
