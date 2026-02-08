@@ -44,8 +44,7 @@
 
 (defvar bah/persistent-workspaces
   '(("doom" "~/.config/doom/" "config.el")
-    ("mynix" "~/mynix/" "configuration.nix")
-    ("noldor" "~/noldor/" "clan.nix")
+    ("noldor" "~/noldor/" "home/home.nix")
     ("beathagenlocher.com" "~/beathagenlocher.com/" "flake.nix")
     ("mycelium" "~/mycelium/" "acc.md")))
 
@@ -68,7 +67,6 @@
                                                                        " fish")))
 
       :desc "doom"                "TAB d" (cmd! (bah/create|switch "doom"))
-      :desc "mynix"               "TAB m" (cmd! (bah/create|switch "mynix"))
       :desc "noldor"              "TAB n" (cmd! (bah/create|switch "noldor"))
       :desc "beathagenlocher.com" "TAB b" (cmd! (bah/create|switch "beathagenlocher.com"))
       :desc "mycelium"            "TAB o" (cmd! (bah/create|switch "mycelium"))
