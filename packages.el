@@ -27,6 +27,8 @@
 (package! all-the-icons)
 (package! company-emoji)
 
+(package! plz)
+
 (package! aidermacs)
 (package! gptel :recipe (:nonrecursive t))
 (package! shell-maker)

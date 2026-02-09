@@ -128,6 +128,7 @@
 
 (load! "config/completion/markdown.el")
 
+(load! "packages/plz.el")
 (load! "packages/monkeytype.el")
 (load! "packages/bluesky.el")
 (load! "packages/eat.el")
