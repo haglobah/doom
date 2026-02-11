@@ -163,7 +163,7 @@
        ;;purescript        ; javascript, but functional
        (python +lsp)            ; beautiful is better than ugly
        ;;qt                ; the 'cutest' gui framework ever
-       (racket +lsp +xp +lsp)            ; a DSL for DSLs
+       (racket +lsp +xp +hash-lang)            ; a DSL for DSLs
        ;;raku              ; the artist formerly known as perl6
        ;;rest              ; Emacs as a REST client
        ;;rst               ; ReST in peace
