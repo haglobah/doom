@@ -74,7 +74,7 @@ Syndicated from my [digital garden](https://beathagenlocher.com)"))
          (bluesky--parse-mdx-to-richtext)
          (bsky-post))))
 
-(defun bsky-post-buffer-as-image ()
+(defun bsky-post-buffer-as-image (type-title)
   (interactive)
   (let* ((text (buffer-substring-no-properties (point-min) (point-max)))
          (relative-file-name (file-relative-name
@@ -89,15 +89,19 @@ Syndicated from my [digital garden](https://beathagenlocher.com)"))
          (sanitized (ret-text ret))
          (title (ret-title ret))
          (tags (ret-tags ret))
-         (post-text (if is-stream
-                        (concat title "\n\n" tags)
-                      (read-string "Post text: " (concat title "\n\n" tags)))))
+         (post-text (if type-title
+                        (read-string "Post text: " (concat title "\n\n" tags))
+                      (concat title "\n\n" tags))))
     (bsky-post-as-image post-text sanitized link)))
+
+(defun bsky-post-buffer-as-image-title ()  (interactive)  (bsky-post-buffer-as-image nil))
+(defun bsky-post-buffer-as-image-custom-text ()  (interactive)  (bsky-post-buffer-as-image t))
 
 (map! :map markdown-mode-map
       :leader
-      :prefix ("d b" . "dg bsky")
-      :desc "Post buffer as text" "b" #'bsky-post-buffer
-      :desc "Post buffer as image" "i" #'bsky-post-buffer-as-image
-      :desc "Post region" "r" #'bsky-post-region
+      :prefix ("d b" . "dg bsky post")
+      :desc "buffer: text" "b" #'bsky-post-buffer
+      :desc "buffer: image, title" "i" #'bsky-post-buffer-as-image-title
+      :desc "buffer: image, custom text" "t" #'bsky-post-buffer-as-image-custom-text
+      :desc "region" "r" #'bsky-post-region
       )
