@@ -20,6 +20,14 @@ in a way so that this duplicate command can be replayed multiple times."
   (let* ((is-region (use-region-p))
          (beg (if is-region (region-beginning) nil))
          (end (if is-region (region-end) nil))
+         ;; When end is at the very beginning of a line (e.g. visual-line
+         ;; mode / V in evil), step back by one so we don't accidentally
+         ;; include the next line.
+         (end (if (and end (> end beg) (= end (save-mark-and-excursion
+                                                 (goto-char end)
+                                                 (line-beginning-position))))
+                  (1- end)
+                end))
          (start (point))
          (region-other-point (if is-region (if (eq start beg) end beg)))
          (line-start (if is-region
