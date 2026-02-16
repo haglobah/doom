@@ -8,6 +8,7 @@
   :type 'string
   :group 'bluesky)
 
+;; TODO: Fix this function (json-readtable error 72)
 (defun bsky--handle-response (status)
   "Handle Bluesky API response."
   (if (plist-get status :error)
