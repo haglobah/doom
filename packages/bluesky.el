@@ -8,49 +8,31 @@
   :type 'string
   :group 'bluesky)
 
+(defun bsky--handle-response (status)
+  "Handle Bluesky API response."
+  (if (plist-get status :error)
+      (message "Bsky post failed: %s" (plist-get status :error))
+    (message "Posted to Bluesky: %s"
+             (json-read-from-string
+              (buffer-substring-no-properties (point) (point-max))))))
+
+(defun bsky--post-json (endpoint payload)
+  "POST PAYLOAD as JSON to ENDPOINT on localhost:3000."
+  (let ((url-request-method "POST")
+        (url-request-extra-headers '(("Content-Type" . "application/json")))
+        (url-request-data (encode-coding-string (json-encode payload) 'utf-8)))
+    (url-retrieve (concat "http://localhost:3000" endpoint) #'bsky--handle-response)))
+
 (defun bsky-post-as-image (text alttext link)
-  (interactive)
-  (let* ((url-request-method "POST")
-         (url-request-extra-headers '(("Content-Type" . "application/json")))
-         (url-request-data (encode-coding-string
-                            (json-encode `((text . ,text)
-                                           (alttext . ,alttext)
-                                           (link . ,link)
-                                           )
-                                         )
-                            'utf-8)))
-    (url-retrieve
-     "http://localhost:3000/post/as-image"
-     (lambda (status)
-       (if (plist-get status :error)
-           (message "Bsky post as image failed: %s" (plist-get status :error))
-         (message "Posted to Bluesky: %s" status))))))
-[
- (bsky-post-as-image "The title" "Hello there" "stream#00092")
- ]
+  (bsky--post-json "/post/as-image"
+                   `((text . ,text) (alttext . ,alttext) (link . ,link))))
 
 (defun bsky-post (ret)
-  "Post current buffer content to Bluesky."
-  (interactive)
-  (let* ((url-request-method "POST")
-         (url-request-extra-headers '(("Content-Type" . "application/json")))
-         (url-request-data (encode-coding-string
-                            (json-encode `((title . ,(ret-title ret))
-                                           (text . ,(ret-text ret))
-                                           (facets . ,(ret-facets ret))))
-                            'utf-8)))
-    (url-retrieve
-     "http://localhost:3000/post"
-     (lambda (status)
-       (if (plist-get status :error)
-           (message "Bsky post failed: %s" (plist-get status :error))
-         (message "Posted to Bluesky: %s" status))))))
-
-[
- (->> "Is this finally a [nonbroken publish](https://github.com/haglobah/beathagenlocher.com/blob/53c04162ee0cd1ef12145b5b137055ffd9af921e/bsky-post-server/index.ts#L1) from [[Emacs]] by @beathagenlocher.com?"
-      (bluesky--parse-mdx-to-richtext)
-      (bsky-post))
- ]
+  "Post parsed richtext RET to Bluesky."
+  (bsky--post-json "/post"
+                   `((title . ,(ret-title ret))
+                     (text . ,(ret-text ret))
+                     (facets . ,(ret-facets ret)))))
 
 (defun bsky-append-posse-backlink (text)
   "Adds the POSSE backlink caption"
@@ -58,41 +40,48 @@
 
 Syndicated from my [digital garden](https://beathagenlocher.com)"))
 
+(defun bsky--post-text (text)
+  "Append backlink, parse to richtext, and post TEXT to Bluesky."
+  (->> text
+       (bsky-append-posse-backlink)
+       (bluesky--parse-mdx-to-richtext)
+       (bsky-post)))
+
 (defun bsky-post-region (start end)
   (interactive "r")
-  (let ((text (buffer-substring-no-properties start end)))
-    (->> text
-         (bsky-append-posse-backlink)
-         (bluesky--parse-mdx-to-richtext)
-         (bsky-post))))
+  (bsky--post-text (buffer-substring-no-properties start end)))
 
 (defun bsky-post-buffer ()
   (interactive)
-  (let ((text (buffer-substring-no-properties (point-min) (point-max))))
-    (->> text
-         (bsky-append-posse-backlink)
-         (bluesky--parse-mdx-to-richtext)
-         (bsky-post))))
+  (bsky--post-text (buffer-substring-no-properties (point-min) (point-max))))
+
+(defun bsky--buffer-link ()
+  "Derive the Bluesky link slug from the current buffer's file path."
+  (let* ((relative-file-name (file-relative-name
+                              (buffer-file-name)
+                              "~/beathagenlocher.com/src/content/"))
+         (is-stream (string-prefix-p "stream/" relative-file-name)))
+    (if is-stream
+        (concat "stream#" (file-name-base relative-file-name))
+      (file-name-base relative-file-name))))
+
+(defun bsky--image-post-text (ret type-title)
+  "Build the post text for an image post from RET.
+When TYPE-TITLE is non-nil, prompt the user to edit the text."
+  (let* ((title (ret-title ret))
+         (tags (ret-tags ret))
+         (default-text (concat title "\n\n" tags)))
+    (if type-title
+        (read-string "Post text: " default-text)
+      default-text)))
 
 (defun bsky-post-buffer-as-image (type-title)
   (interactive)
   (let* ((text (buffer-substring-no-properties (point-min) (point-max)))
-         (relative-file-name (file-relative-name
-                              (buffer-file-name)
-                              "~/beathagenlocher.com/src/content/"))
-         (is-stream (string-prefix-p "stream/" relative-file-name))
-         (link (if is-stream
-                   (concat "stream#" (file-name-base relative-file-name))
-                 (file-name-base relative-file-name)))
          (ret (bluesky--parse-mdx-to-richtext text))
-         ;; REVIEW: Maybe don't ignore the facets here?
-         (sanitized (ret-text ret))
-         (title (ret-title ret))
-         (tags (ret-tags ret))
-         (post-text (if type-title
-                        (read-string "Post text: " (concat title "\n\n" tags))
-                      (concat title "\n\n" tags))))
-    (bsky-post-as-image post-text sanitized link)))
+         (post-text (bsky--image-post-text ret type-title))
+         (link (bsky--buffer-link)))
+    (bsky-post-as-image post-text (ret-text ret) link)))
 
 (defun bsky-post-buffer-as-image-title ()  (interactive)  (bsky-post-buffer-as-image nil))
 (defun bsky-post-buffer-as-image-custom-text ()  (interactive)  (bsky-post-buffer-as-image t))
@@ -103,5 +92,4 @@ Syndicated from my [digital garden](https://beathagenlocher.com)"))
       :desc "buffer: text" "b" #'bsky-post-buffer
       :desc "buffer: image, title" "i" #'bsky-post-buffer-as-image-title
       :desc "buffer: image, custom text" "t" #'bsky-post-buffer-as-image-custom-text
-      :desc "region" "r" #'bsky-post-region
-      )
+      :desc "region" "r" #'bsky-post-region)
