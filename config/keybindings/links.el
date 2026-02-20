@@ -2,19 +2,17 @@
 
 (defvar bah/priv-links
   '("focus.nirvanahq.com"
-    ;; "app.mochi.cards"
-    "eu.posthog.com"))
+    "eu.posthog.com"
+    "https://linklonk.com/foryou/stats"))
 
 (defvar bah/work-links
-  '("mattermost.active-group.de"
+  `("mattermost.active-group.de"
     "timetracking.active-group.de"
-    "focus.nirvanahq.com"
-    ;; "app.mochi.cards"
     "gitlab.active-group.de/ag/"
     "projects.active-group.de/projects/fab-researcher/issues"
     "app.element.io"
     "plausible.io"
-    "eu.posthog.com"))
+    ,@bah/priv-links))
 
 (defun bah/open-in-tabs (linklist)
   (let* ((command (bah/i (concat "kitty @ --to=unix:@mykitty launch --type=tab firefox "
