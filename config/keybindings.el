@@ -12,7 +12,7 @@
 ;; For that, an `ibus' restart is sufficient
 (map! :leader
       :prefix ("e" . "bah")
-      :desc "Restart ibus" :nv "i" (cmd! (shell-command "ibus restart &")))
+      :desc "Restart ibus in kitty" :nv "i" (cmd! (shell-command "kitty @ --to=unix:@mykitty launch --type=tab ibus restart &")))
 
 (defun delete-word (arg)
   "Delete characters forward until encountering the end of a word.
