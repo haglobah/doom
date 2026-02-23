@@ -1,5 +1,11 @@
 ;;; config/keybindings/header.el -*- lexical-binding: t; -*-
 
+(defun bah/in-garden-p ()
+  "Check if the current buffer's file is in ~/beathagenlocher.com."
+  (let ((dg-root (expand-file-name "~/beathagenlocher.com")))
+    (and (buffer-file-name)
+         (string-prefix-p dg-root (expand-file-name (buffer-file-name))))))
+
 (defun bah/insert-file-header (fmt-string)
   "Insert a header at the top of the current buffer with title,
    growthStage, and dates."
@@ -15,6 +21,8 @@
 
 (defun bah/insert-file-header-note ()
   (interactive)
+  (unless (bah/in-garden-p)
+    (user-error "Not in the beathagenlocher.com project"))
   (bah/insert-file-header "---
 title: \"%s\"
 description: \"\"
@@ -29,6 +37,8 @@ publish: false
 
 (defun bah/insert-file-header-thought ()
   (interactive)
+  (unless (bah/in-garden-p)
+    (user-error "Not in the beathagenlocher.com project"))
   (bah/insert-file-header "---
 title: \"%s\"
 startDate: %s
@@ -42,6 +52,8 @@ publish: true
   "Update the title and updated fields of an existing file header.
 Does not create a new header if one doesn't exist."
   (interactive)
+  (unless (bah/in-garden-p)
+    (user-error "Not in the beathagenlocher.com project"))
   (save-excursion
     (goto-char (point-min))
     (if (looking-at "---\n")
@@ -60,6 +72,8 @@ Does not create a new header if one doesn't exist."
   "Update the title and updated fields of an existing file header.
 Does not create a new header if one doesn't exist."
   (interactive)
+  (unless (bah/in-garden-p)
+    (user-error "Not in the beathagenlocher.com project"))
   (save-excursion
     (goto-char (point-min))
     (if (looking-at "---\n")
@@ -106,11 +120,10 @@ Does not create a new header if one doesn't exist."
 (defun bah/dg-track ()
   "Run `just track` in the beathagenlocher.com project directory."
   (interactive)
-  (let* ((dg-root (expand-file-name "~/beathagenlocher.com"))
-         (default-directory dg-root))
-    (if (string-prefix-p dg-root (expand-file-name (buffer-file-name)))
-        (shell-command "just track")
-      (message "Not in the beathagenlocher.com project"))))
+  (unless (bah/in-garden-p)
+    (user-error "Not in the beathagenlocher.com project"))
+  (let ((default-directory (expand-file-name "~/beathagenlocher.com")))
+    (shell-command "just track")))
 
 (map! :leader
       :prefix ("d" . "digital garden")
