@@ -125,6 +125,7 @@
 (load! "config/mycelium.el")
 (load! "config/avy.el")
 (load! "config/company.el")
+(load! "config/aphepleia.el")
 
 (load! "config/completion/markdown.el")
 
