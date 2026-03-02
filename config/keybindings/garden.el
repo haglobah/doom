@@ -24,8 +24,8 @@
   (unless (bah/in-garden-p)
     (user-error "Not in the beathagenlocher.com project"))
   (bah/insert-file-header "---
-title: \"%s\"
-description: \"\"
+title: \'%s\'
+description: \'\'
 growthStage: seedling
 startDate: %s
 updated: %s
@@ -40,7 +40,7 @@ publish: false
   (unless (bah/in-garden-p)
     (user-error "Not in the beathagenlocher.com project"))
   (bah/insert-file-header "---
-title: \"%s\"
+title: \'%s\'
 startDate: %s
 topics: []
 publish: true

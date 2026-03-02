@@ -19,7 +19,7 @@
  (bluesky--strip-frontmatter
   "---
 arst: hoho
-title: \"lala\"
+title: \'lala\'
 ---
   qwfp")
  ]
@@ -32,12 +32,12 @@ title: \"lala\"
 
 (defun get-title (frontmatter)
   (when (and frontmatter
-             (string-match "title:[ \t]*\"\\([^\"]+\\)\"" frontmatter))
+             (string-match "title:[ \t]*\'\\([^\']+\\)\'" frontmatter))
     (match-string 1 frontmatter)))
 [
  (->> "---
 arst: hoho
-title: \"lala\"
+title: \'lala\'
 ---
   qwfp"
       (bluesky--get-frontmatter)
@@ -53,7 +53,7 @@ title: \"lala\"
 [
  (->> "---
 arst: hoho
-title: \"lala\"
+title: \'lala\'
 topics: [hoho, lala, hihi]
 ---
   qwfp"
@@ -65,10 +65,10 @@ topics: [hoho, lala, hihi]
 (defun topic->tags (topic-string)
   (if topic-string
       (-as-> topic-string _
-          (string-split _ "," t " ")
-          (mapcar (lambda (topic) (string-replace " " "" topic)) _)
-          (mapcar (lambda (topic) (concat "#" topic)) _)
-          (string-join _ " "))
+             (string-split _ "," t " ")
+             (mapcar (lambda (topic) (string-replace " " "" topic)) _)
+             (mapcar (lambda (topic) (concat "#" topic)) _)
+             (string-join _ " "))
     ""))
 
 [
@@ -89,9 +89,9 @@ topics: [hoho, lala, hihi]
                    (string-trim)))
          (matches '())
          (tags (-> content
-                     (bluesky--get-frontmatter)
-                     (get-topics)
-                     (topic->tags)))
+                   (bluesky--get-frontmatter)
+                   (get-topics)
+                   (topic->tags)))
          (pos 0))
 
     ;; Collect all [[...]] wiki-style links
@@ -160,7 +160,7 @@ topics: [hoho, lala, hihi]
  (bluesky--parse-mdx-to-richtext "Hi! https://qwfp.com wfp https://lala.com")
  (defvar text "
 ---
-title: \"Raising Aspirations\"
+title: \'Raising Aspirations\'
 startDate: 2025-09-05T18:28:27
 topics: [Ambition]
 publish: true
