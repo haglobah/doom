@@ -65,6 +65,7 @@
 (load! "config/keybindings/workspaces.el")
 (load! "config/keybindings/links.el")
 (load! "config/keybindings/files.el")
+(load! "config/keybindings/fetch-link-title.el")
 
 (load! "config/lsp-mode.el")
 (load! "config/programming-language-specifics.el")
