@@ -1,0 +1,8 @@
+# -*- mode: snippet -*-
+# name: `
+# uuid: `
+# key: `
+# condition: t
+# --
+
+<KB>$0</KB>
