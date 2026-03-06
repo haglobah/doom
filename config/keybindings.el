@@ -22,6 +22,7 @@ Does not add to kill ring."
   (delete-region (point) (progn (forward-word arg) (point))))
 
 (map! :i "C-f" #'kill-word
+      :desc "Capitalize Region" :nvi "M-c" #'capitalize-dwim
       :i "C-<backspace>" #'doom/delete-backward-word
       :i "C-<delete>" #'delete-word)
 
