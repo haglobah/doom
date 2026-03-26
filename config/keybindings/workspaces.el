@@ -46,8 +46,8 @@
   '(("doom" "~/.config/doom/" "config.el")
     ("noldor" "~/noldor/" "home/home.nix")
     ("beathagenlocher.com" "~/beathagenlocher.com/" "flake.nix")
-    ("mycelium" "~/mycelium/" "acc.md")
-    ("skills" "~/.claude/skills/" "algebraic-dev/SKILL.md")))
+    ("skills" "~/.claude/skills/" "algebraic-dev/SKILL.md")
+    ("mycelium" "~/mycelium/" "acc.md")))
 
 (defvar bah/all-workspaces
   (append
@@ -70,8 +70,8 @@
       :desc "doom"                "TAB d" (cmd! (bah/create|switch "doom"))
       :desc "noldor"              "TAB n" (cmd! (bah/create|switch "noldor"))
       :desc "beathagenlocher.com" "TAB b" (cmd! (bah/create|switch "beathagenlocher.com"))
-      :desc "mycelium"            "TAB o" (cmd! (bah/create|switch "mycelium"))
       :desc "skills"              "TAB k" (cmd! (bah/create|switch "skills"))
+      :desc "mycelium"            "TAB o" (cmd! (bah/create|switch "mycelium"))
 
       :desc "templater"           "TAB p" (cmd! (bah/create|switch "templater"))
       :desc "zmk-config-tzcl"     "TAB z" (cmd! (bah/create|switch "zmk-config-tzcl"))
