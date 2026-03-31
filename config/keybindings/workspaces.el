@@ -43,16 +43,16 @@
     (bah/setup-workspace (bah/get-workspace workspace-name bah/all-workspaces))))
 
 (defvar bah/persistent-workspaces
-  '(("doom" "~/.config/doom/" "config.el")
-    ("noldor" "~/noldor/" "home/home.nix")
+  '(("noldor" "~/noldor/" "home/home.nix")
     ("beathagenlocher.com" "~/beathagenlocher.com/" "flake.nix")
     ("skills" "~/.claude/skills/" "algebraic-dev/SKILL.md")
-    ("mycelium" "~/mycelium/" "acc.md")))
+    ("doom" "~/.config/doom/" "config.el")))
 
 (defvar bah/all-workspaces
   (append
    bah/persistent-workspaces
-   '(("templater" "~/projects/templater/" "templates/flake.nix")
+   '(("mycelium" "~/mycelium/" "acc.md")
+     ("templater" "~/projects/templater/" "templates/flake.nix")
      ("zmk-config-tzcl" "~/projects/zmk-config-tzcl/" "config/rae_dux.keymap")
      ("fabresearcher" "~/ag/fabresearcher/work/" "Justfile")
      ("todo-home" "~/projects/todo-home/" "flake.nix")
