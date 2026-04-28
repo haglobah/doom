@@ -28,6 +28,7 @@
   (interactive)
   (persp-add-new (first name+dir+file))
   (persp-switch (first name+dir+file))
+  (delete-other-windows)
   (find-file (concat (second name+dir+file) (caddr name+dir+file)))
   (find-file (concat (second name+dir+file) (second (projectile-recentf-files)))))
 
