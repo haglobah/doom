@@ -22,6 +22,7 @@
 
 (set-formatter! 'prettier-astro
   '("npx" "prettier" "--parser=astro"
+    "--plugin=prettier-plugin-astro"
     (apheleia-formatters-indent "--use-tabs" "--tab-width" 'astro-ts-mode-indent-offset))
   :modes '(astro-ts-mode))
 
