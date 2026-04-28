@@ -33,6 +33,22 @@
   :config
   (add-to-list 'lsp-tailwindcss-major-modes 'astro-ts-mode))
 
+;; Override after lsp-tailwindcss finishes loading so our registration wins.
+(after! lsp-tailwindcss
+  (lsp-register-client
+   (make-lsp-client
+    :new-connection (lsp-stdio-connection
+                     (lambda ()
+                       (list (executable-find "tailwindcss-language-server") "--stdio")))
+    :activation-fn #'lsp-tailwindcss--activate-p
+    :server-id 'tailwindcss
+    :priority -1
+    :add-on? lsp-tailwindcss-add-on-mode
+    :initialization-options #'lsp-tailwindcss--initialization-options
+    :initialized-fn #'lsp-tailwindcss--company-dash-hack
+    :notification-handlers (ht ("@/tailwindCSS/projectInitialized" #'ignore)
+                               ("@/tailwindCSS/projectsDestroyed" #'ignore)))))
+
 ;; MDX Support
 (add-to-list 'auto-mode-alist '("\\.\\(mdx\\)$" . markdown-mode))
 (when (modulep! +lsp)
