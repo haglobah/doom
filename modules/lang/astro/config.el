@@ -31,7 +31,10 @@
   :init
   (setq! lsp-tailwindcss-add-on-mode t)
   :config
-  (add-to-list 'lsp-tailwindcss-major-modes 'astro-ts-mode))
+  (add-to-list 'lsp-tailwindcss-major-modes 'astro-ts-mode)
+  (lsp-register-custom-settings
+   '(("tailwindCSS.files.exclude"
+      ["**/.git/**" "**/.direnv/**" "**/node_modules/**" "**/.hg/**" "**/.svn/**"]))))
 
 ;; Override after lsp-tailwindcss finishes loading so our registration wins.
 (after! lsp-tailwindcss
