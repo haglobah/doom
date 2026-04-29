@@ -52,7 +52,7 @@
     :notification-handlers (ht ("@/tailwindCSS/projectInitialized" #'ignore)
                                ("@/tailwindCSS/projectsDestroyed" #'ignore)))))
 
-;; MDX Support
-(add-to-list 'auto-mode-alist '("\\.\\(mdx\\)$" . markdown-mode))
-(when (modulep! +lsp)
-  (add-hook 'markdown-mode-local-vars-hook #'lsp! 'append))
+;; ;; MDX Support
+;; (add-to-list 'auto-mode-alist '("\\.\\(mdx\\)$" . markdown-mode))
+;; (when (modulep! +lsp)
+;;   (add-hook 'markdown-mode-local-vars-hook #'lsp! 'append))
