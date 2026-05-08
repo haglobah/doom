@@ -108,7 +108,7 @@ Does not create a new header if one doesn't exist."
                                   (string-to-number (file-name-sans-extension filename))))
                            (sort)
                            (reverse)
-                           (first)
+                           (cl-first)
                            (+ 1)))
          (next-streamlet-filename (concat (s-pad-left 5 "0" (number-to-string next-number)) ".mdx"))
          (next-streamlet-path (doom-path stream-folder next-streamlet-filename)))

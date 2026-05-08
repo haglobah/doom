@@ -7,8 +7,8 @@
 
 Bestellung für Morgen, den `
 (let* ((date (calendar-current-date 1))
-       (day (second date))
-       (month (first date))
-       (year (third date)))
+       (day (cl-second date))
+       (month (cl-first date))
+       (year (cl-third date)))
   (format! "%s.%s.%s" day month year))
 `
