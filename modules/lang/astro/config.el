@@ -4,21 +4,36 @@
   :custom
   (treesit-auto-install 'prompt)
   :config
+  ;; Register astro before treesit-auto consults its recipe list.
+  ;; tsx + css are :requires because astro-ts-mode evaluates
+  ;; (typescript-ts-mode--indent-rules 'tsx) inside a top-level defvar
+  ;; (needs tsx grammar at *load* time), and pulls in css--treesit-*
+  ;; during activation.
+  (add-to-list 'treesit-auto-recipe-list
+               (make-treesit-auto-recipe
+                :lang 'astro
+                :ts-mode 'astro-ts-mode
+                :requires '(tsx css)
+                :url "https://github.com/virchau13/tree-sitter-astro"
+                :revision "master"
+                :source-dir "src"))
+  ;; treesit-auto-langs is a defcustom whose default snapshot was taken
+  ;; before we extended the recipe list, so add astro explicitly.
+  (cl-pushnew 'astro treesit-auto-langs)
   (treesit-auto-add-to-auto-mode-alist 'all)
   (global-treesit-auto-mode))
 
+;; Defer: requiring astro-ts-mode at boot crashes when the tsx grammar
+;; is missing (see :requires comment above). With :defer t, the package
+;; only loads when its autoload fires — i.e. when a .astro buffer is
+;; opened, which only happens after astro-ts-mode-autoloads.el sees
+;; (treesit-ready-p 'astro). Run `M-x treesit-auto-install-all' once on
+;; a fresh setup to populate the grammars.
 (use-package! astro-ts-mode
+  :defer t
   :init
   (when (modulep! +lsp)
-    (add-hook 'astro-ts-mode-hook #'lsp! 'append))
-  :config
-  (let ((astro-recipe (make-treesit-auto-recipe
-                       :lang 'astro
-                       :ts-mode 'astro-ts-mode
-                       :url "https://github.com/virchau13/tree-sitter-astro"
-                       :revision "master"
-                       :source-dir "src")))
-    (add-to-list 'treesit-auto-recipe-list astro-recipe)))
+    (add-hook 'astro-ts-mode-hook #'lsp! 'append)))
 
 (set-formatter! 'prettier-astro
   '("npx" "prettier" "--parser=astro"

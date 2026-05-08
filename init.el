@@ -3,6 +3,17 @@
 ;; LSP Mode performance
 ;; https://discourse.doomemacs.org/t/using-lsp-use-plists-with-rust-analyzer-stops-updating-diagnostics-on-save/2832
 (setenv "LSP_USE_PLISTS" "1")
+
+;; astro-ts-mode-autoloads.el calls (treesit-ready-p 'astro) at top level, but
+;; treesit-ready-p isn't autoloaded — straight blows up activating the autoloads
+;; unless treesit is already loaded. Load it before any package autoloads run.
+(require 'treesit)
+;; Same autoload guard emits a "language unavailable" warning unless
+;; treesit-extra-load-path already includes the grammars dir at autoload time.
+;; Doom's tools/tree-sitter module sets the same path in its :config block,
+;; but that fires after package autoloads have already run.
+(add-to-list 'treesit-extra-load-path
+             (file-name-concat doom-data-dir "tree-sitter"))
 ;; This file controls what Doom modules are enabled and what order they load
 ;; in. Remember to run 'doom sync' after modifying it!
 
