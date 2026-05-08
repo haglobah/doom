@@ -9,6 +9,9 @@
   ;; (typescript-ts-mode--indent-rules 'tsx) inside a top-level defvar
   ;; (needs tsx grammar at *load* time), and pulls in css--treesit-*
   ;; during activation.
+  ;; :ext is needed for treesit-auto-add-to-auto-mode-alist to re-register
+  ;; .astro after Doom's tools/tree-sitter :preface strips every *-ts-mode
+  ;; entry from auto-mode-alist.
   (add-to-list 'treesit-auto-recipe-list
                (make-treesit-auto-recipe
                 :lang 'astro
@@ -16,7 +19,8 @@
                 :requires '(tsx css)
                 :url "https://github.com/virchau13/tree-sitter-astro"
                 :revision "master"
-                :source-dir "src"))
+                :source-dir "src"
+                :ext "\\.astro\\'"))
   ;; treesit-auto-langs is a defcustom whose default snapshot was taken
   ;; before we extended the recipe list, so add astro explicitly.
   (cl-pushnew 'astro treesit-auto-langs)
