@@ -174,17 +174,19 @@
   :group 'writegood
   :type 'regexp)
 
-(defcustom writegood-passive-voice-tooltip "Switch to active voice"
+(defcustom writegood-passive-voice-tooltip "Passive voice: switch to active"
   "Message to show for passive-voice text"
   :group 'writegood
   :type 'string)
 
 (defun writegood-passive-voice-font-lock-keywords-regexp ()
   "Generate font-lock keywords regexp for passive-voice"
-  (concat "\\b\\(am\\|are\\|were\\|being\\|is\\|been\\|was\\|be\\)\\b\\([[:space:]]\\|\\s<\\|\\s>\\)+\\([[:word:]]+ed\\|"
+  (concat "\\b\\(am\\|are\\|were\\|being\\|is\\|been\\|was\\|be\\)\\b"
+          "\\([[:space:]]\\|\\s<\\|\\s>\\)+"
+          "\\([[:word:]]+ed\\|"
           (regexp-opt writegood-passive-voice-irregulars)
           (when writegood-passive-voice-irregulars-additional-regexp
-            (concat "\\)\\|\\(" writegood-passive-voice-irregulars-additional-regexp))
+            (concat "\\|" writegood-passive-voice-irregulars-additional-regexp))
           "\\)\\b"))
 
 (defun writegood-passive-voice-font-lock-keywords ()
@@ -262,7 +264,7 @@
 
 (defun writegood-count-words (rstart rend)
   "Count the words specified by the region bounded by RSTART and REND."
-  (if (boundp 'count-words)
+  (if (fboundp 'count-words-region)
       (count-words-region rstart rend)
     (how-many "[[:word:]]+" rstart rend)))
 
@@ -274,7 +276,9 @@
   "Count the (approximate) number of syllables in the region bounded by RSTART and REND.
 
    Consecutive vowels count as one syllable. The endings -es -ed
-   and -e are not counted as syllables.
+   and -e are not counted as syllables. Caller is expected to
+   clamp to at least one syllable per word — this estimator
+   undercounts short words like \"the\" or \"code\".
   "
   (- (how-many "[aeiouy]+" rstart rend)
      (how-many "\\(es\\|ed\\|e\\)\\b" rstart rend)))
@@ -283,12 +287,15 @@
   "Flesch-Kincaid reading parameters"
   (let* ((start (cond (rstart rstart)
                       ((and transient-mark-mode mark-active) (region-beginning))
-                      ('t (point-min))))
+                      (t (point-min))))
          (end   (cond (rend rend)
                       ((and transient-mark-mode mark-active) (region-end))
-                      ('t (point-max))))
+                      (t (point-max))))
          (words     (float (writegood-count-words start end)))
-         (syllables (float (writegood-count-syllables start end)))
+         ;; Clamp: every word is at least one syllable, so the
+         ;; estimator's known undercount on short words can't drag
+         ;; the total below the word count.
+         (syllables (float (max words (writegood-count-syllables start end))))
          (sentences (float (writegood-count-sentences start end))))
     (list sentences words syllables)))
 
@@ -315,10 +322,14 @@ Scores roughly between 0 and 100."
   (let* ((params (writegood-fk-parameters start end))
          (sentences (nth 0 params))
          (words     (nth 1 params))
-         (syllables (nth 2 params))
-         (score  (- 206.835 (* 1.015 (/ words sentences)) (* 84.6 (/ syllables words)))))
-    (message "Flesch-Kincaid reading ease score: %.2f %s" score
-             (writegood-reading-ease-score->comment score))))
+         (syllables (nth 2 params)))
+    (if (or (zerop sentences) (zerop words))
+        (message "Flesch-Kincaid: need at least one sentence and one word.")
+      (let ((score (- 206.835
+                      (* 1.015 (/ words sentences))
+                      (* 84.6 (/ syllables words)))))
+        (message "Flesch-Kincaid reading ease score: %.2f %s" score
+                 (writegood-reading-ease-score->comment score))))))
 
 ;;;###autoload
 (defun writegood-grade-level (&optional start end)
@@ -328,21 +339,28 @@ Scores roughly between 0 and 100."
   (let* ((params (writegood-fk-parameters start end))
          (sentences (nth 0 params))
          (words     (nth 1 params))
-         (syllables (nth 2 params))
-         (score     (+ (* 0.39 (/ words sentences)) (* 11.8 (/ syllables words)) -15.59)))
-    (message "Flesch-Kincaid grade level score: %.2f" score)))
+         (syllables (nth 2 params)))
+    (if (or (zerop sentences) (zerop words))
+        (message "Flesch-Kincaid: need at least one sentence and one word.")
+      (let ((score (+ (* 0.39 (/ words sentences))
+                      (* 11.8 (/ syllables words))
+                      -15.59)))
+        (message "Flesch-Kincaid grade level score: %.2f" score)))))
 
 (defcustom writegood-help-at-pt-delay 0.3
   "Idle delay (seconds) before showing the writegood explanation at point.
-Used when `writegood-mode' is turned on; it enables
-`help-at-pt-display-when-idle' so the `help-echo' attached to weasel,
-passive-voice, and duplicate highlights surfaces in the echo area when
-point sits on the highlighted span (not just on mouse hover)."
+This file enables `help-at-pt-display-when-idle' once at load time so
+the `help-echo' attached to weasel, passive-voice, and duplicate
+highlights surfaces in the echo area when point sits on the
+highlighted span (not just on mouse hover)."
   :group 'writegood
   :type 'number)
 
-(defun writegood-enable-help-at-pt ()
-  "Make `help-echo' on writegood highlights show in the echo area at point."
+;; Enable point-hover help-echo display once, idempotently. We don't do
+;; this on every `writegood-mode' enable so user customization of these
+;; globals isn't repeatedly stomped, and disabling writegood doesn't
+;; need to tear down state shared with the rest of Emacs.
+(unless help-at-pt-display-when-idle
   (setq help-at-pt-display-when-idle t
         help-at-pt-timer-delay writegood-help-at-pt-delay)
   (help-at-pt-set-timer))
@@ -351,13 +369,13 @@ point sits on the highlighted span (not just on mouse hover)."
 (define-minor-mode writegood-mode
   "Colorize issues with the writing in the buffer."
   :lighter " Wg"
-  (progn
-    (if writegood-mode
-        (progn
-          (writegood-turn-on)
-          (writegood-enable-help-at-pt))
-      (writegood-turn-off))
-    (font-lock-mode 1)))
+  (if writegood-mode
+      (writegood-turn-on)
+    (writegood-turn-off))
+  ;; Refresh fontification if font-lock is on; don't force it on/off
+  ;; as a side effect of toggling writegood.
+  (when font-lock-mode
+    (font-lock-flush)))
 
 (provide 'writegood-mode)
 

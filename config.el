@@ -135,6 +135,7 @@
 (load! "packages/monkeytype.el")
 (load! "packages/writegood.el")
 (add-hook! '(text-mode-hook markdown-mode-hook org-mode-hook) #'writegood-mode)
+(map! "C-c g" #'writegood-mode)
 (load! "packages/bluesky.el")
 (load! "packages/eat.el")
 (load! "packages/why-this.el")
