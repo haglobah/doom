@@ -155,6 +155,12 @@
 ;; treemacs
 ;; (setq! treemacs-file-event-delay 100)
 
+;; clojure-ts-mode 0.6 needs a recent tree-sitter-clojure grammar (str_content,
+;; old_meta_lit). Point treesit-install-language-grammar at sogaiu's repo.
+(after! treesit
+  (add-to-list 'treesit-language-source-alist
+               '(clojure "https://github.com/sogaiu/tree-sitter-clojure")))
+
 ;; Whenever you reconfigure a package, make sure to wrap your config in an
 ;; `after!' block, otherwise Doom's defaults may override your settings. E.g.
 ;;
