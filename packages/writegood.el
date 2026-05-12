@@ -347,23 +347,9 @@ Scores roughly between 0 and 100."
                       -15.59)))
         (message "Flesch-Kincaid grade level score: %.2f" score)))))
 
-(defcustom writegood-help-at-pt-delay 0.3
-  "Idle delay (seconds) before showing the writegood explanation at point.
-This file enables `help-at-pt-display-when-idle' once at load time so
-the `help-echo' attached to weasel, passive-voice, and duplicate
-highlights surfaces in the echo area when point sits on the
-highlighted span (not just on mouse hover)."
-  :group 'writegood
-  :type 'number)
-
-;; Enable point-hover help-echo display once, idempotently. We don't do
-;; this on every `writegood-mode' enable so user customization of these
-;; globals isn't repeatedly stomped, and disabling writegood doesn't
-;; need to tear down state shared with the rest of Emacs.
-(unless help-at-pt-display-when-idle
-  (setq help-at-pt-display-when-idle t
-        help-at-pt-timer-delay writegood-help-at-pt-delay)
-  (help-at-pt-set-timer))
+;; The `help-echo' property writegood attaches to highlights is read by
+;; mouse hover (tooltip), `display-local-help' (C-h .), and any eldoc
+;; integration. No idle-timer setup needed here.
 
 ;;;###autoload
 (define-minor-mode writegood-mode
