@@ -45,7 +45,7 @@
 (defvar bah/persistent-workspaces
   '(("noldor" "~/noldor/" "home/home.nix")
     ("beathagenlocher.com" "~/beathagenlocher.com/" "flake.nix")
-    ("skills" "~/.claude/skills/" "algebraic-dev/SKILL.md")
+    ("skills" "~/.claude/" "skills/algebraic-dev/SKILL.md")
     ("doom" "~/.config/doom/" "config.el")))
 
 (defvar bah/all-workspaces
