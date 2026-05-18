@@ -66,6 +66,9 @@
       :desc "Launch kitty tab"    "TAB ," (cmd! (shell-command (concat "kitty @ --to=unix:@mykitty launch --type=tab --cwd="
                                                                        (projectile-project-root (file-name-directory (buffer-file-name)))
                                                                        " fish")))
+      :desc "Launch claude tab"    "TAB c" (cmd! (shell-command (concat "kitty @ --to=unix:@mykitty launch --type=tab --cwd="
+                                                                        (projectile-project-root (file-name-directory (buffer-file-name)))
+                                                                        " claude --model opus")))
 
       :desc "doom"                "TAB d" (cmd! (bah/create|switch "doom"))
       :desc "noldor"              "TAB n" (cmd! (bah/create|switch "noldor"))
