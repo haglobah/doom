@@ -93,4 +93,4 @@ If point is on a URL, replaces it. Otherwise inserts at point."
              (set-marker marker nil))))))))
 
 (map! :leader
-      :desc "->[title](link)" :nv "d f" #'flt-fetch-link-title)
+      :desc "->[title](link)" :nv "d l" #'flt-fetch-link-title)
