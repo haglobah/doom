@@ -125,6 +125,7 @@
 (load! "config/email.el")
 (load! "config/magit.el")
 (load! "config/mycelium.el")
+(load! "config/section-word-count.el")
 (load! "config/avy.el")
 (load! "config/company.el")
 (load! "config/apheleia.el")
