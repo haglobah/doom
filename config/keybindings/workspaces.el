@@ -64,10 +64,10 @@
       :desc "New Workspace"       "TAB N" #'+workspace/new
 
       :desc "Launch kitty tab"    "TAB ," (cmd! (shell-command (concat "kitty @ --to=unix:@mykitty launch --type=tab --cwd="
-                                                                       (projectile-project-root (file-name-directory (buffer-file-name)))
+                                                                       (shell-quote-argument (or (projectile-project-root) default-directory))
                                                                        " fish")))
       :desc "Launch claude tab"    "TAB c" (cmd! (shell-command (concat "kitty @ --to=unix:@mykitty launch --type=tab --cwd="
-                                                                        (projectile-project-root (file-name-directory (buffer-file-name)))
+                                                                        (shell-quote-argument (or (projectile-project-root) default-directory))
                                                                         " claude --model opus")))
 
       :desc "doom"                "TAB d" (cmd! (bah/create|switch "doom"))
