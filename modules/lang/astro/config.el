@@ -39,11 +39,13 @@
   (when (modulep! +lsp)
     (add-hook 'astro-ts-mode-hook #'lsp! 'append)))
 
-(set-formatter! 'prettier-astro
-  '("npx" "prettier" "--parser=astro"
-    "--plugin=prettier-plugin-astro"
-    (apheleia-formatters-indent "--use-tabs" "--tab-width" 'astro-ts-mode-indent-offset))
-  :modes '(astro-ts-mode))
+;; Disabled: prettier-plugin-astro is currently broken.
+;; (set-formatter! 'prettier-astro
+;;   '("npx" "prettier" "--parser=astro"
+;;     "--plugin=prettier-plugin-astro"
+;;     (apheleia-formatters-indent "--use-tabs" "--tab-width" 'astro-ts-mode-indent-offset))
+;;   :modes '(astro-ts-mode))
+(setq-hook! 'astro-ts-mode-hook +format-with :none)
 
 (use-package! lsp-tailwindcss
   :when (modulep! +lsp)
