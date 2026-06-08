@@ -42,6 +42,19 @@
       (+workspace-switch workspace-name)
     (bah/setup-workspace (bah/get-workspace workspace-name bah/all-workspaces))))
 
+(defun bah/kitty-launch (command directory)
+  (shell-command
+   (concat "kitty @ --to=unix:@mykitty launch --type=tab --cwd="
+           (shell-quote-argument directory)
+           " "
+           command)))
+
+(defun bah/kitty-launch-tab (command directory)
+  (bah/kitty-launch (concat " fish --interactive --init-command \"direnv exec . "
+                            command
+                            "\"")
+                    directory))
+
 (defvar bah/persistent-workspaces
   '(("noldor" "~/noldor/" "home/home.nix")
     ("beathagenlocher.com" "~/beathagenlocher.com/" "flake.nix")
@@ -63,12 +76,14 @@
       :desc "Delete Workspace"    "TAB x" #'+workspace/kill
       :desc "New Workspace"       "TAB N" #'+workspace/new
 
-      :desc "Launch kitty tab"    "TAB ," (cmd! (shell-command (concat "kitty @ --to=unix:@mykitty launch --type=tab --cwd="
-                                                                       (shell-quote-argument (or (projectile-project-root) default-directory))
-                                                                       " fish")))
-      :desc "Launch claude tab"    "TAB c" (cmd! (shell-command (concat "kitty @ --to=unix:@mykitty launch --type=tab --cwd="
-                                                                        (shell-quote-argument (or (projectile-project-root) default-directory))
-                                                                        " claude --model opus")))
+      :desc "Launch kitty tab"    "TAB ," (cmd!
+                                           (bah/kitty-launch
+                                            "fish"
+                                            (or (projectile-project-root) default-directory)))
+      :desc "Launch claude tab"    "TAB c" (cmd!
+                                            (bah/kitty-launch-tab
+                                             "claude --model opus"
+                                             (or (projectile-project-root) default-directory)))
 
       :desc "doom"                "TAB d" (cmd! (bah/create|switch "doom"))
       :desc "noldor"              "TAB n" (cmd! (bah/create|switch "noldor"))
