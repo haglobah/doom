@@ -12,6 +12,7 @@
         mu4e-drafts-folder "/drafts"
         mu4e-completing-read-function #'completing-read
         mu4e-confirm-quit nil
+        mu4e-main-hide-personal-addresses t
         mu4e-change-filenames-when-moving t
         mu4e-attachment-dir "~/Downloads/"
         mu4e-context-policy 'pick-first
