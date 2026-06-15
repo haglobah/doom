@@ -11,3 +11,8 @@
         (tsx "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")
         (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")))
 (add-to-list 'auto-mode-alist '("\\.keymap\\'" . c-mode))
+(add-to-list 'auto-mode-alist '("\\.ct$" . lisp-mode))
+
+;; SBCL comes from Nix without Quicklisp, so slynk-quicklisp fails to load.
+(after! sly
+  (setq sly-contribs (delq 'sly-quicklisp sly-contribs)))
