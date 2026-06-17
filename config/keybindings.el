@@ -77,7 +77,6 @@ identical to `split-window-right'."
 (map! :leader
       :desc "direnv reload" :nv "e d" #'envrc-reload
 
-      :desc "LSP: Format buffer" :nv "c f" #'lsp-format-buffer
       :desc "Toggle line wrapping" :v "v" #'visual-line-mode
       :desc "Copy file to clipboard" :nv "y" (cmd! (evil-ex-execute "%y+")))
 
