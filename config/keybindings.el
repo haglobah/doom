@@ -84,6 +84,31 @@ identical to `split-window-right'."
 (map! :nv "M-d" #'evil-mc-make-and-goto-next-match
       :nv "M-v" #'evil-mc-skip-and-goto-next-match)
 
+(defun bah/scroll-down-half-page ()
+  "scroll down half a page while keeping the cursor centered"
+  (interactive)
+  (let ((ln (line-number-at-pos (point)))
+        (lmax (line-number-at-pos (point-max))))
+    (cond ((= ln 1) (move-to-window-line nil))
+          ((= ln lmax) (recenter (window-end)))
+          (t (progn
+               (move-to-window-line -1)
+               (recenter))))))
+
+(defun bah/scroll-up-half-page ()
+  "scroll up half a page while keeping the cursor centered"
+  (interactive)
+  (let ((ln (line-number-at-pos (point)))
+        (lmax (line-number-at-pos (point-max))))
+    (cond ((= ln 1) nil)
+          ((= ln lmax) (move-to-window-line nil))
+          (t (progn
+               (move-to-window-line 0)
+               (recenter))))))
+
+(map! "M-h" #'bah/scroll-down-half-page
+      "M-," #'bah/scroll-up-half-page)
+
 ;; sexp editing/movement
 (defun bah/evil-eol-advice (&optional _count)
   (when (evil-eolp)
@@ -96,8 +121,8 @@ identical to `split-window-right'."
       "C-{" #'sp-backward-barf-sexp
       "C-}" #'sp-forward-barf-sexp
 
+      "M-j" #'sp-absorb-sexp
       "M-m" #'sp-raise-sexp
-      "M-h" #'sp-absorb-sexp
       "M-k" #'sp-transpose-sexp
 
       "M-l" #'sp-beginning-of-sexp
