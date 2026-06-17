@@ -75,6 +75,19 @@
 ;; numbers are disabled. For relative line numbers, set this to `relative'.
 (setq display-line-numbers-type t)
 (setq which-key-idle-delay 0.2)
+(after! which-key
+  ;; Ctrl-prefixes are safe globally — they don't conflict with text input.
+  ;; `which-key-mode' builds its keymap from `which-key-paging-prefixes' once at
+  ;; load time, so we re-install the bindings here after our `setq' takes effect.
+  (setq which-key-paging-prefixes '("C-c" "C-x" "C-h"))
+  (dolist (prefix which-key-paging-prefixes)
+    (define-key which-key-mode-map
+                (kbd (concat prefix " " which-key-paging-key))
+                #'which-key-C-h-dispatch)))
+
+;; Leader paging: only reached via SPC in evil normal/motion/visual states, so
+;; plain SPC stays usable in insert-state buffers (e.g. magit commit messages).
+(map! :leader "<f5>" #'which-key-C-h-dispatch)
 (setq shell-file-name (executable-find "bash"))
 
 ;; If you use `org' and don't want your org files in the default location below,
