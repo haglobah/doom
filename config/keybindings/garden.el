@@ -98,6 +98,11 @@ Does not create a new header if one doesn't exist."
       :desc "Insert Note header" "n" #'bah/insert-file-header-note
       :desc "Insert Thought header" "t" #'bah/insert-file-header-thought)
 
+;; Unbind M-t (`transpose-words') in markdown buffers. Binding to nil would only
+;; remove markdown-mode-map's own entry and fall through to the global M-t, so we
+;; shadow it with `undefined' (the command Emacs runs for any unbound key).
+(map! :map markdown-mode-map "M-t" #'undefined)
+
 (defun bah/new-streamlet ()
   (interactive)
   (let* ((dg-root "~/beathagenlocher.com")
