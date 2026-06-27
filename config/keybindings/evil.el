@@ -1,6 +1,6 @@
 ;;; config/keybindings/evil.el -*- lexical-binding: t; -*-
 
-(map! :desc "Select whole line" :n "l" (kmacro "^ v $ <left>")
+(map! :desc "Select whole line" :n "k" (kmacro "^ v $ <left>")
       :desc "space" :n "_" (cmd! (insert " ") (evil-normal-state)))
 
 (defmacro define-and-bind-text-object (key start-regex end-regex)
@@ -37,5 +37,9 @@ TYPE is one of `char', `line', or `block'. REGISTER is ignored here."
       (goto-char end)
       (insert to-insert))))
 
-(map! :desc "Duplicate text" :nv "h" #'bah/evil-duplicate)
+(map! :desc "Duplicate text" :nv "h" #'bah/evil-duplicate
+      :nv "j" #'evil-undo
+      :nv "l" #'evil-next-line
+      :nv "u" #'evil-previous-line
+      )
 

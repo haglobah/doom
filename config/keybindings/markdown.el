@@ -17,3 +17,4 @@
   (map! :map evil-markdown-mode-map
         :nv "M-h" nil
         :nv "M-l" nil))
+
