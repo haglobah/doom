@@ -39,7 +39,12 @@ TYPE is one of `char', `line', or `block'. REGISTER is ignored here."
 
 (map! :desc "Duplicate text" :nv "h" #'bah/evil-duplicate
       :nv "j" #'evil-undo
-      :nv "l" #'evil-next-line
-      :nv "u" #'evil-previous-line
+      ;; `l'/`u' are *motions*, so they must also live in motion state.
+      ;; Normal, visual, and operator-pending states all inherit from motion
+      ;; state; binding only `:nv' leaves operators (d/c/y and the custom `h'
+      ;; duplicate) reading the stale default motions (`l' = forward-char,
+      ;; `u' = undefined). `:nvm' updates the text objects for them too.
+      :nvm "l" #'evil-next-line
+      :nvm "u" #'evil-previous-line
       )
 
