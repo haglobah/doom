@@ -11,15 +11,34 @@
 (defvar bah/markdown-files-cache nil
   "Cached hashmap of markdown filenames from the project.")
 
+(defvar bah/wikilink-reference-counts (make-hash-table :test 'equal)
+  "Hashmap of wikilink name -> number of [[references]] across the project.")
+
+(defun bah/count-wikilink-references (root files)
+  "Count [[wikilink]] occurrences in the markdown FILES under ROOT.
+Returns a hashmap of link name -> reference count."
+  (let ((counts (make-hash-table :test 'equal)))
+    (dolist (file files)
+      (when (string-match-p "\\.md\\(x\\)?$" file)
+        (with-temp-buffer
+          (insert-file-contents (doom-path root file))
+          (goto-char (point-min))
+          (while (re-search-forward "\\[\\[\\(.*?\\)\\]\\]" nil t)
+            (let ((name (match-string 1)))
+              (puthash name (1+ (gethash name counts 0)) counts))))))
+    counts))
+
 (defun bah/rebuild-markdown-cache ()
   "Rebuild the markdown files cache from the project."
-  (let ((files (projectile-project-files (projectile-project-root)))
-        (markdown-map (make-hash-table :test 'equal)))
+  (let* ((root (projectile-project-root))
+         (files (projectile-project-files root))
+         (markdown-map (make-hash-table :test 'equal)))
     (dolist (file files)
       (when (string-match-p "\\.md\\(x\\)?$" file)
         (let ((filename (file-name-sans-extension (file-name-nondirectory file))))
           (puthash filename file markdown-map))))
     (setq bah/markdown-files-cache markdown-map)
+    (setq bah/wikilink-reference-counts (bah/count-wikilink-references root files))
     (message "[mycelium] Markdown cache rebuilt: %d files" (hash-table-count markdown-map))
     markdown-map))
 
