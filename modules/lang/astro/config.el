@@ -39,13 +39,29 @@
   (when (modulep! +lsp)
     (add-hook 'astro-ts-mode-hook #'lsp! 'append)))
 
-;; Disabled: prettier-plugin-astro is currently broken.
-;; (set-formatter! 'prettier-astro
-;;   '("npx" "prettier" "--parser=astro"
-;;     "--plugin=prettier-plugin-astro"
-;;     (apheleia-formatters-indent "--use-tabs" "--tab-width" 'astro-ts-mode-indent-offset))
-;;   :modes '(astro-ts-mode))
-(setq-hook! 'astro-ts-mode-hook +format-with :none)
+;; Prettier 3 no longer auto-discovers plugins; the project's .prettierrc
+;; must list prettier-plugin-astro in `plugins`. With that in place,
+;; --stdin-filepath is enough for prettier to pick parser and settings.
+(set-formatter! 'prettier-astro
+  '("npx" "prettier" "--stdin-filepath" filepath)
+  :modes '(astro-ts-mode))
+
+;; astro-ls hard-requires the typescript.tsdk init option. Upstream
+;; lsp-astro only checks the project's node_modules and sends *nothing*
+;; when it's absent, which makes the server reject initialize. Fall back
+;; to the typescript on PATH (the project's nix shell, via envrc): tsc
+;; lives at <store>/bin/tsc, its tsdk at <store>/lib/node_modules/typescript/lib.
+(defadvice! +astro--tsdk-init-options-a ()
+  :override #'lsp-astro--get-initialization-options
+  (let* ((project-tsdk (f-join (lsp-workspace-root) "node_modules/typescript/lib"))
+         (tsc (executable-find "tsc"))
+         (path-tsdk (and tsc (f-join (f-parent (f-parent (file-truename tsc)))
+                                     "lib/node_modules/typescript/lib")))
+         (tsdk (seq-find #'file-exists-p (delq nil (list project-tsdk path-tsdk)))))
+    (if tsdk
+        `(:typescript (:tsdk ,tsdk))
+      (lsp-warn "No typescript.tsdk for astro-ls: checked %s and tsc on PATH"
+                project-tsdk))))
 
 (use-package! lsp-tailwindcss
   :when (modulep! +lsp)
