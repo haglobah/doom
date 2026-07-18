@@ -82,7 +82,7 @@
                                             (or (projectile-project-root) default-directory)))
       :desc "Launch claude tab"    "TAB c" (cmd!
                                             (bah/kitty-launch-tab
-                                             "claude --model opus"
+                                             "claude"
                                              (or (projectile-project-root) default-directory)))
 
       :desc "doom"                "TAB d" (cmd! (bah/create|switch "doom"))
