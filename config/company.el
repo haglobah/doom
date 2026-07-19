@@ -1,5 +1,9 @@
 ;;; packages/company.el -*- lexical-binding: t; -*-
 
+;; Emacs 30 adds `ispell-completion-at-point' to text-mode buffers by default;
+;; without a plain word-list dictionary it signals an error whenever consulted.
+(setq text-mode-ispell-word-completion nil)
+
 (after! company
   (keymap-unset company-active-map "<return>" t)
   (keymap-unset company-active-map "RET" t)

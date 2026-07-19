@@ -125,15 +125,19 @@ in current directory. When creating, uses the same extension as the current file
               (insert ""))
             (find-file new-note-file)))))))
 
-(add-hook 'markdown-mode-hook
-          (lambda ()
-            (bah/rebuild-markdown-cache)
-            (bah/apply-bracket-overlays)
-            (add-hook 'after-change-functions
-                      (lambda (_beg _end _len)
-                        (bah/apply-bracket-overlays)))
+(defun bah/mycelium-after-change (_beg _end _len)
+  (bah/apply-bracket-overlays))
+
+(defun bah/mycelium-setup ()
+  (bah/rebuild-markdown-cache)
+  (bah/apply-bracket-overlays)
+  ;; Buffer-local: a global after-change-functions entry would run the
+  ;; full-buffer overlay rescan on every change in every buffer.
+  (add-hook 'after-change-functions #'bah/mycelium-after-change nil t)
                                         ;(add-hook 'after-save-hook #'bah/on-markdown-save nil t)
-            ))
+  )
+
+(add-hook 'markdown-mode-hook #'bah/mycelium-setup)
 
 (defun bah/on-markdown-save ()
   "Hook to run on markdown file save.
