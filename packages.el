@@ -16,6 +16,11 @@
 ;;  :recipe (:host github :repo "username/repo"))
 
 (package! ws-butler :disable t)
+
+;; nixd (LSP) covers option completion/docs; the elisp database parses a
+;; 24k-entry options.json into ~34MB of heap and made GC pauses ~0.4s.
+(package! nixos-options :disable t)
+(package! company-nixos-options :disable t)
 (package! why-this
   :recipe (:host nil :repo "https://codeberg.org/akib/emacs-why-this.git"))
 (package! affe
