@@ -69,6 +69,7 @@
      ("zmk-config-tzcl" "~/projects/zmk-config-tzcl/" "config/rae_dux.keymap")
      ("fabresearcher" "~/ag/fabresearcher/work/" "Justfile")
      ("todo-home" "~/projects/todo-home/" "flake.nix")
+     ("abetterplace" "~/projects/abetterplace.world/" "flake.nix")
      ("talks" "~/projects/talks/" "flake.nix"))))
 
 (map! :leader
@@ -85,6 +86,7 @@
                                              "claude"
                                              (or (projectile-project-root) default-directory)))
 
+      :desc "abetterplace"        "TAB a" (cmd! (bah/create|switch "abetterplace"))
       :desc "doom"                "TAB d" (cmd! (bah/create|switch "doom"))
       :desc "noldor"              "TAB n" (cmd! (bah/create|switch "noldor"))
       :desc "beathagenlocher.com" "TAB b" (cmd! (bah/create|switch "beathagenlocher.com"))
