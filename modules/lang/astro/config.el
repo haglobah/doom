@@ -21,9 +21,20 @@
                 :revision "master"
                 :source-dir "src"
                 :ext "\\.astro\\'"))
+  ;; markdown-inline has no upstream recipe (there is no major mode for
+  ;; it), but +markdown-injection needs the grammar. The fake :ts-mode is
+  ;; inert: every remap/auto-mode-alist path in treesit-auto is
+  ;; fboundp-guarded; only treesit-auto-install-all uses the recipe.
+  (add-to-list 'treesit-auto-recipe-list
+               (make-treesit-auto-recipe
+                :lang 'markdown-inline
+                :ts-mode 'markdown-inline-ts-mode
+                :url "https://github.com/tree-sitter-grammars/tree-sitter-markdown"
+                :source-dir "tree-sitter-markdown-inline/src"))
   ;; treesit-auto-langs is a defcustom whose default snapshot was taken
   ;; before we extended the recipe list, so add astro explicitly.
   (cl-pushnew 'astro treesit-auto-langs)
+  (cl-pushnew 'markdown-inline treesit-auto-langs)
   (treesit-auto-add-to-auto-mode-alist 'all)
   (global-treesit-auto-mode))
 
@@ -38,6 +49,9 @@
   :init
   (when (modulep! +lsp)
     (add-hook 'astro-ts-mode-hook #'lsp! 'append)))
+
+;; Markdown highlighting inside <Text> islands (see file for details).
+(load! "+markdown-injection")
 
 ;; Prettier 3 no longer auto-discovers plugins; the project's .prettierrc
 ;; must list prettier-plugin-astro in `plugins`. With that in place,
