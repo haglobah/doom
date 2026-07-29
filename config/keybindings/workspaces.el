@@ -66,7 +66,7 @@
    bah/persistent-workspaces
    '(("mycelium" "~/mycelium/" "acc.md")
      ("templater" "~/projects/templater/" "templates/flake.nix")
-     ("zmk-config-tzcl" "~/projects/zmk-config-tzcl/" "config/rae_dux.keymap")
+     ("zmk-config" "~/projects/zmk-config/" "config/rae_dux.keymap")
      ("fabresearcher" "~/ag/fabresearcher/work/" "Justfile")
      ("todo-home" "~/projects/todo-home/" "flake.nix")
      ("abetterplace" "~/projects/abetterplace.world/" "flake.nix")
@@ -94,7 +94,7 @@
       :desc "mycelium"            "TAB o" (cmd! (bah/create|switch "mycelium"))
 
       :desc "templater"           "TAB p" (cmd! (bah/create|switch "templater"))
-      :desc "zmk-config-tzcl"     "TAB z" (cmd! (bah/create|switch "zmk-config-tzcl"))
+      :desc "zmk-config"          "TAB z" (cmd! (bah/create|switch "zmk-config"))
       :desc "fabresearcher"       "TAB f" (cmd! (bah/create|switch "fabresearcher"))
       :desc "talks"               "TAB t" (cmd! (bah/create|switch "talks"))
       :desc "todo-home"           "TAB h" (cmd! (bah/create|switch "todo-home"))
