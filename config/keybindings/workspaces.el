@@ -69,6 +69,7 @@
      ("zmk-config" "~/projects/zmk-config/" "config/rae_dux.keymap")
      ("fabresearcher" "~/ag/fabresearcher/work/" "Justfile")
      ("todo-home" "~/projects/todo-home/" "flake.nix")
+     ("media-inbox" "~/projects/media-inbox/" "flake.nix")
      ("abetterplace" "~/projects/abetterplace.world/" "flake.nix")
      ("talks" "~/projects/talks/" "flake.nix"))))
 
@@ -87,6 +88,7 @@
                                              (or (projectile-project-root) default-directory)))
 
       :desc "abetterplace"        "TAB a" (cmd! (bah/create|switch "abetterplace"))
+      :desc "media-inbox"         "TAB m" (cmd! (bah/create|switch "media-inbox"))
       :desc "doom"                "TAB d" (cmd! (bah/create|switch "doom"))
       :desc "noldor"              "TAB n" (cmd! (bah/create|switch "noldor"))
       :desc "beathagenlocher.com" "TAB b" (cmd! (bah/create|switch "beathagenlocher.com"))
