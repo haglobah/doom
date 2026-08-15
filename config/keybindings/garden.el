@@ -103,7 +103,7 @@ Does not create a new header if one doesn't exist."
   (let* ((dg-root "~/beathagenlocher.com")
          (stream-folder (doom-path dg-root "src" "content" "stream"))
          (next-number (->> (directory-files stream-folder nil (rx ".mdx"))
-                           (map 'list
+                           (cl-map 'list
                                 (lambda (filename)
                                   (string-to-number (file-name-sans-extension filename))))
                            (sort)
