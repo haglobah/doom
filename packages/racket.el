@@ -4,5 +4,6 @@
 
 ;; Author: Beat Hagenlocher <beat@gondor>
 
-(after! racket
+;; The feature is `racket-mode', not `racket' — `after! racket' never fires.
+(after! racket-mode
   (setq racket-smart-open-bracket-mode nil))

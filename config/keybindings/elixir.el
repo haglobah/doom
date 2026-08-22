@@ -140,5 +140,7 @@
                                                       (bah/elixir-eval-show-region (region-beginning) (region-end))))
       :desc "Restart IEx"               "i r" #'bah/restart-iex
       :desc "Run 'iex -S mix'"          "i m" #'bah/iex-project-run
-      :desc "Toggle file/tests"         "p t" #'apprentice-project-toggle-file-and-tests
-      :desc "Run tests for file"        "p r" #'apprentice-project-run-tests-for-current-file)
+      ;; exunit ships with Doom's :lang elixir module; apprentice was never
+      ;; installed, so the previous apprentice-* bindings were void.
+      :desc "Toggle file/tests"         "p t" #'exunit-toggle-file-and-test
+      :desc "Run tests for file"        "p r" #'exunit-verify)

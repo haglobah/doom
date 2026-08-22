@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(emacsclient *)",
+      "Bash(emacs --batch --eval '\\(message \"%s\" \\(autoloadp \\(symbol-function \\(quote treesit-ready-p\\)\\)\\)\\)')",
+      "Bash(emacs --batch --eval '\\(message \"%s\" \\(fboundp \\(quote treesit-ready-p\\)\\)\\)')",
+      "Bash(zcat /nix/store/xxywqayx584zfal9d3h0smk5k2slyk44-emacs-30.2/share/emacs/30.2/lisp/treesit.el.gz)",
+      "Bash(find / -name 'libtree-sitter-typescript*')",
+      "Bash(find / -name 'libtree-sitter-tsx*')",
+      "Bash(find / -name 'libtree-sitter-astro*')",
+      "Bash(timeout 90 emacs --daemon --debug-init)",
+      "Bash(git -C /home/beat/.config/emacs log --oneline --all -- modules/tools/tree-sitter/config.el)",
+      "Bash(git -C /home/beat/.config/emacs log -p --all -S \"cache/tree-sitter\")",
+      "Read(//home/beat/beathagenlocher.com/**)",
+      "Bash(direnv status *)",
+      "Read(//home/beat/ag/fabresearcher/work/factory-tiling/**)",
+      "Read(//tmp/tree-sitter-lean-inspect/src/**)",
+      "Read(//tmp/tree-sitter-lean-inspect/**)"
+    ]
+  }
+}

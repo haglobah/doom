@@ -1,5 +1,11 @@
 ;;; writegood-mode.el --- Polish up poor writing on the fly
 ;;
+;; NOTE: Vendored, locally modified fork of upstream writegood-mode 2.2.0.
+;; Local changes: passive-voice regexp fix, syllable-count clamp,
+;; divide-by-zero guards in the Flesch-Kincaid commands, and
+;; `font-lock-flush' instead of forcing `font-lock-mode' on toggle.
+;; Do not replace with the MELPA package without porting these.
+;;
 ;; Author: Benjamin Beckwith
 ;; Created: 2010-8-12
 ;; Version: 2.2.0

@@ -17,15 +17,12 @@
     ,@bah/priv-links))
 
 (defun bah/open-in-tabs (linklist)
-  (let* ((command (bah/i (concat "kitty @ --to=unix:@mykitty launch --type=tab firefox "
-                                 (mapconcat
-                                  (lambda (link) (concat "--new-tab \"" link))
-                                  linklist
-                                  "\" ")
-                                 "\""))))
-    command
-    (shell-command command)
-    ))
+  (let ((command (bah/i (concat "kitty @ --to=unix:@mykitty launch --type=tab firefox "
+                                (mapconcat
+                                 (lambda (link) (concat "--new-tab " (shell-quote-argument link)))
+                                 linklist
+                                 " ")))))
+    (shell-command command)))
 
 (map! :leader
       :prefix ("e" . "bah")

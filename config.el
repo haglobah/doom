@@ -50,12 +50,14 @@
 (setq doom-theme 'catppuccin)
 (setq rainbow-delimiters-max-face-count 9)
 
-(custom-set-variables
- '(display-battery-mode +1)
- '(battery-load-low 30)
- '(battery-load-critical 15))
+(setq battery-load-low 30
+      battery-load-critical 15)
+(display-battery-mode +1)
 
 (setq doom-localleader-key ",")
+
+;; utils.el first: keybindings/links.el calls `bah/i' at runtime.
+(load! "config/utils.el")
 
 (load! "config/keybindings.el")
 (load! "config/keybindings/evil.el")
@@ -155,10 +157,11 @@
 (load! "packages/eat.el")
 (load! "packages/why-this.el")
 
-(load! "packages/gptel.el")
+;; (load! "packages/gptel.el")
 (load! "packages/aidermacs.el")
 (load! "packages/agent-shell.el")
 
+(load! "packages/racket.el")
 (load! "packages/rescript.el")
 (load! "packages/gleam.el")
 (load! "packages/purescript.el")
