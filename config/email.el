@@ -88,21 +88,26 @@
                                        (number-to-string year))))))
    t))
 
+(defun bah/mu4e-mark-move-to (maildir)
+  "Mark the message at point for moving to MAILDIR, then advance."
+  (mu4e-mark-at-point 'move maildir)
+  (mu4e-headers-next))
+
 (map! :map mu4e-headers-mode-map
 
       :desc "Just execute mark"         :n "x"     (cmd! (mu4e-mark-execute-all t))
 
       :prefix ("i a" . "ag")
-      :desc "ag: Move to action"    :n "m" (kmacro "m a g / a c t <return>")
-      :desc "ag: Move to archive"    :n "n" (kmacro "m a g / a r c h <return>")
-      :desc "ag: Move to read-review"    :n "e" (kmacro "m a g / r e a d <return>")
-      :desc "ag: Move to waiting-for"    :n "i" (kmacro "m a g / w a i t <return>")
-      :desc "ag: Move to incubate"    :n "o" (kmacro "m a g / i n c <return>")
+      :desc "ag: Move to action"      :n "m" (cmd! (bah/mu4e-mark-move-to "/ag/action"))
+      :desc "ag: Move to archive"     :n "n" (cmd! (bah/mu4e-mark-move-to "/ag/archive"))
+      :desc "ag: Move to read-review" :n "e" (cmd! (bah/mu4e-mark-move-to "/ag/read-review"))
+      :desc "ag: Move to waiting-for" :n "i" (cmd! (bah/mu4e-mark-move-to "/ag/waiting-for"))
+      :desc "ag: Move to incubate"    :n "o" (cmd! (bah/mu4e-mark-move-to "/ag/incubate"))
 
       :prefix ("i p" . "posteo")
-      :desc "Posteo: Move to action"    :n "m" (kmacro "m p o s t e o / a c t <return>")
-      :desc "Posteo: Move to archive"    :n "n" (kmacro "m p o s t e o / a r c h <return>")
-      :desc "Posteo: Move to read-review"    :n "e" (kmacro "m p o s t e o / r e a d <return>")
-      :desc "Posteo: Move to waiting-for"    :n "i" (kmacro "m p o s t e o / w a i t <return>")
-      :desc "Posteo: Move to incubate"    :n "o" (kmacro "m p o s t e o / i n c <return>")
+      :desc "Posteo: Move to action"      :n "m" (cmd! (bah/mu4e-mark-move-to "/posteo/action"))
+      :desc "Posteo: Move to archive"     :n "n" (cmd! (bah/mu4e-mark-move-to "/posteo/archive"))
+      :desc "Posteo: Move to read-review" :n "e" (cmd! (bah/mu4e-mark-move-to "/posteo/read-review"))
+      :desc "Posteo: Move to waiting-for" :n "i" (cmd! (bah/mu4e-mark-move-to "/posteo/waiting-for"))
+      :desc "Posteo: Move to incubate"    :n "o" (cmd! (bah/mu4e-mark-move-to "/posteo/incubate"))
       )
