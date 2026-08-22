@@ -1,15 +1,21 @@
-;;; mycelium.el ---                                     -*- lexical-binding: t; -*-
+;;; mycelium.el --- project wikilink cache -*- lexical-binding: t; -*-
 
-(defface bah/bracket-highlight
-  '((t :inherit font-lock-type-face :weight bold))
-  "Face for highlighted content in [[...]]")
-
-(defface bah/bracket-dim
-  '((t :inherit font-lock-constant-face))
-  "Face for dimmed content in [[...]]")
+;; Fontification (valid vs. missing links) and follow/create are handled by
+;; markdown-mode's built-in wiki links. Our cache plugs into
+;; `markdown-convert-wiki-link-to-filename', because the built-in resolver
+;; only matches "<name>.<current buffer's extension>" — it can't resolve a
+;; [[link]] from a .md file to a .mdx note (both mycelium and the garden mix
+;; extensions), and its `project' search runs `directory-files-recursively'
+;; per link during font-lock. The cache also ranks candidates for the company
+;; backend in config/completion/markdown.el.
 
 (defvar bah/markdown-files-cache nil
   "Cached hashmap of markdown filenames from the project.")
+
+(defvar bah/markdown-cache-root nil
+  "Project root the markdown cache was built from.
+Cache values are paths relative to this root, so lookups must resolve
+against it — not against whatever project the current buffer is in.")
 
 (defvar bah/wikilink-reference-counts (make-hash-table :test 'equal)
   "Hashmap of wikilink name -> number of [[references]] across the project.")
@@ -38,15 +44,10 @@ Returns a hashmap of link name -> reference count."
         (let ((filename (file-name-sans-extension (file-name-nondirectory file))))
           (puthash filename file markdown-map))))
     (setq bah/markdown-files-cache markdown-map)
+    (setq bah/markdown-cache-root root)
     (setq bah/wikilink-reference-counts (bah/count-wikilink-references root files))
     (message "[mycelium] Markdown cache rebuilt: %d files" (hash-table-count markdown-map))
     markdown-map))
-
-(defun bah/add-file-to-cache (file-path)
-  "Add a markdown file to the cache by its path."
-  (when (string-match-p "\\.md\\(x\\)?$" file-path)
-    (let ((filename (file-name-sans-extension (file-name-nondirectory file-path))))
-      (puthash filename file-path bah/markdown-files-cache))))
 
 (defun bah/get-project-markdown-file-names ()
   "Get a hashmap of markdown filenames from the current project.
@@ -54,103 +55,43 @@ Results are cached; rebuild on first access or after project changes."
   (or bah/markdown-files-cache
       (bah/rebuild-markdown-cache)))
 
-(defun bah/apply-bracket-overlays ()
-  "Apply overlays to all [[...]] patterns in current buffer.
-Highlights valid markdown file references, dims invalid ones."
-  (interactive)
-
-  ;; Remove old overlays with our marker
-  (dolist (ov (overlays-in (point-min) (point-max)))
-    (when (overlay-get ov 'bah/bracket-overlay)
-      (delete-overlay ov)))
-
-  (let ((markdown-files (bah/get-project-markdown-file-names)))
-    (save-excursion
-      (goto-char (point-min))
-      (while (re-search-forward "\\[\\[\\(.*?\\)\\]\\]" nil t)
-        (let* ((start (match-beginning 1))
-               (end (match-end 1))
-               (note-name (match-string 1))
-               (is-valid (gethash note-name markdown-files))
-               (overlay (make-overlay start end))
-               (face (if is-valid 'bah/bracket-highlight 'bah/bracket-dim)))
-          (overlay-put overlay 'face face)
-          (overlay-put overlay 'bah/bracket-overlay t))))))
-
 (defun bah/refresh-wikilinks ()
-  "Manually refresh the mycelium cache and reapply overlays.
-Useful for testing and debugging."
+  "Manually refresh the mycelium cache and refontify markdown buffers."
   (interactive)
-  (message "[mycelium] Manual refresh triggered")
   (bah/rebuild-markdown-cache)
-  (bah/apply-bracket-overlays)
-  (message "[mycelium] Refresh complete"))
-
-(defun bah/get-bracket-content-at-point ()
-  "Get the content inside [[...]] at point, or nil if not inside brackets."
-  (save-excursion
-    (let ((start-pos (point)))
-      ;; Try to find opening brackets before point
-      (when (search-backward "[[" nil t)
-        (let ((bracket-start (point)))
-          ;; Try to find closing brackets after original point
-          (goto-char start-pos)
-          (when (search-forward "]]" nil t)
-            (let ((bracket-end (point)))
-              ;; Verify we're actually inside the brackets
-              (if (and (> start-pos bracket-start) (< start-pos bracket-end))
-                  (buffer-substring-no-properties (+ bracket-start 2) (- bracket-end 2))
-                nil))))))))
-
-(defun bah/open-or-create-bracket-file ()
-  "Open the markdown file referenced in [[...]] at point.
-If not inside brackets, message to minibuffer.
-Looks for .mdx first, then .md. Creates file if it doesn't exist
-in current directory. When creating, uses the same extension as the current file."
-  (interactive)
-  (let ((note-name (bah/get-bracket-content-at-point)))
-    (if (not note-name)
-        (message "Only works inside double brackets [[...]]")
-      (let* ((current-dir (file-name-directory (or (buffer-file-name) default-directory)))
-             (current-file-ext (file-name-extension (buffer-file-name)))
-             (markdown-files (bah/get-project-markdown-file-names))
-             (project-note-file (gethash note-name markdown-files)))
-        (if project-note-file
-            (let* ((existing-note-file (doom-path (projectile-project-root) project-note-file)))
-              (message "existing file path!")
-              (find-file existing-note-file))
-          (let* ((new-extension (if (string= current-file-ext "mdx") "mdx" "md"))
-                 (new-note-file (doom-path current-dir (concat note-name "." new-extension))))
-            (with-temp-file new-note-file
-              (insert ""))
-            (find-file new-note-file)))))))
-
-(defun bah/mycelium-after-change (_beg _end _len)
-  (bah/apply-bracket-overlays))
+  (dolist (buf (buffer-list))
+    (with-current-buffer buf
+      (when (derived-mode-p 'markdown-mode)
+        (font-lock-flush)))))
 
 (defun bah/mycelium-setup ()
-  (bah/rebuild-markdown-cache)
-  (bah/apply-bracket-overlays)
-  ;; Buffer-local: a global after-change-functions entry would run the
-  ;; full-buffer overlay rescan on every change in every buffer.
-  (add-hook 'after-change-functions #'bah/mycelium-after-change nil t)
-                                        ;(add-hook 'after-save-hook #'bah/on-markdown-save nil t)
-  )
+  (bah/rebuild-markdown-cache))
 
 (add-hook 'markdown-mode-hook #'bah/mycelium-setup)
 
-(defun bah/on-markdown-save ()
-  "Hook to run on markdown file save.
-Updates cache and reapplies overlays."
-  (when (and (buffer-file-name)
-             (string-match-p "\\.md\\(x\\)?$" (buffer-file-name)))
-    (bah/add-file-to-cache (buffer-file-name))
-    (bah/apply-bracket-overlays)))
+;; Keep spaces in link targets — the notes have spaces in their filenames, and
+;; the cache lookup above uses the raw link text anyway. This only affects the
+;; fallback (creating a not-yet-existing note in the current directory).
+(setq markdown-enable-wiki-links t
+      markdown-wiki-link-fontify-missing t
+      markdown-link-space-sub-char " ")
+
+(defun bah/markdown-wiki-link-resolve (orig name)
+  "Resolve wiki link NAME via the project cache, extension-agnostic.
+Falls back to markdown-mode's resolution (NAME + current buffer's
+extension, relative to the current directory) for new notes."
+  (or (when-let* ((rel (gethash name (bah/get-project-markdown-file-names)))
+                  (root bah/markdown-cache-root))
+        (doom-path root rel))
+      (funcall orig name)))
+
+(advice-add 'markdown-convert-wiki-link-to-filename
+            :around #'bah/markdown-wiki-link-resolve)
 
 (map! :map markdown-mode-map
-      :nvi "C-," #'bah/open-or-create-bracket-file
+      :nvi "C-," #'markdown-follow-thing-at-point
 
       :leader
-      :desc "Open or create wikilink" :nv "f ." #'bah/open-or-create-bracket-file
+      :desc "Open or create wikilink" :nv "f ." #'markdown-follow-thing-at-point
       :desc "Refresh wikilinks" :nv "e r" #'bah/refresh-wikilinks
       :desc "Go to journal" :nv "e t" (cmd! (find-file "~/mycelium/2025.md")))

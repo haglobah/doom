@@ -97,22 +97,9 @@
 ;; change `org-directory'. It must be set before org loads!
 (setq org-directory "~/org/")
 
-(defun bah/save-buffer ()
-  (when (and buffer-file-name
-             (file-writable-p buffer-file-name))
-    (save-buffer)))
-(add-hook! 'focus-out-hook #'bah/save-buffer)
-(add-hook! 'doom-switch-buffer-hook #'bah/save-buffer)
-(add-hook! 'doom-switch-window-hook #'bah/save-buffer)
-;; REVIEW: This breaks `dd.` in vim, which is not what I want—so I'm gonna disable this for now.
-;;(add-hook! 'evil-insert-state-exit-hook #'bah/save-buffer)
-
-;; This disables the creation of the emacs auto save files
-;; "Auto"saving
-;; NOTE: This is bad for performance:
-;; (setq auto-save-visited-interval 1.0)
-(setq auto-save-visited-interval 20.0)
-(auto-save-visited-mode t)
+;; Save-on-switch/focus/idle lives in packages/super-save.el.
+;; NOTE: saving on `evil-insert-state-exit-hook' breaks `dd.` in vim — don't.
+(load! "packages/super-save.el")
 ;; This makes buffers not diverge from files
 (global-auto-revert-mode t)
 (setq! doom-modeline-buffer-modification-icon nil)

@@ -31,6 +31,13 @@
 (package! consult-dir)
 (package! eat)
 
+;; Saves on buffer/window switch, focus change, and idle — replaces the
+;; hand-rolled bah/save-buffer hook trio.
+(package! super-save)
+;; Maintained alchemist fork: IEx integration + mix test helpers for Elixir.
+(package! apprentice
+  :recipe (:host github :repo "Sasanidas/Apprentice"))
+
 (package! catppuccin-theme)
 (package! all-the-icons)
 (package! company-emoji)
