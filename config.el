@@ -24,6 +24,16 @@
 (setq doom-font (font-spec :family "FiraCode Nerd Font" :size 20 :weight 'normal))
 (setq doom-font-increment 1)
 
+;; Doom maps the Nerd Font private-use ranges to "Symbols Nerd Font Mono". At
+;; this size its glyphs advance 37px in a 23px cell, so every icon in a
+;; terminal (eat, starship prompt) shifts the rest of the line by 0.6 cells.
+;; FiraCode Nerd Font carries the same glyphs at exactly one cell.
+(defun +beat/nerd-icons-one-cell-h ()
+  "Render Nerd Font private-use glyphs with the default font, one cell wide."
+  (dolist (range '((#xe000 . #xf8ff) (#xf0000 . #xfffff)))
+    (set-fontset-font t range (font-spec :family "FiraCode Nerd Font"))))
+(add-hook 'after-setting-font-hook #'+beat/nerd-icons-one-cell-h)
+
 ;; (setq debug-on-error t)
 
 (setq read-process-output-max (* 3 1024 1024)) ;; 3mb
