@@ -197,3 +197,31 @@
 ;;
 ;; You can also try 'gd' (or 'C-c c d') to jump to their definition and see how
 ;; they are implemented.
+
+;; Opened from the shell (fish alt-o) via emacsclient; see noldor home/programs/fish.nix.
+(defun +beat/open-project (root)
+  "Switch to the project at ROOT in the current frame and raise it.
+
+Resumes the workspace that belongs to ROOT (matched by its project
+directory, else by project name) where it was left. When no such
+workspace exists or it holds no real buffer, opens the most recently
+visited file under ROOT, or dired at ROOT when recentf knows none.
+Called from the shell via emacsclient."
+  (let* ((root (file-name-as-directory (file-truename root)))
+         (name (let ((default-directory root)) (doom-project-name)))
+         (ws (or (seq-find (lambda (p)
+                             (let ((dir (persp-parameter '+workspace-project p)))
+                               (and dir (file-equal-p dir root))))
+                           (+workspace-list))
+                 (+workspace-get name t))))
+    (projectile-add-known-project root)
+    (+workspace-switch (if ws (safe-persp-name ws) name) t)
+    (set-persp-parameter '+workspace-project root (+workspace-current))
+    (unless (seq-some #'doom-real-buffer-p (+workspace-buffer-list))
+      (let ((recent (seq-find (lambda (f) (string-prefix-p root (expand-file-name f)))
+                              recentf-list)))
+        (if recent
+            (find-file recent)
+          (dired root))))
+    (select-frame-set-input-focus (selected-frame))
+    (+workspace-current-name)))
