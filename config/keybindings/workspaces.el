@@ -49,6 +49,16 @@
            " "
            command)))
 
+(defun bah/kitty-launch-workspace ()
+  "Open a kitty tab with three equal shell columns in the project directory."
+  (interactive)
+  (unless (zerop
+           (shell-command
+            (concat "kitty @ --to=unix:@mykitty kitten balance_splits.py workspace "
+                    (shell-quote-argument
+                     (expand-file-name (or (projectile-project-root) default-directory))))))
+    (user-error "Kitty workspace launch failed; see command output")))
+
 (defun bah/kitty-launch-tab (command directory)
   (bah/kitty-launch (concat " fish --interactive --init-command \"direnv exec . "
                             command
@@ -82,6 +92,7 @@
                                            (bah/kitty-launch
                                             "fish"
                                             (or (projectile-project-root) default-directory)))
+      :desc "Launch three-pane kitty workspace" "TAB :" #'bah/kitty-launch-workspace
       :desc "Launch claude tab"    "TAB c" (cmd!
                                             (bah/kitty-launch-tab
                                              "claude"
