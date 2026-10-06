@@ -143,8 +143,11 @@ author, date and message; `difftastic-magit-show' keeps them."
     (interactive (list (difftastic--chunk-file-at-point)) difftastic-mode)
     (+difftastic--visit chunk-file t))
 
-
+  ;; Doom's motion-state smart tab binds <tab> and runs `+fold/toggle'
+  ;; whenever the line end is invisible, so it steals TAB on a hidden
+  ;; chunk.  Bind <tab> here; the mode's normal-state map wins.
   (map! :map difftastic-mode-map
+        :nm [tab] #'difftastic-toggle-chunk
         :nm "RET" #'+difftastic-visit-file
         :nm "C-j" #'+difftastic-visit-worktree-file
         [remap difftastic-diff-visit-file] #'+difftastic-visit-file
