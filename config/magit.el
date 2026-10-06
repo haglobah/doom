@@ -148,4 +148,85 @@ author, date and message; `difftastic-magit-show' keeps them."
         :nm "RET" #'+difftastic-visit-file
         :nm "C-j" #'+difftastic-visit-worktree-file
         [remap difftastic-diff-visit-file] #'+difftastic-visit-file
-        [remap difftastic-diff-visit-worktree-file] #'+difftastic-visit-worktree-file))
+        [remap difftastic-diff-visit-worktree-file] #'+difftastic-visit-worktree-file)
+
+  ;; difft marks changed tokens with bold red/green only.  Give them a
+  ;; tinted background, and the rest of a changed line (the gaps between
+  ;; tokens) a fainter one.  Colors derive from the theme.
+  (defface +difftastic-removed '((t)) "Removed tokens in difftastic output.")
+  (defface +difftastic-added '((t)) "Added tokens in difftastic output.")
+  (defface +difftastic-removed-line '((t)) "Removed lines in difftastic output.")
+  (defface +difftastic-added-line '((t)) "Added lines in difftastic output.")
+
+  (defun +difftastic-set-faces (&rest _)
+    (let ((bg (face-background 'default)))
+      (pcase-dolist (`(,token ,line . ,base)
+                     '((+difftastic-removed +difftastic-removed-line . magit-diff-removed)
+                       (+difftastic-added +difftastic-added-line . magit-diff-added)))
+        (let ((fg (face-foreground base nil t)))
+          (set-face-attribute token nil :foreground fg
+                              :background (doom-blend fg bg 0.25))
+          (set-face-attribute line nil :extend t
+                              :background (doom-blend fg bg 0.08))))))
+  (+difftastic-set-faces)
+  (add-hook 'doom-load-theme-hook #'+difftastic-set-faces)
+
+  (dolist (colors (list difftastic-normal-colors-vector
+                        difftastic-bright-colors-vector))
+    (aset colors 1 '+difftastic-removed)
+    (aset colors 2 '+difftastic-added))
+
+  ;; ansi-color puts difft's colors in `font-lock-face', so read and write
+  ;; that property rather than `face'.
+  (defun +difftastic--faces-at (pos)
+    "List of faces in `font-lock-face' at POS."
+    (let ((f (get-text-property pos 'font-lock-face)))
+      (if (keywordp (car-safe f)) (list f) (ensure-list f))))
+
+  (defun +difftastic--line-face (pos)
+    "Line face matching the color of the line number at POS, or nil."
+    (let ((fg (seq-some (lambda (f) (and (consp f) (plist-get f :foreground)))
+                        (+difftastic--faces-at pos))))
+      (cond ((null fg) nil)
+            ((equal fg (face-foreground '+difftastic-added)) '+difftastic-added-line)
+            ((equal fg (face-foreground '+difftastic-removed)) '+difftastic-removed-line))))
+
+  (defun +difftastic--tint (beg end face)
+    "Add FACE between BEG and END wherever text has no background yet."
+    (let ((pos beg))
+      (while (< pos end)
+        (let ((next (min end (next-single-property-change pos 'font-lock-face nil end)))
+              (faces (+difftastic--faces-at pos)))
+          (unless (seq-some (lambda (f) (and (consp f) (plist-member f :background)))
+                            faces)
+            (put-text-property pos next 'font-lock-face (append faces (list face))))
+          (setq pos next)))))
+
+  (defun +difftastic-tint-lines-h ()
+    "Tint added and removed lines, using difftastic's own chunk parser."
+    (let ((inhibit-read-only t))
+      (save-excursion
+        (goto-char (point-min))
+        (while (re-search-forward (difftastic--chunk-regexp nil) nil t)
+          (when-let* ((bounds (difftastic--chunk-bounds)))
+            (if (eq (difftastic--classify-chunk bounds) 'single-column)
+                (pcase-dolist (`((,_ ,eol) ,left ,right)
+                               (difftastic--parse-single-column-chunk bounds))
+                  (when-let* ((num (if (and right (+difftastic--line-face (nth 1 right)))
+                                       right left))
+                              (face (+difftastic--line-face (nth 1 num))))
+                    (+difftastic--tint (nth 2 (or right left))
+                                       (min (1+ eol) (point-max)) face)))
+              (pcase-dolist (`((,_ ,eol) ,left ,right)
+                             (difftastic--parse-side-by-side-chunk bounds))
+                (when-let* ((left) (face (+difftastic--line-face (nth 1 left))))
+                  (+difftastic--tint (nth 2 left) (if right (nth 1 right) eol) face))
+                (when-let* ((right) (face (+difftastic--line-face (nth 1 right))))
+                  (+difftastic--tint (nth 2 right) (min (1+ eol) (point-max)) face))))
+            (goto-char (cdr bounds)))))))
+  ;; This file loads as source.  Interpreted, the tinting loop rebuilds its
+  ;; closures for every text run (~0.15s on a 400-line diff); compiled, it
+  ;; takes ~0.02s.
+  (mapc #'byte-compile '(+difftastic--faces-at +difftastic--line-face
+                         +difftastic--tint +difftastic-tint-lines-h))
+  (add-hook 'difftastic-mode-hook #'+difftastic-tint-lines-h))
