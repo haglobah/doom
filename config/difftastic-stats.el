@@ -8,6 +8,9 @@
 (require 'difftastic)
 (require 'magit-diff)                   ; magit-diffstat-added/-removed faces
 
+(defvar-local +difftastic-stats--entries nil
+  "The (PATH ADDED DELETED) entries shown in this buffer, or nil.")
+
 (defun +difftastic-stats--command (git-command)
   "The --numstat variant of GIT-COMMAND, a `git diff' or `git show' call."
   (let ((show (member "show" git-command)))
@@ -85,8 +88,10 @@ ADDED and DELETED are nil for binary files.  A rename uses its new path."
         (setq status (apply #'process-file (car numstat) nil '(t nil) nil
                             (cdr numstat))
               output (buffer-string)))
+      (setq +difftastic-stats--entries
+            (and (eql status 0) (+difftastic-stats--parse output)))
       (if (eql status 0)
-          (+difftastic-stats--annotate (+difftastic-stats--parse output) label)
+          (+difftastic-stats--annotate +difftastic-stats--entries label)
         (remove-overlays (point-min) (point-max) '+difftastic-stats t)
         (setq header-line-format
               (propertize (format " %s  line counts unavailable (git exit %s)"

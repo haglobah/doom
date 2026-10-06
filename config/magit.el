@@ -91,13 +91,17 @@ author, date and message; `difftastic-magit-show' keeps them."
   (setq difftastic-requested-window-width-function #'+difftastic-requested-width
         difftastic-display-buffer-function #'+difftastic-display)
 
+  ;; +A −D after each file header, and the total in the header line.
+  (load! "difftastic-stats")
+  ;; Files grouped by intent, in review order, with claude's notes:
+  ;; ]g / [g step through the groups, m marks one reviewed, C classifies,
+  ;; g y copies the notes at point.
+  (load! "difftastic-groups")
+
   ;; Visiting a file from the diff (RET, C-j) shows it in the window next
   ;; to the diff (usually magit), so the diff stays visible.  Closing the
   ;; file (kill or quit-window) puts that window's previous buffer back
   ;; and selects the diff again; quitting the diff then leaves magit.
-  ;; +A −D after each file header, and the total in the header line.
-  (load! "difftastic-stats")
-
   (defun +difftastic--visit (chunk-file &optional worktree)
     "Visit CHUNK-FILE beside the diff; closing it returns to the diff."
     (let* ((diff-win (selected-window))
@@ -146,12 +150,24 @@ author, date and message; `difftastic-magit-show' keeps them."
     (interactive (list (difftastic--chunk-file-at-point)) difftastic-mode)
     (+difftastic--visit chunk-file t))
 
+  (defun +difftastic-visit-file-or-group ()
+    "On an overview line, go to its group; else visit the file beside the diff."
+    (interactive nil difftastic-mode)
+    (if (get-text-property (point) '+difftastic-groups-step)
+        (+difftastic-groups-jump)
+      (call-interactively #'+difftastic-visit-file)))
+
   ;; Doom's motion-state smart tab binds <tab> and runs `+fold/toggle'
   ;; whenever the line end is invisible, so it steals TAB on a hidden
   ;; chunk.  Bind <tab> here; the mode's normal-state map wins.
   (map! :map difftastic-mode-map
         :nm [tab] #'difftastic-toggle-chunk
-        :nm "RET" #'+difftastic-visit-file
+        :nm "RET" #'+difftastic-visit-file-or-group
+        :nm "] g" #'+difftastic-groups-next
+        :nm "[ g" #'+difftastic-groups-previous
+        :nm "m" #'+difftastic-groups-toggle-reviewed
+        :nm "C" #'+difftastic-groups-classify
+        :nm "g y" #'+difftastic-groups-copy-notes
         :nm "C-j" #'+difftastic-visit-worktree-file
         [remap difftastic-diff-visit-file] #'+difftastic-visit-file
         [remap difftastic-diff-visit-worktree-file] #'+difftastic-visit-worktree-file)
