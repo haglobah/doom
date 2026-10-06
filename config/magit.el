@@ -95,6 +95,9 @@ author, date and message; `difftastic-magit-show' keeps them."
   ;; to the diff (usually magit), so the diff stays visible.  Closing the
   ;; file (kill or quit-window) puts that window's previous buffer back
   ;; and selects the diff again; quitting the diff then leaves magit.
+  ;; +A −D after each file header, and the total in the header line.
+  (load! "difftastic-stats")
+
   (defun +difftastic--visit (chunk-file &optional worktree)
     "Visit CHUNK-FILE beside the diff; closing it returns to the diff."
     (let* ((diff-win (selected-window))
