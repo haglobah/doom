@@ -26,6 +26,8 @@
 (package! affe
   :recipe (:host github :repo "minad/affe"))
 (package! hercules)
+;; Structural diffs from magit (needs the `difft' binary, installed via noldor).
+(package! difftastic)
 ;; Used by bah/move-file-to-dir-fuzzy (config/keybindings/files.el); was
 ;; previously only present as a leftover straight build.
 (package! consult-dir)
