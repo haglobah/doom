@@ -100,6 +100,9 @@ author, date and message; `difftastic-magit-show' keeps them."
   ;; A gray bar and a checkbox on every hunk header (x ticks it green);
   ;; C-<down> / C-<up> jump between headers, TAB folds the hunk at point.
   (load! "difftastic-hunks")
+  ;; Under the header line, bars with the part (group) and the file that
+  ;; scrolled off the top; the next file's header slides under them.
+  (load! "difftastic-sticky")
 
   ;; Visiting a file from the diff (RET, C-j) shows it in the window next
   ;; to the diff (usually magit), so the diff stays visible.  Closing the
