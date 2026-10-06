@@ -64,4 +64,29 @@ author, date and message; `difftastic-magit-show' keeps them."
                    ("c" "Show commit" difftastic-magit-show magit-show-commit)))
     (transient-replace-suffix 'magit-diff key (list key desc difft))
     (transient-append-suffix 'magit-diff key
-      (list (upcase key) (concat desc " (magit)") magit))))
+      (list (upcase key) (concat desc " (magit)") magit)))
+
+  ;; Open full height on the right (65% of the frame), or in a tall
+  ;; bottom window when the frame is too narrow for two columns.
+  (defun +difftastic--side-p ()
+    "Non-nil when the frame is wide enough for a side window."
+    (>= (frame-width) 160))
+
+  (defun +difftastic-requested-width ()
+    "Width difft should format for: the window `+difftastic-display' makes."
+    (- (if (+difftastic--side-p) (floor (* 0.65 (frame-width))) (frame-width))
+       3))
+
+  (defun +difftastic-display (buffer _requested-width)
+    "Show BUFFER full height on the right, or in a tall bottom window."
+    (pop-to-buffer
+     buffer
+     `((display-buffer-reuse-mode-window display-buffer-in-direction)
+       (mode . difftastic-mode)
+       (window . root)
+       ,@(if (+difftastic--side-p)
+             '((direction . right) (window-width . 0.65))
+           '((direction . bottom) (window-height . 0.6))))))
+
+  (setq difftastic-requested-window-width-function #'+difftastic-requested-width
+        difftastic-display-buffer-function #'+difftastic-display))
