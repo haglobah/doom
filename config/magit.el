@@ -97,6 +97,9 @@ author, date and message; `difftastic-magit-show' keeps them."
   ;; ]g / [g step through the groups, m marks one reviewed, C classifies,
   ;; g y copies the notes at point.
   (load! "difftastic-groups")
+  ;; A gray bar and a checkbox on every hunk header (x ticks it green);
+  ;; C-<down> / C-<up> jump between headers, TAB folds the hunk at point.
+  (load! "difftastic-hunks")
 
   ;; Visiting a file from the diff (RET, C-j) shows it in the window next
   ;; to the diff (usually magit), so the diff stays visible.  Closing the
@@ -161,7 +164,10 @@ author, date and message; `difftastic-magit-show' keeps them."
   ;; whenever the line end is invisible, so it steals TAB on a hidden
   ;; chunk.  Bind <tab> here; the mode's normal-state map wins.
   (map! :map difftastic-mode-map
-        :nm [tab] #'difftastic-toggle-chunk
+        :nm [tab] #'+difftastic-hunks-toggle
+        :nm "C-<down>" #'difftastic-next-chunk
+        :nm "C-<up>" #'difftastic-previous-chunk
+        :nm "x" #'+difftastic-hunks-toggle-checked
         :nm "RET" #'+difftastic-visit-file-or-group
         :nm "] g" #'+difftastic-groups-next
         :nm "[ g" #'+difftastic-groups-previous
@@ -169,6 +175,7 @@ author, date and message; `difftastic-magit-show' keeps them."
         :nm "C" #'+difftastic-groups-classify
         :nm "g y" #'+difftastic-groups-copy-notes
         :nm "C-j" #'+difftastic-visit-worktree-file
+        [remap difftastic-toggle-chunk] #'+difftastic-hunks-toggle
         [remap difftastic-diff-visit-file] #'+difftastic-visit-file
         [remap difftastic-diff-visit-worktree-file] #'+difftastic-visit-worktree-file)
 
