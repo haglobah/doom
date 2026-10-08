@@ -15,6 +15,8 @@
 ;; The buffer gets an overview after the commit message, a heading above
 ;; each group, and notes under file headers and changed lines.  The
 ;; header line shows the group at point and where the grouping came from.
+;; The overview and the headings are text point can reach; TAB on one
+;; folds it.
 
 (require 'cl-lib)
 (require 'seq)
@@ -97,6 +99,8 @@ blends the theme's orange into the text color."
 (defvar-local +difftastic-groups--view nil "The grouping shown.")
 (defvar-local +difftastic-groups--steps nil "(GROUP . MARKER) per shown group.")
 (defvar-local +difftastic-groups--marks nil "Keys of groups marked reviewed.")
+(defvar-local +difftastic-groups--folded nil
+  "Keys of the folded sections: group keys, or \"overview\".")
 (defvar-local +difftastic-groups--file-statuses nil
   "Alist of PATH to `added' or `deleted', for this buffer's diff.")
 
@@ -613,8 +617,27 @@ line; HEADERS are the positions of its header lines."
       (dolist (seg segments)
         (setf (nth 2 seg) end
               (nth 3 seg) (nreverse (nth 3 seg))
-              end (nth 1 seg))))
+              ;; A heading above this file is not the previous file's.
+              end (+difftastic-groups--text-start (nth 1 seg)))))
     (nreverse segments)))
+
+(defun +difftastic-groups--text-start (pos)
+  "Start of the rendered text that ends at POS, or POS when there is none."
+  (if (and (> pos (point-min))
+           (get-text-property (1- pos) '+difftastic-groups-text))
+      (or (previous-single-property-change pos '+difftastic-groups-text)
+          (point-min))
+    pos))
+
+(defun +difftastic-groups--regions (prop &optional value)
+  "(BEG . END) of each run of text whose PROP is non-nil, or equal to VALUE."
+  (let ((pos (point-min)) regions)
+    (while (setq pos (text-property-not-all pos (point-max) prop nil))
+      (let ((end (or (next-single-property-change pos prop) (point-max))))
+        (when (or (null value) (equal (get-text-property pos prop) value))
+          (push (cons pos end) regions))
+        (setq pos end)))
+    (nreverse regions)))
 
 (defun +difftastic-groups--order (view)
   "Paths in the order VIEW shows them."
@@ -729,24 +752,44 @@ Return non-nil when the buffer changed."
 
 (defun +difftastic-groups--heading (group i n)
   "The heading shown above GROUP, the Ith of N."
-  (let ((width (+difftastic-groups--width)))
-    (concat
-     (propertize (concat "━━ " (format "%d/%d  " (1+ i) n)
-                         (plist-get group :label)
-                         (if (plist-get group :critical) "  ⚠ critical" "")
-                         (if (member (plist-get group :key) +difftastic-groups--marks)
-                             "  ✓ reviewed" "")
-                         "  "
-                         (propertize (format "%s · " (plist-get group :category))
-                                     'face 'shadow)
-                         (+difftastic-groups--counts (plist-get group :files))
-                         "\n")
-                 'face '+difftastic-groups-heading)
-     (when-let* ((summary (plist-get group :summary)))
-       (concat (propertize (+difftastic-groups--fill summary "   " width)
-                           'face '+difftastic-groups-summary)
-               "\n"))
-     "\n")))
+  (let ((width (+difftastic-groups--width))
+        (key (plist-get group :key)))
+    (propertize
+     (concat
+      (propertize (concat "━━ " (format "%d/%d  " (1+ i) n)
+                          (+difftastic-groups--plain (plist-get group :label))
+                          (if (plist-get group :critical) "  ⚠ critical" "")
+                          (if (member key +difftastic-groups--marks) "  ✓ reviewed" "")
+                          "  ")
+                  'font-lock-face '+difftastic-groups-heading)
+      (propertize (concat (format "%s · " (plist-get group :category))
+                          (+difftastic-groups--counts (plist-get group :files))
+                          "\n")
+                  'font-lock-face '(shadow +difftastic-groups-heading))
+      (when-let* ((summary (plist-get group :summary)))
+        (concat (propertize (+difftastic-groups--fill
+                             (+difftastic-groups--plain summary) "   " width)
+                            'font-lock-face '+difftastic-groups-summary)
+                "\n"))
+      "\n")
+     '+difftastic-groups-text t
+     '+difftastic-groups-heading key
+     '+difftastic-groups-section key)))
+
+(defun +difftastic-groups--insert-headings (segments)
+  "Insert a heading above the first file of each group in SEGMENTS."
+  (let* ((groups (plist-get +difftastic-groups--view :groups))
+         (n (length groups))
+         headings)
+    (cl-loop for group in groups for i from 0
+             for seg = (seq-find (lambda (s) (member (car s) (plist-get group :files)))
+                                 segments)
+             when seg do (push (cons (nth 1 seg) (+difftastic-groups--heading group i n))
+                               headings))
+    ;; Last first, so the earlier positions stay put.
+    (pcase-dolist (`(,pos . ,text) (sort headings (lambda (a b) (> (car a) (car b)))))
+      (goto-char pos)
+      (insert text))))
 
 (defun +difftastic-groups--note (text &optional label)
   "TEXT as a note line, after LABEL."
@@ -865,19 +908,13 @@ SIDE is \"new\" or \"old\"."
 (defun +difftastic-groups--annotate (segments)
   "Add headings and notes to the file outputs in SEGMENTS."
   (let* ((groups (plist-get +difftastic-groups--view :groups))
-         (n (length groups))
          (unplaced (make-hash-table :test #'equal)))
-    (setq +difftastic-groups--steps nil)
-    (cl-loop
-     for group in groups for i from 0
-     for seg = (seq-find (lambda (s) (member (car s) (plist-get group :files))) segments)
-     when seg do
-     (+difftastic-groups--overlay (nth 1 seg) (save-excursion (goto-char (nth 1 seg))
-                                                               (pos-eol))
-                                  'heading
-                                  'before-string (+difftastic-groups--heading group i n))
-     (push (cons group (copy-marker (nth 1 seg))) +difftastic-groups--steps))
-    (setq +difftastic-groups--steps (nreverse +difftastic-groups--steps))
+    (setq +difftastic-groups--steps
+          (cl-loop for (beg . _) in (+difftastic-groups--regions '+difftastic-groups-heading)
+                   for key = (get-text-property beg '+difftastic-groups-heading)
+                   collect (cons (seq-find (lambda (g) (equal (plist-get g :key) key))
+                                           groups)
+                                 (copy-marker beg))))
     ;; Each note overlay keeps its notes as (REF . TEXT) under `notes',
     ;; for `+difftastic-groups-copy-notes'.  File notes go under the file
     ;; header, followed by line notes difft shows no row for.
@@ -972,28 +1009,38 @@ The notes on the line at point, or else all notes on the file at point."
     (message "Copied %d note%s" (length notes) (if (cdr notes) "s" ""))))
 
 (defun +difftastic-groups--anchor (pos segments)
-  "POS as (PATH . OFFSET) in SEGMENTS, or (nil . POS) before them."
-  (or (seq-some (lambda (seg)
+  "POS as (PATH . OFFSET) in SEGMENTS, or (nil . POS) before them.
+In a heading, POS is ((heading . KEY) . OFFSET)."
+  (or (when-let* ((key (get-text-property pos '+difftastic-groups-heading)))
+        (cons (cons 'heading key)
+              (- pos (car (seq-find (lambda (r) (<= (car r) pos))
+                                    (reverse (+difftastic-groups--regions
+                                              '+difftastic-groups-heading key)))))))
+      (seq-some (lambda (seg)
                   (and (<= (nth 1 seg) pos) (< pos (nth 2 seg))
                        (cons (car seg) (- pos (nth 1 seg)))))
                 segments)
       (cons nil pos)))
 
 (defun +difftastic-groups--resolve (anchor segments)
-  (if-let* ((seg (assoc (car anchor) segments)))
-      (min (+ (nth 1 seg) (cdr anchor)) (nth 2 seg))
-    (min (cdr anchor) (point-max))))
+  (pcase anchor
+    (`((heading . ,key) . ,offset)
+     (if-let* ((region (car (+difftastic-groups--regions
+                             '+difftastic-groups-heading key))))
+         (min (+ (car region) offset) (1- (cdr region)))
+       (point-min)))
+    (_ (if-let* ((seg (assoc (car anchor) segments)))
+           (min (+ (nth 1 seg) (cdr anchor)) (nth 2 seg))
+         (min (cdr anchor) (point-max))))))
 
 (defun +difftastic-groups--clear ()
   "Remove the overview and the overlays a render added."
-  (remove-overlays (point-min) (point-max) '+difftastic-groups 'heading)
+  (remove-overlays (point-min) (point-max) '+difftastic-groups 'fold)
   (remove-overlays (point-min) (point-max) '+difftastic-groups 'note)
   (remove-overlays (point-min) (point-max) '+difftastic-groups 'file-note)
-  (when-let* ((beg (text-property-any (point-min) (point-max)
-                                      '+difftastic-groups-overview t)))
-    (delete-region beg (or (text-property-not-all beg (point-max)
-                                                  '+difftastic-groups-overview t)
-                           (point-max)))))
+  (pcase-dolist (`(,beg . ,end) (reverse (+difftastic-groups--regions
+                                          '+difftastic-groups-text)))
+    (delete-region beg end)))
 
 (defun +difftastic-groups--refresh-indicators ()
   "Redo difftastic's fringe indicators after file outputs moved."
@@ -1026,9 +1073,12 @@ The notes on the line at point, or else all notes on the file at point."
           (+difftastic-groups--refresh-indicators))
         (goto-char (nth 1 (car (+difftastic-groups--segments))))
         (insert (propertize (+difftastic-groups--overview)
-                            '+difftastic-groups-overview t))
+                            '+difftastic-groups-text t
+                            '+difftastic-groups-section "overview"))
+        (+difftastic-groups--insert-headings (+difftastic-groups--segments))
         (setq segments (+difftastic-groups--segments))
         (+difftastic-groups--annotate segments)
+        (+difftastic-groups--apply-folds)
         (setq-local filter-buffer-substring-function
                     #'+difftastic-groups--filter-substring)
         (+difftastic-stats--annotate +difftastic-stats--entries
@@ -1041,6 +1091,51 @@ The notes on the line at point, or else all notes on the file at point."
           (set-window-start w (+difftastic-groups--resolve start segments) t)
           (set-window-point w (+difftastic-groups--resolve point segments)))
         (set-buffer-modified-p nil)))))
+
+;;; Folding
+
+(defun +difftastic-groups--fold-end (key beg end)
+  "Where the fold of section KEY, its text at BEG to END, ends.
+The overview folds to its own end, a group to the next heading."
+  (1- (if (equal key "overview")
+          end
+        (or (seq-some (lambda (r) (and (> (car r) beg) (car r)))
+                      (+difftastic-groups--regions '+difftastic-groups-heading))
+            (1+ (point-max))))))
+
+(defun +difftastic-groups--apply-folds ()
+  "Hide the sections in `+difftastic-groups--folded', but their first lines."
+  (remove-overlays (point-min) (point-max) '+difftastic-groups 'fold)
+  (add-to-invisibility-spec '(+difftastic-groups . t))
+  (dolist (key +difftastic-groups--folded)
+    (when-let* ((region (car (+difftastic-groups--regions
+                              '+difftastic-groups-section key)))
+                (from (save-excursion (goto-char (car region)) (pos-eol)))
+                (to (+difftastic-groups--fold-end key (car region) (cdr region)))
+                ((< from to)))
+      (+difftastic-groups--overlay from to 'fold 'invisible '+difftastic-groups))))
+
+(defun +difftastic-groups-toggle-section ()
+  "Fold or unfold the group heading, or the overview, at point."
+  (interactive nil difftastic-mode)
+  (let* ((key (or (get-text-property (point) '+difftastic-groups-section)
+                  (user-error "Not on a group heading or the overview")))
+         (beg (car (seq-find (lambda (r) (and (<= (car r) (point)) (< (point) (cdr r))))
+                             (+difftastic-groups--regions '+difftastic-groups-section)))))
+    (setq +difftastic-groups--folded
+          (if (member key +difftastic-groups--folded)
+              (delete key +difftastic-groups--folded)
+            (cons key +difftastic-groups--folded)))
+    (+difftastic-groups--apply-folds)
+    (goto-char beg)))
+
+;; difft folds a file's last hunk up to the next file's header, which
+;; takes the heading in between along.  Show it again, and the newline
+;; before it, which ends the folded hunk's line.
+(define-advice difftastic-hide-chunk (:after (&rest _) +difftastic-groups 50)
+  (let ((inhibit-read-only t))
+    (pcase-dolist (`(,beg . ,end) (+difftastic-groups--regions '+difftastic-groups-text))
+      (remove-list-of-text-properties (max (point-min) (1- beg)) end '(invisible)))))
 
 ;;; Stepping through the groups
 

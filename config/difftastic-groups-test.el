@@ -322,6 +322,16 @@
                             (overlays-in (point-min) (point-max)))
                 (lambda (a b) (< (overlay-start a) (overlay-start b))))))
 
+(defun difftastic-groups-test--headings ()
+  "Texts of this buffer's group headings, in buffer order."
+  (let ((pos (point-min)) found)
+    (while (setq pos (text-property-not-all pos (point-max) '+difftastic-groups-heading nil))
+      (let ((end (or (next-single-property-change pos '+difftastic-groups-heading)
+                     (point-max))))
+        (push (buffer-substring-no-properties pos end) found)
+        (setq pos end)))
+    (nreverse found)))
+
 (defun difftastic-groups-test--line-after-note (text)
   "The buffer line whose end carries the note containing TEXT."
   (when-let* ((ov (seq-find (lambda (ov)
@@ -383,7 +393,7 @@
    (should (looking-at "commit "))
    (should (search-forward "Review guide" nil t))
    (should (< (point) (save-excursion (re-search-forward "^extra.el --- "))))
-   (let ((headings (difftastic-groups-test--overlay-strings 'heading)))
+   (let ((headings (difftastic-groups-test--headings)))
      (should (equal (mapcar (lambda (s) (car (split-string s "  [a-z]+ · ")))
                             headings)
                     '("━━ 1/6  Code" "━━ 2/6  Tests" "━━ 3/6  Docs" "━━ 4/6  Config"
@@ -405,7 +415,7 @@
      (difftastic-groups-test--run
       (lambda () (difftastic--rerun nil) (get-buffer-process buf)))
      (should (= 1 (count-matches "Review guide" (point-min) (point-max))))
-     (should (= 6 (length (difftastic-groups-test--overlay-strings 'heading)))))))
+     (should (= 6 (length (difftastic-groups-test--headings)))))))
 
 (ert-deftest difftastic-groups-cached-analysis-orders-and-annotates ()
   (difftastic-groups-test--with-show
@@ -417,9 +427,9 @@
    (goto-char (point-min))
    (should (search-forward "Speeds up core." nil t))
    (should (string-match-p "⚠ critical"
-                           (car (difftastic-groups-test--overlay-strings 'heading))))
+                           (car (difftastic-groups-test--headings))))
    (should (string-match-p "Why it is faster."
-                           (car (difftastic-groups-test--overlay-strings 'heading))))
+                           (car (difftastic-groups-test--headings))))
    ;; Line notes sit after the row showing that line.
    (should (string-match-p "1500)$" (difftastic-groups-test--line-after-note "New value.")))
    (should (string-match-p "\\`  4 (defun f3 () 3)"
@@ -452,11 +462,14 @@
    (let ((text (filter-buffer-substring (pos-bol) (pos-bol 2))))
      (should (string-match-p "1500)\n  🤖 New value.\n\\'" text))
      (should-not (text-properties-at 0 text)))
-   ;; Headings and summaries come along too.
+   ;; Headings are text, plain when copied.
    (goto-char (point-min))
-   (re-search-forward "^lib/core.el --- 1/2")
-   (should (string-match-p "\\`━━ 1/2  Faster core.*\n   Why it is faster.\n\nlib/core.el --- 1/2"
-                           (filter-buffer-substring (pos-bol) (pos-eol))))))
+   (let ((beg (search-forward "━━ 1/2" nil t)))
+     (re-search-forward "^lib/core.el --- 1/2")
+     (let ((text (filter-buffer-substring (- beg 6) (pos-eol))))
+       (should (string-match-p "\\`━━ 1/2  Faster core.*\n   Why it is faster.\n\nlib/core.el --- 1/2"
+                               text))
+       (should-not (text-properties-at 0 text))))))
 
 (ert-deftest difftastic-groups-copy-notes ()
   (difftastic-groups-test--with-show
@@ -479,24 +492,78 @@
   (difftastic-groups-test--with-show
    (goto-char (point-min))
    (+difftastic-groups-next)
-   (should (looking-at "extra.el --- "))
+   (should (looking-at "━━ 1/6  Code"))
    (+difftastic-groups-next)
-   (should (looking-at "lib/core-test.el --- "))
+   (should (looking-at "━━ 2/6  Tests"))
    (+difftastic-groups-previous)
-   (should (looking-at "extra.el --- "))
+   (should (looking-at "━━ 1/6  Code"))
    (should (string-match-p "1/6 Code" (difftastic-groups-test--header)))
    ;; Marking moves on to the next unreviewed group and persists.
    (+difftastic-groups-toggle-reviewed)
-   (should (looking-at "lib/core-test.el --- "))
+   (should (looking-at "━━ 2/6  Tests"))
    (should (string-match-p "✓ reviewed"
-                           (car (difftastic-groups-test--overlay-strings 'heading))))
+                           (car (difftastic-groups-test--headings))))
    (let ((key +difftastic-groups--key))
      (should (equal (+difftastic-groups--read-marks key) '("core"))))
    ;; RET on an overview line jumps to its group.
    (goto-char (point-min))
    (search-forward "Docs")
    (+difftastic-groups-jump)
-   (should (looking-at "README.md --- "))))
+   (should (looking-at "━━ 3/6  Docs"))))
+
+(defun difftastic-groups-test--visible-p (regexp)
+  "Whether the first match of REGEXP shows."
+  (save-excursion
+    (goto-char (point-min))
+    (re-search-forward regexp)
+    (not (invisible-p (match-beginning 0)))))
+
+(ert-deftest difftastic-groups-headings-are-text-point-can-reach ()
+  (difftastic-groups-test--with-show
+   (goto-char (point-min))
+   (should (search-forward "━━ 2/6  Tests" nil t))
+   (should (equal (get-text-property (point) '+difftastic-groups-section) "tests"))
+   ;; The header line names the group of its heading.
+   (should (string-match-p "2/6 Tests" (difftastic-groups-test--header)))
+   ;; Folding the file before a heading leaves the heading in view.
+   (goto-char (point-min))
+   (re-search-forward "^lib/new.el --- ")
+   (difftastic-hide-chunk)
+   (should (difftastic-groups-test--visible-p "^━━ 2/6  Tests"))
+   (should (difftastic-groups-test--visible-p "^lib/core-test.el --- "))))
+
+(ert-deftest difftastic-groups-toggle-folds-a-group ()
+  (difftastic-groups-test--with-show
+   (goto-char (point-min))
+   (search-forward "━━ 1/6  Code")
+   (+difftastic-groups-toggle-section)
+   (should (looking-at "━━ 1/6  Code"))
+   (should-not (difftastic-groups-test--visible-p "^extra.el --- "))
+   (should-not (difftastic-groups-test--visible-p "^lib/new.el --- "))
+   (should-not (difftastic-groups-test--visible-p "Source changes"))
+   (should (difftastic-groups-test--visible-p "^━━ 2/6  Tests"))
+   ;; The fold survives a render, here from marking another group.
+   (search-forward "━━ 2/6")
+   (+difftastic-groups-toggle-reviewed)
+   (should-not (difftastic-groups-test--visible-p "^extra.el --- "))
+   (goto-char (point-min))
+   (search-forward "━━ 1/6  Code")
+   (+difftastic-groups-toggle-section)
+   (should (difftastic-groups-test--visible-p "^extra.el --- "))
+   (should (difftastic-groups-test--visible-p "^lib/new.el --- "))))
+
+(ert-deftest difftastic-groups-toggle-folds-the-overview ()
+  (difftastic-groups-test--with-show
+   (goto-char (point-min))
+   (search-forward "Review guide")
+   (+difftastic-groups-toggle-section)
+   (should (difftastic-groups-test--visible-p "Review guide"))
+   (should-not (difftastic-groups-test--visible-p "^  1 .*Code"))
+   (should (difftastic-groups-test--visible-p "^━━ 1/6  Code"))
+   (+difftastic-groups-toggle-section)
+   (should (difftastic-groups-test--visible-p "^  1 .*Code"))
+   (goto-char (point-min))
+   (should-error (+difftastic-groups-toggle-section) :type 'user-error)))
 
 (ert-deftest difftastic-groups-classify-in-background ()
   (difftastic-groups-test--with-show

@@ -95,7 +95,7 @@ author, date and message; `difftastic-magit-show' keeps them."
   (load! "difftastic-stats")
   ;; Files grouped by intent, in review order, with claude's notes:
   ;; ]g / [g step through the groups, m marks one reviewed, C classifies,
-  ;; g y copies the notes at point.
+  ;; g y copies the notes at point, TAB on a heading or the overview folds it.
   (load! "difftastic-groups")
   ;; A gray bar and a checkbox on every hunk header (x ticks it green);
   ;; C-<down> / C-<up> jump between headers, TAB folds the hunk at point.
@@ -163,11 +163,19 @@ author, date and message; `difftastic-magit-show' keeps them."
         (+difftastic-groups-jump)
       (call-interactively #'+difftastic-visit-file)))
 
+  (defun +difftastic-toggle (&optional file-chunk)
+    "Fold the group heading or overview at point, else the hunk at point.
+FILE-CHUNK is as in `difftastic-toggle-chunk'."
+    (interactive "P" difftastic-mode)
+    (if (get-text-property (point) '+difftastic-groups-section)
+        (+difftastic-groups-toggle-section)
+      (+difftastic-hunks-toggle file-chunk)))
+
   ;; Doom's motion-state smart tab binds <tab> and runs `+fold/toggle'
   ;; whenever the line end is invisible, so it steals TAB on a hidden
   ;; chunk.  Bind <tab> here; the mode's normal-state map wins.
   (map! :map difftastic-mode-map
-        :nm [tab] #'+difftastic-hunks-toggle
+        :nm [tab] #'+difftastic-toggle
         :nm "C-<down>" #'difftastic-next-chunk
         :nm "C-<up>" #'difftastic-previous-chunk
         :nm "x" #'+difftastic-hunks-toggle-checked
@@ -178,7 +186,7 @@ author, date and message; `difftastic-magit-show' keeps them."
         :nm "C" #'+difftastic-groups-classify
         :nm "g y" #'+difftastic-groups-copy-notes
         :nm "C-j" #'+difftastic-visit-worktree-file
-        [remap difftastic-toggle-chunk] #'+difftastic-hunks-toggle
+        [remap difftastic-toggle-chunk] #'+difftastic-toggle
         [remap difftastic-diff-visit-file] #'+difftastic-visit-file
         [remap difftastic-diff-visit-worktree-file] #'+difftastic-visit-worktree-file)
 

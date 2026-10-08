@@ -102,7 +102,7 @@ Drops the bars of windows that no longer show this buffer."
             (setq ov (make-overlay start start))
             (overlay-put ov '+difftastic-sticky window)
             (overlay-put ov 'window window)
-            ;; Above group headings and hunk checkboxes at the same spot.
+            ;; Above hunk checkboxes at the same spot.
             (overlay-put ov 'priority 1000))
           (move-overlay ov start start)
           (overlay-put ov 'before-string
@@ -129,5 +129,6 @@ Drops the bars of windows that no longer show this buffer."
 (advice-add '+difftastic-groups--render :after #'+difftastic-sticky-update-all)
 (advice-add 'difftastic-hide-chunk :after #'+difftastic-sticky-update-all)
 (advice-add 'difftastic-show-chunk :after #'+difftastic-sticky-update-all)
+(advice-add '+difftastic-groups-toggle-section :after #'+difftastic-sticky-update-all)
 
 ;;; difftastic-sticky.el ends here

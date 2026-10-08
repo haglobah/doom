@@ -41,7 +41,9 @@
     (nreverse headers)))
 
 (defun +difftastic-hunks--key (bol next)
-  "Key of the hunk whose header starts at BOL; NEXT ends its body."
+  "Key of the hunk whose header starts at BOL; NEXT ends its body.
+A difftastic-groups heading before NEXT is not part of the body."
+  (setq next (or (text-property-not-all bol next '+difftastic-groups-text nil) next))
   (sha1 (concat (buffer-substring-no-properties bol (pos-eol))
                 "\n"
                 (string-trim (buffer-substring-no-properties
@@ -133,7 +135,7 @@ FILE-CHUNK is as in `difftastic-toggle-chunk'."
 
 ;; Redraw whenever the text or the folding changes: after difft finishes
 ;; and after difftastic-groups (depth -50) has reordered the files, after
-;; every later groups render, and after folding.
+;; every later groups render, and after folding hunks or groups.
 (define-advice difftastic--run-command-sentinel
     (:after (process &rest _) +difftastic-hunks -90)
   (when (and (eq (process-status process) 'exit)
@@ -143,5 +145,6 @@ FILE-CHUNK is as in `difftastic-toggle-chunk'."
 (advice-add '+difftastic-groups--render :after #'+difftastic-hunks-decorate)
 (advice-add 'difftastic-hide-chunk :after #'+difftastic-hunks-decorate)
 (advice-add 'difftastic-show-chunk :after #'+difftastic-hunks-decorate)
+(advice-add '+difftastic-groups-toggle-section :after #'+difftastic-hunks-decorate)
 
 ;;; difftastic-hunks.el ends here

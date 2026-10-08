@@ -106,6 +106,21 @@
    (+difftastic-hunks-decorate)
    (should (equal (difftastic-hunks-test--boxes) '("☐ " "☐ " "☐ ")))))
 
+(ert-deftest difftastic-hunks-checks-ignore-group-headings ()
+  (difftastic-hunks-test--with-buffer
+   (difftastic-hunks-test--goto "(baz)")
+   (+difftastic-hunks-toggle-checked)
+   ;; difftastic-groups puts a heading above b.py; then marks it reviewed.
+   (let ((inhibit-read-only t))
+     (difftastic-hunks-test--goto "b.py --- ")
+     (insert (propertize "━━ 2/2  Python\n\n" '+difftastic-groups-text t))
+     (+difftastic-hunks-decorate)
+     (should (equal (difftastic-hunks-test--boxes) '("☐ " "☑ " "☐ ")))
+     (difftastic-hunks-test--goto "Python\n\n")
+     (insert (propertize "  ✓ reviewed" '+difftastic-groups-text t)))
+   (+difftastic-hunks-decorate)
+   (should (equal (difftastic-hunks-test--boxes) '("☐ " "☑ " "☐ ")))))
+
 (ert-deftest difftastic-hunks-tab-in-the-body-folds-its-hunk ()
   (difftastic-hunks-test--with-buffer
    (difftastic-hunks-test--goto "(bar)")
