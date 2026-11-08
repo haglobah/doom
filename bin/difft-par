@@ -1,0 +1,95 @@
+#!/usr/bin/env bash
+# Run git's external diffs in parallel, with the same output as serial git.
+#
+#   difft-par --git git ARGS...
+#
+# git calls GIT_EXTERNAL_DIFF once per file and waits for each call.  Here
+# each call only queues its file and returns: it copies the inputs, since
+# git deletes its temporary blob files when the call returns.  After git
+# exits, the queued diffs run at once, and their output follows git's own
+# output (the commit header) in git's file order.
+#
+# Assumes git prints nothing between files, which holds for `git show' of
+# one commit and for `git diff'; not for `git log -p'.
+#
+# If a diff fails, the other files still print; the failure goes to
+# stderr and the exit status is 1.  A failing git exits with git's status.
+
+set -euo pipefail
+
+queue() {
+  local n job
+  n=$(($(<"$DIFFT_PAR_DIR/count") + 1))
+  echo "$n" >"$DIFFT_PAR_DIR/count"
+  job=$DIFFT_PAR_DIR/$n
+  mkdir -p "$job/a" "$job/b"
+  local args=("$@")
+  # git's arguments: path old-file old-hex old-mode new-file new-hex
+  # new-mode [new-path rename-message], or just path when unmerged.
+  if (($# >= 7)); then
+    args[1]=$(snapshot "$2" "$job/a")
+    args[4]=$(snapshot "$5" "$job/b")
+  fi
+  printf '%s\0' "${args[@]}" >"$job/args"
+  printf '%s\0' "$PWD" "${GIT_DIFF_PATH_COUNTER-}" "${GIT_DIFF_PATH_TOTAL-}" >"$job/env"
+}
+
+# Copy FILE into DIR, keeping its name; print the copy, or FILE itself
+# when it cannot be copied (/dev/null, a directory).
+snapshot() {
+  local copy=$2/${1##*/}
+  if [[ -f $1 ]] && cp -- "$1" "$copy" 2>/dev/null; then
+    printf '%s' "$copy"
+  else
+    printf '%s' "$1"
+  fi
+}
+
+run() {
+  local job=$DIFFT_PAR_DIR/$1 args env status=0
+  mapfile -d '' args <"$job/args"
+  mapfile -d '' env <"$job/env"
+  cd "${env[0]}"
+  # Like git: sh -c 'CMD "$@"' CMD ARGS...
+  GIT_DIFF_PATH_COUNTER=${env[1]} GIT_DIFF_PATH_TOTAL=${env[2]} \
+    sh -c "$DIFFT_PAR_CMD \"\$@\"" "$DIFFT_PAR_CMD" "${args[@]}" \
+    >"$job/out" 2>"$job/err" || status=$?
+  echo "$status" >"$job/status"
+}
+
+drive() {
+  : "${GIT_EXTERNAL_DIFF:?difft-par: GIT_EXTERNAL_DIFF is not set}"
+  DIFFT_PAR_DIR=$(mktemp -d "${TMPDIR:-/tmp}/difft-par.XXXXXX")
+  trap 'rm -rf "$DIFFT_PAR_DIR"' EXIT
+  echo 0 >"$DIFFT_PAR_DIR/count"
+  export DIFFT_PAR_DIR DIFFT_PAR_CMD=$GIT_EXTERNAL_DIFF
+
+  local status=0
+  GIT_EXTERNAL_DIFF="$(printf '%q' "$0") --queue" "$@" || status=$?
+  ((status == 0)) || exit "$status"
+
+  local n i failed=0
+  n=$(<"$DIFFT_PAR_DIR/count")
+  ((n > 0)) || exit 0
+  seq 1 "$n" | xargs -P "$(nproc)" -I{} "$0" --run {}
+
+  for ((i = 1; i <= n; i++)); do
+    local job=$DIFFT_PAR_DIR/$i
+    cat "$job/out"
+    cat "$job/err" >&2
+    if [[ $(<"$job/status") != 0 ]]; then
+      local path
+      path=$(head -z -n1 "$job/args" | tr -d '\0')
+      echo "difft-par: external diff failed for $path (exit $(<"$job/status"))" >&2
+      failed=1
+    fi
+  done
+  exit "$failed"
+}
+
+case ${1-} in
+  --git) shift; drive "$@" ;;
+  --queue) shift; queue "$@" ;;
+  --run) run "$2" ;;
+  *) echo "usage: difft-par --git git ARGS..." >&2; exit 2 ;;
+esac

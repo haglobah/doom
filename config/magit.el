@@ -106,6 +106,9 @@ author, date and message; `difftastic-magit-show' keeps them."
   ;; g r reruns difft; a commit amended or rebased since is followed to
   ;; its new hash.
   (load! "difftastic-follow")
+  ;; difft runs on all of a commit's files at once (bin/difft-par), not
+  ;; one after another; same output.
+  (load! "difftastic-parallel")
 
   ;; Visiting a file from the diff (RET, C-j) shows it in the window next
   ;; to the diff (usually magit), so the diff stays visible.  Closing the
