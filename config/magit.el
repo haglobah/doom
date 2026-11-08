@@ -9,7 +9,11 @@
 
 (after! magit
   (setq magit-diff-refine-hunk 'all)
-  (setq magit-save-repository-buffers 'dontask))
+  (setq magit-save-repository-buffers 'dontask)
+  ;; List all worktrees in the status buffer; RET jumps to one's status.
+  (magit-add-section-hook 'magit-status-sections-hook
+                          'magit-insert-worktrees
+                          'magit-insert-status-headers t))
 
 ;; Adds difftastic commands to the magit diff (d) and blame transients.
 (use-package! difftastic
