@@ -26,6 +26,8 @@
 (package! affe
   :recipe (:host github :repo "minad/affe"))
 (package! hercules)
+;; Magit-style interface for jj (needs jj >= 0.41, installed via noldor).
+(package! majutsu :recipe (:host github :repo "0WD0/majutsu"))
 ;; Structural diffs from magit (needs the `difft' binary, installed via noldor).
 (package! difftastic)
 ;; Used by bah/move-file-to-dir-fuzzy (config/keybindings/files.el); was
