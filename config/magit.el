@@ -103,6 +103,9 @@ author, date and message; `difftastic-magit-show' keeps them."
   ;; Under the header line, bars with the part (group) and the file that
   ;; scrolled off the top; the next file's header slides under them.
   (load! "difftastic-sticky")
+  ;; g r reruns difft; a commit amended or rebased since is followed to
+  ;; its new hash.
+  (load! "difftastic-follow")
 
   ;; Visiting a file from the diff (RET, C-j) shows it in the window next
   ;; to the diff (usually magit), so the diff stays visible.  Closing the
@@ -185,7 +188,9 @@ FILE-CHUNK is as in `difftastic-toggle-chunk'."
         :nm "m" #'+difftastic-groups-toggle-reviewed
         :nm "C" #'+difftastic-groups-classify
         :nm "g y" #'+difftastic-groups-copy-notes
+        :nm "g r" #'+difftastic-follow-rerun
         :nm "C-j" #'+difftastic-visit-worktree-file
+        [remap difftastic-rerun] #'+difftastic-follow-rerun
         [remap difftastic-toggle-chunk] #'+difftastic-toggle
         [remap difftastic-diff-visit-file] #'+difftastic-visit-file
         [remap difftastic-diff-visit-worktree-file] #'+difftastic-visit-worktree-file)
